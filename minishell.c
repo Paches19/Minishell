@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/07 14:12:05 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/07 19:22:28 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,29 @@ void	exit_error()
 {
 	perror("error\n");
 	exit(1);
+}
+
+t_token	*ft_token_last(t_token *lst)
+{
+	if (!lst)
+		return (NULL);
+	while (lst->next != NULL)
+		lst = lst->next;
+	return (lst);
+}
+
+void	ft_token_add_back(t_token **lst, t_token *new)
+{
+	t_token	*ptr;
+
+	if (!*lst)
+	{
+		*lst = new;
+		return ;
+	}
+	ptr = ft_token_last(*lst);
+	ptr->next = new;
+	new->prev = ptr;
 }
 
 void	free_tokens(t_token *tokens) 
@@ -46,15 +69,15 @@ enum e_token_type	get_token_type(const char *token)
 {
 	if (!token)
 		return COMMAND;
-	if (strcmp(token, "|") == 0)
+	if (ft_strcmp(token, "|") == 0)
 		return PIPE;
-	else if (strcmp(token, "<") == 0)
+	else if (ft_strcmp(token, "<") == 0)
 		return INPUT_REDIRECT;
-	else if (strcmp(token, ">") == 0)
+	else if (ft_strcmp(token, ">") == 0)
 		return OUTPUT_REDIRECT;
-	else if (strcmp(token, ">>") == 0)
+	else if (ft_strcmp(token, ">>") == 0)
 		return APPEND_REDIRECT;
-	else if (strcmp(token, "<<") == 0)
+	else if (ft_strcmp(token, "<<") == 0)
 		return HEREDOC_REDIRECT;
 	else if (*token == '\"' && token[ft_strlen(token) - 1] == '\"')
 		return DOUBLE_QUOTE;
@@ -88,12 +111,14 @@ int	read_special_char(const char ***input)
 	{
 		if (***input == '>' && (***(input + 1) == ***input || ***(input + 1) != '<') \
 		&& (***(input + 2) != ***input && !ft_is_special(***(input + 2)))) //ME HE FUMADO EL DOLAR
-		{
-			++(**input);
-			++(**input);
 			return (2);
-		}
-		
+		else if (***input == '<' && (***(input + 1) == ***input || ***(input + 1) != '>') \
+		&& (***(input + 2) != ***input && !ft_is_special(***(input + 2)))) //ME HE FUMADO EL DOLAR
+			return (2);
+		else if (ft_is_special(***(input + 1)))
+			return (-1);
+		else
+			return (1);
 	}
 }
 
@@ -121,38 +146,32 @@ int	ft_reading_token(const char **input)
 	return (len);
 }
 
-t_token*	add_token_to_list(t_token *list, char *token, int len)
+t_token*	add_token_to_list(t_token **list, char *token, int len)
 {
 	t_token *new_token;
 
-	new_token = (t_token *) malloc(sizeof(t_token));
+	new_token = (t_token *)ft_calloc(sizeof(t_token), 1);
 	if (!token) 
 		exit_error(); //error malloc
 	new_token->token = ft_substr(token, 0, len);
 	new_token->type = get_token_type(new_token->token);
-	new_token->next = NULL;
-	if (list == NULL) 
+	if (*list == NULL)
 		return new_token;
 	else 
-	{
-		t_token *current_token = list;
-		while (current_token->next != NULL)
-			current_token = current_token->next;
-	current_token->next = new_token;
-	}
+		ft_token_add_back(list, new_token);
 	return list;
 }
 
 t_token	*tokenize_input(const char *input) 
 {
-	t_token 		*list_token;
-	t_token			*head_list_token;
+	t_token 		*token_list;
+	t_token			*head_token_list;
 	char 			*token;
 	int				len;
 
-	head_list_token = NULL;
-	list_token = NULL;
-	while (*input != '\0') 
+	head_token_list = NULL;
+	token_list = NULL;
+	while (*input)
 	{
 		while (ft_isspace(*input))
 			input++;
@@ -162,10 +181,9 @@ t_token	*tokenize_input(const char *input)
 		len = ft_reading_token(*input);
 		if (len < 0)
 			exit_error(); //error en introduccion de comandos comillas abiertas
-		add_token_to_list(list_token, token, len);
-		if (!head_list_token)
-			head_list_token = list_token;
-		list_token->type = get_token_type(token);
+		add_token_to_list(&token_list, token, len);
+		if (!head_token_list)
+			head_token_list = token_list;
 	}
-	return list_token;
+	return head_token_list;
 }
