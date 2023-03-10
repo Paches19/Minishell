@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/10 18:57:45 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/10 19:12:39 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,8 @@ int ft_is_special(char const c)
 
 enum e_token_type	get_token_type(const char *token)
 {
-	if (!token)
-		return COMMAND;
+	if (*token == '-')
+		return ARGUMENT;
 	if (ft_strcmp(token, "|") == 0)
 		return PIPE;
 	else if (ft_strcmp(token, "<") == 0)
@@ -64,7 +64,7 @@ enum e_token_type	get_token_type(const char *token)
 	else if (*token == '$')
 		return VARIABLE;
 	else
-		return ARGUMENT;
+		return COMMAND;
 }
 
 int	find_closing_quote(const char ***input, char quote)
@@ -189,7 +189,7 @@ t_token	*add_token_to_list(t_token **list, char *token, int len)
 	new_token->token = ft_substr(token, 0, len);
 	new_token->type = get_token_type(new_token->token);
 	if (*list == NULL)
-			*list = new_token;
+		*list = new_token;
 	else
 		ft_token_add_back(list, new_token);
 	return (*list);
