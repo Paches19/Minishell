@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 12:29:38 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/07 13:00:25 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/10 12:16:33 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ char	*ft_strchr(const char *s, int c)
 	int		i;
 	char	*str;
 
-	if (!str)
+	if (!s)
 		return (NULL);
 	str = (char *) s;
 	i = 0;

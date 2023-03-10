@@ -6,11 +6,12 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/07 19:22:28 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/10 17:54:58 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../include/minishell.h"
+#include "../libft/libft.h"
 
 void	exit_error()
 {
@@ -18,37 +19,14 @@ void	exit_error()
 	exit(1);
 }
 
-t_token	*ft_token_last(t_token *lst)
-{
-	if (!lst)
-		return (NULL);
-	while (lst->next != NULL)
-		lst = lst->next;
-	return (lst);
-}
-
-void	ft_token_add_back(t_token **lst, t_token *new)
-{
-	t_token	*ptr;
-
-	if (!*lst)
-	{
-		*lst = new;
-		return ;
-	}
-	ptr = ft_token_last(*lst);
-	ptr->next = new;
-	new->prev = ptr;
-}
-
-void	free_tokens(t_token *tokens) 
+void	free_tokens(t_token *token_list) 
 {
 	t_token *tmp;
 
-	while (tokens) 
+	while (token_list) 
 	{
-		tmp = tokens;
-		tokens = tokens->next;
+		tmp = token_list;
+		token_list = token_list->next;
 		free(tmp->token);
 		free(tmp);
 	}
@@ -105,20 +83,43 @@ int	find_closing_quote(const char ***input, char quote)
 	return (len);
 }
 
-int	read_special_char(const char ***input)
-{	
-	while (**input)
+int	read_special_char(const char **input)
+{
+	int	i;
+
+	i = -1;
+	while (!ft_isspace(input[0][++i]))
 	{
-		if (***input == '>' && (***(input + 1) == ***input || ***(input + 1) != '<') \
-		&& (***(input + 2) != ***input && !ft_is_special(***(input + 2)))) //ME HE FUMADO EL DOLAR
+		printf("special: %c\n", input[0][i]);
+		/*if (input[0][i] == '>' && (input[0][i + 1] == input[0][i] || input[0][i + 1]) != '<' \
+		&& (input[0][i + 2]) != input[0][i] && !ft_is_special(input[0][i + 2])) //ME HE FUMADO EL DOLAR
 			return (2);
-		else if (***input == '<' && (***(input + 1) == ***input || ***(input + 1) != '>') \
-		&& (***(input + 2) != ***input && !ft_is_special(***(input + 2)))) //ME HE FUMADO EL DOLAR
+		else if (input[0][i] == '<' && ((input[0][i + 1]) == input[0][i] || input[0][i + 1] != '>') \
+		&& ((input[0][i + 2]) != input[0][i]) && !ft_is_special(input[0][i + 2])) //ME HE FUMADO EL DOLAR
 			return (2);
-		else if (ft_is_special(***(input + 1)))
+		else if (ft_is_special(input[0][i + 1]))
 			return (-1);
-		else
+		else*/
 			return (1);
+	}
+	return (-1);
+}
+
+
+void	print_token_list(t_token **tokenize_list)
+{
+	t_token	*aux;
+	int		i;
+
+	printf("print token list\n");
+	aux = *tokenize_list;
+	i = 0;
+	while(aux)
+	{
+		printf("token %d: \n", ++i);
+		printf("\b\btoken: %s\n", aux->token);
+		printf("\b\btype: %d\n", aux->type);
+		aux = aux->next;
 	}
 }
 
@@ -127,26 +128,58 @@ int	ft_reading_token(const char **input)
 	int	len;
 
 	len = 0;
-	while (*input)
+	//printf("input: %s\n", *input);
+	while (**input != '\0')
 	{
+	//	printf("char: %c\n", **input);
 		if (**input == '\'' || **input == '\"')
-			return (find_closing_quote(*input, **input));
+			return (find_closing_quote(&input, **input));
 		else if(ft_is_special(**input))
-			return (read_special_char(*input));
+		{
+			//printf("is special\n");
+			return (read_special_char(input));
+		}
 		else if (!ft_isspace(**input) && !ft_is_special(**input))
 		{
+			//printf("is not special\n");
 			++len;
-			++input;
+			++*input;
 		}
 		else
 			return (len);
 		if (len == 0)
-				return (-1);
+			return (-1);
 	}
 	return (len);
 }
 
-t_token*	add_token_to_list(t_token **list, char *token, int len)
+t_token	*ft_token_last(t_token *lst)
+{
+	t_token	*aux;
+
+	if (!lst)
+		return (NULL);
+	aux = lst;
+	while (aux->next != NULL)
+		aux = aux->next;
+	return (aux);
+}
+
+void	ft_token_add_back(t_token **lst, t_token *new)
+{
+	t_token	*ptr;
+
+	if (!(*lst))
+	{
+		*lst = new;
+		return ;
+	}
+	ptr = ft_token_last(*lst);
+	new->prev = ptr;
+	ptr->next = new;
+}
+
+t_token	*add_token_to_list(t_token **list, char *token, int len)
 {
 	t_token *new_token;
 
@@ -156,10 +189,10 @@ t_token*	add_token_to_list(t_token **list, char *token, int len)
 	new_token->token = ft_substr(token, 0, len);
 	new_token->type = get_token_type(new_token->token);
 	if (*list == NULL)
-		return new_token;
-	else 
+			*list = new_token;
+	else
 		ft_token_add_back(list, new_token);
-	return list;
+	return (*list);
 }
 
 t_token	*tokenize_input(const char *input) 
@@ -169,21 +202,35 @@ t_token	*tokenize_input(const char *input)
 	char 			*token;
 	int				len;
 
-	head_token_list = NULL;
 	token_list = NULL;
+	head_token_list = NULL;
 	while (*input)
 	{
 		while (ft_isspace(*input))
 			input++;
 		if (*input == '\0')
 			return (NULL); //error en introduccion de comandos no ha leido nada
-		token = input;
-		len = ft_reading_token(*input);
+		token = (char *) input;
+		len = ft_reading_token(&input);
+		printf("len: %d\n", len);
 		if (len < 0)
 			exit_error(); //error en introduccion de comandos comillas abiertas
 		add_token_to_list(&token_list, token, len);
+		//print_token_list(head_token_list);
 		if (!head_token_list)
 			head_token_list = token_list;
 	}
+	print_token_list(&head_token_list);
 	return head_token_list;
+}
+
+int	main(int argc, char **argv)
+{
+	t_token	*token_list;
+	
+	if (argc == 1)
+		return (0);
+	token_list = tokenize_input(argv[1]);
+	free_tokens(token_list);
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 15:45:56 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/10 11:53:18 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/10 12:15:01 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,9 @@
 
 int	ft_atoi(const char *str)
 {
-	int		i;
 	int		sign;
 	long	result;
 
-	i = 0;
 	sign = 1;
 	while (*str && (*str == 32 || (*str >= 9 && *str <= 13)))
 		++str;
@@ -33,9 +31,9 @@ int	ft_atoi(const char *str)
 	{
 		result = (result * 10) + (*str - '0') * sign;
 		if (result > INT_MAX)
-			error_exit_int();
+			exit(1);
 		else if (result < INT_MIN)
-			error_exit_int();
+			exit(1);
 		++str;
 	}
 	return (result);
