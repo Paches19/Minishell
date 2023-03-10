@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/10 17:54:58 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/10 18:57:45 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,10 +209,10 @@ t_token	*tokenize_input(const char *input)
 		while (ft_isspace(*input))
 			input++;
 		if (*input == '\0')
-			return (NULL); //error en introduccion de comandos no ha leido nada
+			exit(1); //error en introduccion de comandos no ha leido nada
 		token = (char *) input;
 		len = ft_reading_token(&input);
-		printf("len: %d\n", len);
+		//printf("len: %d\n", len);
 		if (len < 0)
 			exit_error(); //error en introduccion de comandos comillas abiertas
 		add_token_to_list(&token_list, token, len);
@@ -221,13 +221,14 @@ t_token	*tokenize_input(const char *input)
 			head_token_list = token_list;
 	}
 	print_token_list(&head_token_list);
-	return head_token_list;
+	return (head_token_list);
 }
 
 int	main(int argc, char **argv)
 {
 	t_token	*token_list;
 	
+	//comentario nuevo
 	if (argc == 1)
 		return (0);
 	token_list = tokenize_input(argv[1]);
