@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
+/*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/10 17:54:58 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/11 19:25:00 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,13 +224,75 @@ t_token	*tokenize_input(const char *input)
 	return head_token_list;
 }
 
+void	splash(void)
+{
+	printf("\x1b[33m");
+	printf("\u2587     \u2587\n");
+	printf("\u2587     \u2587  \u2587         \u2587                       \u2587   \u2587\n");	
+	printf("\u2587\u2587   \u2587\u2587                 \u2587\u2587\u2587\u2587  \u2587       \u2587\u2587   \u2587   \u2587\n");	
+	printf("\u2587  \u2587  \u2587  \u2587         \u2587   \u2587      \u2587      \u2587  \u2587  \u2587   \u2587\n");	
+	printf("\u2587     \u2587  \u2587  \u2587 \u2587    \u2587    \u2587\u2587    \u2587\u2587\u2587    \u2587\u2587\u2587   \u2587   \u2587\n");	
+	printf("\u2587     \u2587  \u2587  \u2587   \u2587  \u2587       \u2587  \u2587   \u2587  \u2587     \u2587   \u2587\n");	
+	printf("\u2587     \u2587  \u2587  \u2587   \u2587  \u2587   \u2587\u2587\u2587\u2587   \u2587   \u2587   \u2587\u2587    \u2587   \u2587");
+	printf("\x1b[0m");
+	printf(" (by adpachec & jutrera-)\n");	
+
+}
+
+void renewprompt(void)
+{
+	
+	rl_replace_line("", 0);
+	rl_on_new_line();
+	rl_redisplay();
+}
+
+void	sigint_handler(int signal)
+{
+	if (signal == SIGINT || signal == SIGQUIT)
+	{
+		write(STDERR_FILENO, "\n", 1);
+		renewprompt();
+	}
+}
+
+void ignore_signal_for_shell()
+{
+	struct sigaction	act;
+
+	ft_bzero(&act, sizeof(act));
+	act.sa_handler = &sigint_handler;
+	// ignore "Ctrl-C"
+    sigaction(SIGINT, &act, NULL);
+	// ignore "Ctrl-\"
+    sigaction(SIGQUIT, &act, NULL);
+}
+
 int	main(int argc, char **argv)
 {
 	t_token	*token_list;
-	
-	if (argc == 1)
-		return (0);
-	token_list = tokenize_input(argv[1]);
-	free_tokens(token_list);
-	return (0);
+	char *inpt;
+    char *p;
+		
+	ignore_signal_for_shell();
+	splash();
+    p = getenv("HOME");
+	while (1)
+	{
+		inpt = readline(p);
+		if (inpt == 0 || ft_strcmp(inpt, "exit") == 0) //Ctrl-D pressed or command "exit" typed
+			break;
+		if (ft_strcmp(inpt, "") != 0)
+		{
+			add_history(inpt);
+			token_list = tokenize_input(inpt);
+		}
+		else
+			renewprompt();
+		free(inpt);
+		free_tokens(token_list);
+	}
+	printf("exit\n");
+	rl_clear_history();
+    return (0);
 }
