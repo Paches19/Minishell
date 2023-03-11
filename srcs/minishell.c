@@ -6,7 +6,7 @@
 /*   By: jutrera- <jutrera-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/11 22:10:15 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/03/11 22:58:36 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,6 +293,7 @@ int	main(void)
 		free_tokens(token_list);
 	}
 	printf("exit\n");
+	free(inpt);
 	rl_clear_history();
     return (0);
 }
