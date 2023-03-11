@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
+#    By: jutrera- <jutrera-@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/10 12:11:32 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/10 12:14:02 by adpachec         ###   ########.fr        #
+#    Updated: 2023/03/11 22:10:49 by jutrera-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,7 @@ S_DIR		=	./srcs/
 
 INCL		=	-I$(HEADER)
 
-LIBFLAGS	=	-Llibft -lft
+LIBFLAGS	=	-Llibft -lft -lreadline
 
 LEAKS		=	-g3 -fsanitize=address
 W_FLAGS		=	-Wall -Wextra -Werror

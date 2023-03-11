@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jutrera- <jutrera-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/11 19:25:00 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/03/11 22:10:15 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,7 +268,7 @@ void ignore_signal_for_shell()
     sigaction(SIGQUIT, &act, NULL);
 }
 
-int	main(int argc, char **argv)
+int	main(void)
 {
 	t_token	*token_list;
 	char *inpt;
