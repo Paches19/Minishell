@@ -6,7 +6,7 @@
 /*   By: jutrera- <jutrera-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/11 22:58:36 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/03/13 23:29:55 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,7 @@ int	read_special_char(const char **input)
 	}
 	return (-1);
 }
-
-
+/*
 void	print_token_list(t_token **tokenize_list)
 {
 	t_token	*aux;
@@ -122,7 +121,7 @@ void	print_token_list(t_token **tokenize_list)
 		aux = aux->next;
 	}
 }
-
+*/
 int	ft_reading_token(const char **input)
 {
 	int	len;
@@ -212,7 +211,7 @@ t_token	*tokenize_input(const char *input)
 			return (NULL); //error en introduccion de comandos no ha leido nada
 		token = (char *) input;
 		len = ft_reading_token(&input);
-		printf("len: %d\n", len);
+		//printf("len: %d\n", len);
 		if (len < 0)
 			exit_error(); //error en introduccion de comandos comillas abiertas
 		add_token_to_list(&token_list, token, len);
@@ -220,66 +219,120 @@ t_token	*tokenize_input(const char *input)
 		if (!head_token_list)
 			head_token_list = token_list;
 	}
-	print_token_list(&head_token_list);
+	//print_token_list(&head_token_list);
 	return head_token_list;
 }
 
 void	splash(void)
 {
+	printf("==========================================================================\n");
 	printf("\x1b[33m");
-	printf("\u2587     \u2587\n");
-	printf("\u2587     \u2587  \u2587         \u2587                       \u2587   \u2587\n");	
+	printf("\u2587     \u2587                                    \u2587   \u2587\n");	
 	printf("\u2587\u2587   \u2587\u2587                 \u2587\u2587\u2587\u2587  \u2587       \u2587\u2587   \u2587   \u2587\n");	
 	printf("\u2587  \u2587  \u2587  \u2587         \u2587   \u2587      \u2587      \u2587  \u2587  \u2587   \u2587\n");	
-	printf("\u2587     \u2587  \u2587  \u2587 \u2587    \u2587    \u2587\u2587    \u2587\u2587\u2587    \u2587\u2587\u2587   \u2587   \u2587\n");	
+	printf("\u2587     \u2587     \u2587 \u2587         \u2587\u2587    \u2587\u2587\u2587    \u2587\u2587\u2587   \u2587   \u2587\n");	
 	printf("\u2587     \u2587  \u2587  \u2587   \u2587  \u2587       \u2587  \u2587   \u2587  \u2587     \u2587   \u2587\n");	
 	printf("\u2587     \u2587  \u2587  \u2587   \u2587  \u2587   \u2587\u2587\u2587\u2587   \u2587   \u2587   \u2587\u2587    \u2587   \u2587");
 	printf("\x1b[0m");
 	printf(" (by adpachec & jutrera-)\n");	
-
+	printf("==========================================================================\n\n");
 }
 
-void renewprompt(void)
+void renewprompt(int signal)
 {
-	
+	(void)signal;
+	write(1, "\n", 1);
 	rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_redisplay();
 }
 
-void	sigint_handler(int signal)
+int ft_echo(t_token *token_list)
 {
-	if (signal == SIGINT || signal == SIGQUIT)
+	t_token	*p;
+	char	nl;
+
+	p = token_list->next;
+	if (!p || (ft_strcmp(p->token, "-n") != 0))
+		nl = '\n';
+	else
 	{
-		write(STDERR_FILENO, "\n", 1);
-		renewprompt();
+		p = p->next;
+		nl = 0;
 	}
+	while (p)
+	{
+		ft_putstr_fd(p->token, 1);
+		write(1, " ", 1);
+		p = p->next;
+	}
+	write(1, &nl, 1);
+	return (1);
 }
 
-void ignore_signal_for_shell()
+int ft_cd(t_token *token_list)
 {
-	struct sigaction	act;
+	printf("%s\n", token_list->token);
+	return (1);
+}
 
-	ft_bzero(&act, sizeof(act));
-	act.sa_handler = &sigint_handler;
-	// ignore "Ctrl-C"
-    sigaction(SIGINT, &act, NULL);
-	// ignore "Ctrl-\"
-    sigaction(SIGQUIT, &act, NULL);
+int ft_pwd(t_token *token_list)
+{
+	printf("%s\n", token_list->token);
+	return (1);
+}
+
+int ft_export(t_token *token_list)
+{
+	printf("%s\n", token_list->token);
+	return (1);
+}
+
+int ft_unset(t_token *token_list)
+{
+	printf("%s\n", token_list->token);
+	return (1);
+}
+
+int ft_env(t_token *token_list)
+{
+	printf("%s\n", token_list->token);
+	return (1);
+}
+
+int	its_builtin_command(t_token *token_list)
+{
+	char *command;
+
+	command = token_list->token;
+	if (ft_strcmp(command, "echo") == 0)
+		return (ft_echo(token_list));
+	else if (ft_strcmp(command, "cd") == 0)
+		return (ft_cd(token_list));
+	else if (ft_strcmp(command, "pwd") == 0)
+		return (ft_pwd(token_list));
+	else if (ft_strcmp(command, "export") == 0)
+		return (ft_export(token_list));
+	else if (ft_strcmp(command, "unset") == 0)
+		return (ft_unset(token_list));
+	else if (ft_strcmp(command, "env") == 0)
+		return (ft_env(token_list));
+	return (1);
 }
 
 int	main(void)
 {
 	t_token	*token_list;
 	char *inpt;
-    char *p;
 		
-	ignore_signal_for_shell();
 	splash();
-    p = getenv("HOME");
+   	// newline if "Ctrl-C"
+	signal(SIGINT, &renewprompt);
+	// ignore "Ctrl-\"
+	signal(SIGQUIT, SIG_IGN);
 	while (1)
 	{
-		inpt = readline(p);
+		inpt = readline("minishell ->");
 		if (inpt == 0 || ft_strcmp(inpt, "exit") == 0) //Ctrl-D pressed or command "exit" typed
 			break;
 		if (ft_strcmp(inpt, "") != 0)
@@ -288,12 +341,16 @@ int	main(void)
 			token_list = tokenize_input(inpt);
 		}
 		else
-			renewprompt();
+			renewprompt(0);
+		//builtin commands, look into token_list
+		if (!its_builtin_command(token_list))
+			printf("no es comando builtin !\n");
+		//devuelve 0 si no es command builtin, 1 si lo es
 		free(inpt);
 		free_tokens(token_list);
 	}
-	printf("exit\n");
 	free(inpt);
 	rl_clear_history();
-    return (0);
+    write(1, "exit\n", 5);
+	return (0);
 }
