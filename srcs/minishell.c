@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/10 19:12:39 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/13 12:28:53 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ enum e_token_type	get_token_type(const char *token)
 		return VARIABLE;
 	else
 		return COMMAND;
+	//falta introducir built in
 }
 
 int	find_closing_quote(const char ***input, char quote)
@@ -72,39 +73,68 @@ int	find_closing_quote(const char ***input, char quote)
 	int	len;
 
 	++**input;
+	//printf("ey: %s\n", (char *)**input);
 	if (!ft_strchr(**input, quote))
 		return (-1);
 	len = 1;
 	while (**input && ***input != quote)
 	{
+		//printf("entro\n");
 		++**input;
 		++len;
 	}
-	return (len);
+	++**input;
+	//printf("salgo %s\n", **input);
+	return (++len);
 }
 
+int	ft_check_special(const char *input)
+{
+	if (input[-2] == input[-1])
+		return(2);
+	return(-1);
+}
 int	read_special_char(const char **input)
 {
 	int	i;
 
 	i = -1;
-	while (!ft_isspace(input[0][++i]))
-	{
-		printf("special: %c\n", input[0][i]);
-		/*if (input[0][i] == '>' && (input[0][i + 1] == input[0][i] || input[0][i + 1]) != '<' \
-		&& (input[0][i + 2]) != input[0][i] && !ft_is_special(input[0][i + 2])) //ME HE FUMADO EL DOLAR
-			return (2);
-		else if (input[0][i] == '<' && ((input[0][i + 1]) == input[0][i] || input[0][i + 1] != '>') \
-		&& ((input[0][i + 2]) != input[0][i]) && !ft_is_special(input[0][i + 2])) //ME HE FUMADO EL DOLAR
-			return (2);
-		else if (ft_is_special(input[0][i + 1]))
-			return (-1);
-		else*/
-			return (1);
-	}
+	while (!ft_isspace(**input) && ft_is_special(**input) && ++i > -1)
+		++(*input);
+	if (i > 1)
+		return (-1);
+	if (i == 0)
+		return (1);
+	if (i == 1)
+		return (ft_check_special(*input));
 	return (-1);
 }
 
+char	*ft_convert_type(t_token_type   type)
+{
+	if (type == COMMAND)
+		return ("COMMAND");
+	else if (type == ARGUMENT)
+		return ("ARGUMENT");
+	else if (type == PIPE)
+		return ("PIPE");
+	else if (type == INPUT_REDIRECT)
+		return ("INPUT_REDIRECT");
+	else if (type == OUTPUT_REDIRECT)
+		return ("OUTPUT_REDIRECT");
+	else if (type == APPEND_REDIRECT)
+		return ("APPEND_REDIRECT");
+	else if (type == HEREDOC_REDIRECT)
+		return ("HEREDOC_REDIRECT");
+	else if (type == DOUBLE_QUOTE)
+		return ("DOUBLE_QUOTE");
+	else if (type == SINGLE_QUOTE)
+		return ("SINGLE_QUOTE");
+	else if (type == VARIABLE)
+		return ("VARIABLE");
+	else
+		return ("UNKNOWN");
+}
 
 void	print_token_list(t_token **tokenize_list)
 {
@@ -118,7 +148,7 @@ void	print_token_list(t_token **tokenize_list)
 	{
 		printf("token %d: \n", ++i);
 		printf("\b\btoken: %s\n", aux->token);
-		printf("\b\btype: %d\n", aux->type);
+		printf("\b\btype: %s\n\n", ft_convert_type(aux->type));
 		aux = aux->next;
 	}
 }
@@ -128,10 +158,10 @@ int	ft_reading_token(const char **input)
 	int	len;
 
 	len = 0;
-	//printf("input: %s\n", *input);
+	//printf("char: %c\n", *input);
 	while (**input != '\0')
 	{
-	//	printf("char: %c\n", **input);
+		//printf("char: %c\n", **input);
 		if (**input == '\'' || **input == '\"')
 			return (find_closing_quote(&input, **input));
 		else if(ft_is_special(**input))
@@ -212,9 +242,8 @@ t_token	*tokenize_input(const char *input)
 			exit(1); //error en introduccion de comandos no ha leido nada
 		token = (char *) input;
 		len = ft_reading_token(&input);
-		//printf("len: %d\n", len);
 		if (len < 0)
-			exit_error(); //error en introduccion de comandos comillas abiertas
+			exit_error(); //error en introduccion de comandos
 		add_token_to_list(&token_list, token, len);
 		//print_token_list(head_token_list);
 		if (!head_token_list)
@@ -228,7 +257,6 @@ int	main(int argc, char **argv)
 {
 	t_token	*token_list;
 	
-	//comentario nuevo
 	if (argc == 1)
 		return (0);
 	token_list = tokenize_input(argv[1]);
