@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/13 12:28:53 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/14 11:08:44 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ void	free_tokens(t_token *token_list)
 	{
 		tmp = token_list;
 		token_list = token_list->next;
-		free(tmp->token);
+		if (tmp->token)
+			free(tmp->token);
 		free(tmp);
 	}
 }
@@ -47,7 +48,7 @@ enum e_token_type	get_token_type(const char *token)
 {
 	if (*token == '-')
 		return ARGUMENT;
-	if (ft_strcmp(token, "|") == 0)
+	else if (ft_strcmp(token, "|") == 0)
 		return PIPE;
 	else if (ft_strcmp(token, "<") == 0)
 		return INPUT_REDIRECT;
@@ -73,18 +74,30 @@ int	find_closing_quote(const char ***input, char quote)
 	int	len;
 
 	++**input;
-	//printf("ey: %s\n", (char *)**input);
 	if (!ft_strchr(**input, quote))
 		return (-1);
 	len = 1;
 	while (**input && ***input != quote)
 	{
-		//printf("entro\n");
 		++**input;
 		++len;
 	}
 	++**input;
-	//printf("salgo %s\n", **input);
+	return (++len);
+}
+
+int	ft_read_variable(const char ***input)
+{
+	int	len;
+
+	++**input;
+	len = 1;
+	while (**input && !ft_isspace(***input) && !ft_is_special(***input))
+	{
+		++**input;
+		++len;
+	}
+	++**input;
 	return (++len);
 }
 
@@ -158,15 +171,17 @@ int	ft_reading_token(const char **input)
 	int	len;
 
 	len = 0;
-	//printf("char: %c\n", *input);
+	// printf("input: %s\n", *input);
 	while (**input != '\0')
 	{
-		//printf("char: %c\n", **input);
+		// printf("char: %c\n", **input);
 		if (**input == '\'' || **input == '\"')
 			return (find_closing_quote(&input, **input));
+		else if(**input == '$')
+			return (ft_read_variable(&input));
 		else if(ft_is_special(**input))
 		{
-			//printf("is special\n");
+			// printf("is special\n");
 			return (read_special_char(input));
 		}
 		else if (!ft_isspace(**input) && !ft_is_special(**input))
@@ -242,6 +257,7 @@ t_token	*tokenize_input(const char *input)
 			exit(1); //error en introduccion de comandos no ha leido nada
 		token = (char *) input;
 		len = ft_reading_token(&input);
+		// printf("len: %d\n", len);
 		if (len < 0)
 			exit_error(); //error en introduccion de comandos
 		add_token_to_list(&token_list, token, len);
@@ -253,13 +269,13 @@ t_token	*tokenize_input(const char *input)
 	return (head_token_list);
 }
 
-int	main(int argc, char **argv)
-{
-	t_token	*token_list;
+// int	main(int argc, char **argv)
+// {
+// 	t_token	*token_list;
 	
-	if (argc == 1)
-		return (0);
-	token_list = tokenize_input(argv[1]);
-	free_tokens(token_list);
-	return (0);
-}
+// 	if (argc == 1)
+// 		return (0);
+// 	token_list = tokenize_input(argv[1]);
+// 	free_tokens(token_list);
+// 	return (0);
+// }
