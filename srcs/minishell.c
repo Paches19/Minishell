@@ -272,14 +272,31 @@ int ft_echo(t_token *token_list)
 
 int ft_cd(t_token *token_list)
 {
-	printf("%s\n", token_list->token);
+	t_token	*p;
+	char	*dir;
+
+	p = token_list->next;
+	if (!p)
+		dir = getenv("HOME");
+	else
+		dir = p->token;
+	if (chdir(dir) == -1)
+		perror("cd");
+	free(dir);
 	return (1);
 }
 
-int ft_pwd(t_token *token_list)
+int ft_pwd(void)
 {
-	printf("%s\n", token_list->token);
-	return (1);
+	char *cwd;
+
+	cwd = NULL;
+    if (getcwd(cwd, sizeof(*cwd)) != NULL)
+        printf("%s\n", cwd);
+	else
+        perror("pwd");
+	free (cwd);
+    return (1);
 }
 
 int ft_export(t_token *token_list)
@@ -310,31 +327,36 @@ int	its_builtin_command(t_token *token_list)
 	else if (ft_strcmp(command, "cd") == 0)
 		return (ft_cd(token_list));
 	else if (ft_strcmp(command, "pwd") == 0)
-		return (ft_pwd(token_list));
+		return (ft_pwd());
 	else if (ft_strcmp(command, "export") == 0)
 		return (ft_export(token_list));
 	else if (ft_strcmp(command, "unset") == 0)
 		return (ft_unset(token_list));
 	else if (ft_strcmp(command, "env") == 0)
 		return (ft_env(token_list));
-	return (1);
+	return (0);
 }
 
 int	main(void)
 {
 	t_token	*token_list;
-	char *inpt;
+	char 	*inpt;
+	int		status;
 		
 	splash();
    	// newline if "Ctrl-C"
 	signal(SIGINT, &renewprompt);
 	// ignore "Ctrl-\"
 	signal(SIGQUIT, SIG_IGN);
+	status = 0;
 	while (1)
 	{
 		inpt = readline("minishell ->");
 		if (inpt == 0 || ft_strcmp(inpt, "exit") == 0) //Ctrl-D pressed or command "exit" typed
+		{
+			status = 1;
 			break;
+		}
 		if (ft_strcmp(inpt, "") != 0)
 		{
 			add_history(inpt);
