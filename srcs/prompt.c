@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/14 11:03:59 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/14 11:41:23 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,25 +91,22 @@ int ft_env(t_token *token_list)
 	return (1);
 }
 
-int	its_builtin_command(t_token *token_list)
-{
-	char *command;
-
-	command = token_list->token;
-	if (ft_strcmp(command, "echo") == 0)
-		return (ft_echo(token_list));
-	else if (ft_strcmp(command, "cd") == 0)
-		return (ft_cd(token_list));
-	else if (ft_strcmp(command, "pwd") == 0)
-		return (ft_pwd(token_list));
-	else if (ft_strcmp(command, "export") == 0)
-		return (ft_export(token_list));
-	else if (ft_strcmp(command, "unset") == 0)
-		return (ft_unset(token_list));
-	else if (ft_strcmp(command, "env") == 0)
-		return (ft_env(token_list));
-	return (1);
-}
+// int	its_builtin_command( *token)
+// {
+// 	if (ft_strcmp(token, "echo") == 0)
+// 		return (ft_echo(token_list));
+// 	else if (ft_strcmp(token, "cd") == 0)
+// 		return (ft_cd(token_list));
+// 	else if (ft_strcmp(token, "pwd") == 0)
+// 		return (ft_pwd(token_list));
+// 	else if (ft_strcmp(token, "export") == 0)
+// 		return (ft_export(token_list));
+// 	else if (ft_strcmp(token, "unset") == 0)
+// 		return (ft_unset(token_list));
+// 	else if (ft_strcmp(token, "env") == 0)
+// 		return (ft_env(token_list));
+// 	return (1);
+// }
 
 int	main(void)
 {
@@ -134,8 +131,6 @@ int	main(void)
 		else
 			renewprompt(0);
 		//builtin commands, look into token_list
-		// if (!its_builtin_command(token_list))
-		// 	printf("no es comando builtin !\n");
 		//devuelve 0 si no es command builtin, 1 si lo es
 		free(inpt);
 		free_tokens(token_list);

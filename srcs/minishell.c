@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/14 11:08:44 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/14 11:50:41 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,24 @@ int ft_is_special(char const c)
     return (c == '|' || c == '<' || c == '>' || c == '$');
 }
 
-enum e_token_type	get_token_type(const char *token)
+int	check_builtin(const char *token, int len)
+{
+	if (!ft_strcmp(token, "echo") && len == 4)
+		return (BUILTIN);
+	else if (!ft_strcmp(token, "cd") && len == 2)
+		return (BUILTIN);
+	else if (!ft_strcmp(token, "pwd") && len == 3)
+		return (BUILTIN);
+	else if (!ft_strcmp(token, "export") && len == 6)
+		return (BUILTIN);
+	else if (!ft_strcmp(token, "unset") && len == 5)
+		return (BUILTIN);
+	else if (!ft_strcmp(token, "env") && len == 3)
+		return (BUILTIN);
+	return (COMMAND);
+}
+
+enum e_token_type	get_token_type(const char *token, int len)
 {
 	if (*token == '-')
 		return ARGUMENT;
@@ -65,7 +82,8 @@ enum e_token_type	get_token_type(const char *token)
 	else if (*token == '$')
 		return VARIABLE;
 	else
-		return COMMAND;
+		return (check_builtin(token, len));
+	return COMMAND;
 	//falta introducir built in
 }
 
@@ -145,6 +163,8 @@ char	*ft_convert_type(t_token_type   type)
 		return ("SINGLE_QUOTE");
 	else if (type == VARIABLE)
 		return ("VARIABLE");
+	else if (type == BUILTIN)
+		return ("BUILTIN");
 	else
 		return ("UNKNOWN");
 }
@@ -232,7 +252,7 @@ t_token	*add_token_to_list(t_token **list, char *token, int len)
 	if (!token) 
 		exit_error(); //error malloc
 	new_token->token = ft_substr(token, 0, len);
-	new_token->type = get_token_type(new_token->token);
+	new_token->type = get_token_type(new_token->token, len);
 	if (*list == NULL)
 		*list = new_token;
 	else

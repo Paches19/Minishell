@@ -6,7 +6,7 @@
 #    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/09/21 11:25:04 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/10 12:18:29 by adpachec         ###   ########.fr        #
+#    Updated: 2023/03/14 11:47:06 by adpachec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,6 +40,7 @@ RM = @rm -f
 
 all: $(NAME)
 
+
 $(NAME): $(OBJ) $(INCLUDE) 
 		$(LIB) $(NAME) $(OBJ)
 		ranlib $(NAME)
@@ -47,7 +48,7 @@ $(NAME): $(OBJ) $(INCLUDE)
 bonus:
 		@$(MAKE) BONUS=1 all
 		
-%.o: %.c
+%(O_DIR).o: %.c
 		$(CC) $(FLAGS) -c -o $@ $<
 
 clean:

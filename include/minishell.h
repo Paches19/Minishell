@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/14 11:02:05 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/14 11:41:35 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ typedef enum e_token_type
    HEREDOC_REDIRECT,
    DOUBLE_QUOTE,
    SINGLE_QUOTE,
-   VARIABLE
+   VARIABLE,
+   BUILTIN
 }  t_token_type;
 
 typedef struct s_token
