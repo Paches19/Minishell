@@ -6,7 +6,7 @@
 #    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/10 12:11:32 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/10 12:14:02 by adpachec         ###   ########.fr        #
+#    Updated: 2023/03/14 13:09:35 by adpachec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ I_DIR		=	./include/
 
 #Files
 LIB_A		=	libft.a
-SRCS_M		=	./srcs/minishell.c
+SRCS_M		=	./srcs/minishell.c ./srcs/prompt.c
 
 # Sources and objects
 RM 			=	rm -rf
@@ -32,9 +32,9 @@ S_DIR		=	./srcs/
 
 INCL		=	-I$(HEADER)
 
-LIBFLAGS	=	-Llibft -lft
+LIBFLAGS	=	-Llibft -lft -lreadline
 
-LEAKS		=	-g3 -fsanitize=address
+LEAKS		=	-g -fsanitize=address
 W_FLAGS		=	-Wall -Wextra -Werror
 LIB_N		=	$(L_DIR)$(LIB_A)
 

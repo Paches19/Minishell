@@ -6,30 +6,53 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/10 17:54:58 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/14 17:26:00 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 #include "../libft/libft.h"
 
-void	exit_error()
+void	exit_error(int err)
 {
 	perror("error\n");
-	exit(1);
+	exit(err);
 }
 
-void	free_tokens(t_token *token_list) 
+int	exit_error_token(int err, char *token)
 {
-	t_token *tmp;
-
-	while (token_list) 
+	char	c;
+	
+	if (err == -2)
 	{
-		tmp = token_list;
-		token_list = token_list->next;
-		free(tmp->token);
-		free(tmp);
+		write(2, "minishell: syntax error near unexpected token `", 47);
+		c = *token;
+		write(2, &c, 1);
+		write(2, "\'\n", 2);
 	}
+	if (err == -1)
+		write(2,"minishell: open quotes. Please close quotes if you use \
+		them\n", 65);
+	return (-1);
+}
+
+void	free_tokens(t_token **token_list) 
+{
+	t_token *current_node;
+	t_token *next_node;
+
+	if (!token_list || !(*token_list))
+		return;
+	current_node = *token_list;
+	while (current_node != NULL) 
+	{
+		next_node = current_node->next;
+		if (current_node->token != NULL)
+			free(current_node->token);
+		free(current_node);
+		current_node = next_node;
+	}
+	*token_list = NULL;
 }
 
 int ft_isspace(char const c)
@@ -43,11 +66,28 @@ int ft_is_special(char const c)
     return (c == '|' || c == '<' || c == '>' || c == '$');
 }
 
-enum e_token_type	get_token_type(const char *token)
+int	check_builtin(const char *token, int len)
 {
-	if (!token)
-		return COMMAND;
-	if (ft_strcmp(token, "|") == 0)
+	if (!ft_strcmp(token, "echo") && len == 4)
+		return (BUILTIN);
+	else if (!ft_strcmp(token, "cd") && len == 2)
+		return (BUILTIN);
+	else if (!ft_strcmp(token, "pwd") && len == 3)
+		return (BUILTIN);
+	else if (!ft_strcmp(token, "export") && len == 6)
+		return (BUILTIN);
+	else if (!ft_strcmp(token, "unset") && len == 5)
+		return (BUILTIN);
+	else if (!ft_strcmp(token, "env") && len == 3)
+		return (BUILTIN);
+	return (COMMAND);
+}
+
+enum e_token_type	get_token_type(const char *token, int len)
+{
+	if (*token == '-')
+		return ARGUMENT;
+	else if (ft_strcmp(token, "|") == 0)
 		return PIPE;
 	else if (ft_strcmp(token, "<") == 0)
 		return INPUT_REDIRECT;
@@ -64,7 +104,9 @@ enum e_token_type	get_token_type(const char *token)
 	else if (*token == '$')
 		return VARIABLE;
 	else
-		return ARGUMENT;
+		return (check_builtin(token, len));
+	return COMMAND;
+	//falta introducir built in
 }
 
 int	find_closing_quote(const char ***input, char quote)
@@ -80,31 +122,74 @@ int	find_closing_quote(const char ***input, char quote)
 		++**input;
 		++len;
 	}
-	return (len);
+	++**input;
+	return (++len);
 }
 
+int	ft_read_variable(const char ***input)
+{
+	int	len;
+
+	++**input;
+	len = 1;
+	while (**input && !ft_isspace(***input) && !ft_is_special(***input))
+	{
+		++**input;
+		++len;
+	}
+	++**input;
+	return (++len);
+}
+
+int	ft_check_special(const char *input)
+{
+	if (input[-2] == input[-1])
+		return(2);
+	return(-1);
+}
 int	read_special_char(const char **input)
 {
 	int	i;
 
 	i = -1;
-	while (!ft_isspace(input[0][++i]))
-	{
-		printf("special: %c\n", input[0][i]);
-		/*if (input[0][i] == '>' && (input[0][i + 1] == input[0][i] || input[0][i + 1]) != '<' \
-		&& (input[0][i + 2]) != input[0][i] && !ft_is_special(input[0][i + 2])) //ME HE FUMADO EL DOLAR
-			return (2);
-		else if (input[0][i] == '<' && ((input[0][i + 1]) == input[0][i] || input[0][i + 1] != '>') \
-		&& ((input[0][i + 2]) != input[0][i]) && !ft_is_special(input[0][i + 2])) //ME HE FUMADO EL DOLAR
-			return (2);
-		else if (ft_is_special(input[0][i + 1]))
-			return (-1);
-		else*/
-			return (1);
-	}
+	while (!ft_isspace(**input) && ft_is_special(**input) && ++i > -1)
+		++(*input);
+	if (i > 1)
+		return (-2);
+	if (i == 0)
+		return (1);
+	if (i == 1)
+		return (ft_check_special(*input));
 	return (-1);
 }
 
+char	*ft_convert_type(t_token_type   type)
+{
+	if (type == COMMAND)
+		return ("COMMAND");
+	else if (type == ARGUMENT)
+		return ("ARGUMENT");
+	else if (type == PIPE)
+		return ("PIPE");
+	else if (type == INPUT_REDIRECT)
+		return ("INPUT_REDIRECT");
+	else if (type == OUTPUT_REDIRECT)
+		return ("OUTPUT_REDIRECT");
+	else if (type == APPEND_REDIRECT)
+		return ("APPEND_REDIRECT");
+	else if (type == HEREDOC_REDIRECT)
+		return ("HEREDOC_REDIRECT");
+	else if (type == DOUBLE_QUOTE)
+		return ("DOUBLE_QUOTE");
+	else if (type == SINGLE_QUOTE)
+		return ("SINGLE_QUOTE");
+	else if (type == VARIABLE)
+		return ("VARIABLE");
+	else if (type == BUILTIN)
+		return ("BUILTIN");
+	else
+		return ("UNKNOWN");
+}
 
 void	print_token_list(t_token **tokenize_list)
 {
@@ -118,7 +203,7 @@ void	print_token_list(t_token **tokenize_list)
 	{
 		printf("token %d: \n", ++i);
 		printf("\b\btoken: %s\n", aux->token);
-		printf("\b\btype: %d\n", aux->type);
+		printf("\b\btype: %s\n\n", ft_convert_type(aux->type));
 		aux = aux->next;
 	}
 }
@@ -128,15 +213,17 @@ int	ft_reading_token(const char **input)
 	int	len;
 
 	len = 0;
-	//printf("input: %s\n", *input);
+	// printf("input: %s\n", *input);
 	while (**input != '\0')
 	{
-	//	printf("char: %c\n", **input);
+		// printf("char: %c\n", **input);
 		if (**input == '\'' || **input == '\"')
 			return (find_closing_quote(&input, **input));
+		else if(**input == '$')
+			return (ft_read_variable(&input));
 		else if(ft_is_special(**input))
 		{
-			//printf("is special\n");
+			// printf("is special\n");
 			return (read_special_char(input));
 		}
 		else if (!ft_isspace(**input) && !ft_is_special(**input))
@@ -183,13 +270,15 @@ t_token	*add_token_to_list(t_token **list, char *token, int len)
 {
 	t_token *new_token;
 
+	if (!token)
+		return (NULL);
 	new_token = (t_token *)ft_calloc(sizeof(t_token), 1);
 	if (!token) 
-		exit_error(); //error malloc
+		exit_error(errno); //error malloc
 	new_token->token = ft_substr(token, 0, len);
-	new_token->type = get_token_type(new_token->token);
+	new_token->type = get_token_type(new_token->token, len);
 	if (*list == NULL)
-			*list = new_token;
+		*list = new_token;
 	else
 		ft_token_add_back(list, new_token);
 	return (*list);
@@ -198,39 +287,42 @@ t_token	*add_token_to_list(t_token **list, char *token, int len)
 t_token	*tokenize_input(const char *input) 
 {
 	t_token 		*token_list;
-	t_token			*head_token_list;
+	//t_token			*head_token_list;
 	char 			*token;
 	int				len;
 
 	token_list = NULL;
-	head_token_list = NULL;
+	// head_token_list = NULL;
 	while (*input)
 	{
 		while (ft_isspace(*input))
 			input++;
 		if (*input == '\0')
-			return (NULL); //error en introduccion de comandos no ha leido nada
+			exit(1); //error en introduccion de comandos no ha leido nada
 		token = (char *) input;
 		len = ft_reading_token(&input);
-		printf("len: %d\n", len);
+		// printf("len: %d\n", len);
 		if (len < 0)
-			exit_error(); //error en introduccion de comandos comillas abiertas
+		{
+			exit_error_token(len, token);
+			free_tokens(&token_list);
+			return (NULL);
+		}
 		add_token_to_list(&token_list, token, len);
-		//print_token_list(head_token_list);
-		if (!head_token_list)
-			head_token_list = token_list;
+		// if (!head_token_list)
+		// 	head_token_list = token_list;
 	}
-	print_token_list(&head_token_list);
-	return head_token_list;
+	// print_token_list(&token_list);
+	return (token_list);
 }
 
-int	main(int argc, char **argv)
-{
-	t_token	*token_list;
+// int	main(int argc, char **argv)
+// {
+// 	t_token	*token_list;
 	
-	if (argc == 1)
-		return (0);
-	token_list = tokenize_input(argv[1]);
-	free_tokens(token_list);
-	return (0);
-}
+// 	if (argc == 1)
+// 		return (0);
+// 	token_list = tokenize_input(argv[1]);
+// 	free_tokens(token_list);
+// 	return (0);
+// }
