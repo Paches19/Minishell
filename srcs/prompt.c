@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/14 13:21:40 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/14 17:38:53 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,15 +112,18 @@ int	main(void)
 {
 	t_token	*token_list;
 	char *inpt;
-		
+
+	token_list = NULL;
 	splash();
    	// newline if "Ctrl-C"
-	signal(SIGINT, &renewprompt);
+	// signal(SIGINT, &renewprompt);
 	// ignore "Ctrl-\"
+	// signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, &renewprompt);
 	signal(SIGQUIT, SIG_IGN);
-	while (1)
+	inpt = readline("minishell -> ");
+	while (inpt)
 	{
-		inpt = readline("minishell -> ");
 		if (ft_strcmp(inpt, "exit") == 0 && ft_strlen(inpt) == 4)  //Ctrl-D pressed or command "exit" typed
 			break;
 		if (inpt)
@@ -132,13 +135,15 @@ int	main(void)
 			renewprompt(0);
 		if (inpt)
 			free(inpt);
-		// if (token_list)
-			free_tokens(token_list);
+		print_token_list(&token_list);
+		if (token_list)
+			free_tokens(&token_list);
+		inpt = readline("minishell -> ");
 	}
 	if (inpt)
 		free(inpt);
 	if (token_list)
-		free_tokens(token_list);
+		free_tokens(&token_list);
 	rl_clear_history();
     write(1, "exit\n", 5);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/14 13:15:03 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/14 17:26:00 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,22 +36,23 @@ int	exit_error_token(int err, char *token)
 	return (-1);
 }
 
-void	free_tokens(t_token *token_list) 
+void	free_tokens(t_token **token_list) 
 {
-	t_token *tmp;
+	t_token *current_node;
+	t_token *next_node;
 
-	while (token_list) 
+	if (!token_list || !(*token_list))
+		return;
+	current_node = *token_list;
+	while (current_node != NULL) 
 	{
-		tmp = token_list;
-		token_list = token_list->next;
-		if (tmp->token)
-			free(tmp->token);
-		if (tmp)
-		{
-			tmp = NULL;
-			free(tmp);
-		}
+		next_node = current_node->next;
+		if (current_node->token != NULL)
+			free(current_node->token);
+		free(current_node);
+		current_node = next_node;
 	}
+	*token_list = NULL;
 }
 
 int ft_isspace(char const c)
@@ -269,6 +270,8 @@ t_token	*add_token_to_list(t_token **list, char *token, int len)
 {
 	t_token *new_token;
 
+	if (!token)
+		return (NULL);
 	new_token = (t_token *)ft_calloc(sizeof(t_token), 1);
 	if (!token) 
 		exit_error(errno); //error malloc
@@ -284,12 +287,12 @@ t_token	*add_token_to_list(t_token **list, char *token, int len)
 t_token	*tokenize_input(const char *input) 
 {
 	t_token 		*token_list;
-	t_token			*head_token_list;
+	//t_token			*head_token_list;
 	char 			*token;
 	int				len;
 
 	token_list = NULL;
-	head_token_list = NULL;
+	// head_token_list = NULL;
 	while (*input)
 	{
 		while (ft_isspace(*input))
@@ -302,15 +305,15 @@ t_token	*tokenize_input(const char *input)
 		if (len < 0)
 		{
 			exit_error_token(len, token);
-			free_tokens(token_list);
+			free_tokens(&token_list);
 			return (NULL);
 		}
 		add_token_to_list(&token_list, token, len);
-		if (!head_token_list)
-			head_token_list = token_list;
+		// if (!head_token_list)
+		// 	head_token_list = token_list;
 	}
-	print_token_list(&head_token_list);
-	return (head_token_list);
+	// print_token_list(&token_list);
+	return (token_list);
 }
 
 // int	main(int argc, char **argv)
