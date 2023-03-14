@@ -6,17 +6,34 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/14 11:50:41 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/14 13:15:03 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 #include "../libft/libft.h"
 
-void	exit_error()
+void	exit_error(int err)
 {
 	perror("error\n");
-	exit(1);
+	exit(err);
+}
+
+int	exit_error_token(int err, char *token)
+{
+	char	c;
+	
+	if (err == -2)
+	{
+		write(2, "minishell: syntax error near unexpected token `", 47);
+		c = *token;
+		write(2, &c, 1);
+		write(2, "\'\n", 2);
+	}
+	if (err == -1)
+		write(2,"minishell: open quotes. Please close quotes if you use \
+		them\n", 65);
+	return (-1);
 }
 
 void	free_tokens(t_token *token_list) 
@@ -29,7 +46,11 @@ void	free_tokens(t_token *token_list)
 		token_list = token_list->next;
 		if (tmp->token)
 			free(tmp->token);
-		free(tmp);
+		if (tmp)
+		{
+			tmp = NULL;
+			free(tmp);
+		}
 	}
 }
 
@@ -133,7 +154,7 @@ int	read_special_char(const char **input)
 	while (!ft_isspace(**input) && ft_is_special(**input) && ++i > -1)
 		++(*input);
 	if (i > 1)
-		return (-1);
+		return (-2);
 	if (i == 0)
 		return (1);
 	if (i == 1)
@@ -250,7 +271,7 @@ t_token	*add_token_to_list(t_token **list, char *token, int len)
 
 	new_token = (t_token *)ft_calloc(sizeof(t_token), 1);
 	if (!token) 
-		exit_error(); //error malloc
+		exit_error(errno); //error malloc
 	new_token->token = ft_substr(token, 0, len);
 	new_token->type = get_token_type(new_token->token, len);
 	if (*list == NULL)
@@ -279,9 +300,12 @@ t_token	*tokenize_input(const char *input)
 		len = ft_reading_token(&input);
 		// printf("len: %d\n", len);
 		if (len < 0)
-			exit_error(); //error en introduccion de comandos
+		{
+			exit_error_token(len, token);
+			free_tokens(token_list);
+			return (NULL);
+		}
 		add_token_to_list(&token_list, token, len);
-		//print_token_list(head_token_list);
 		if (!head_token_list)
 			head_token_list = token_list;
 	}

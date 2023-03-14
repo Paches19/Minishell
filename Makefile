@@ -6,7 +6,7 @@
 #    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/10 12:11:32 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/14 10:47:53 by adpachec         ###   ########.fr        #
+#    Updated: 2023/03/14 13:09:35 by adpachec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,7 @@ INCL		=	-I$(HEADER)
 
 LIBFLAGS	=	-Llibft -lft -lreadline
 
-LEAKS		=	-g3 -fsanitize=address
+LEAKS		=	-g -fsanitize=address
 W_FLAGS		=	-Wall -Wextra -Werror
 LIB_N		=	$(L_DIR)$(LIB_A)
 

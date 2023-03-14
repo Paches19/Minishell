@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/14 11:41:23 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/14 13:21:40 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,8 +120,8 @@ int	main(void)
 	signal(SIGQUIT, SIG_IGN);
 	while (1)
 	{
-		inpt = readline("minishell ->");
-		if (inpt == 0 || ft_strcmp(inpt, "exit") == 0) //Ctrl-D pressed or command "exit" typed
+		inpt = readline("minishell -> ");
+		if (ft_strcmp(inpt, "exit") == 0 && ft_strlen(inpt) == 4)  //Ctrl-D pressed or command "exit" typed
 			break;
 		if (inpt)
 		{
@@ -130,12 +130,15 @@ int	main(void)
 		}
 		else
 			renewprompt(0);
-		//builtin commands, look into token_list
-		//devuelve 0 si no es command builtin, 1 si lo es
-		free(inpt);
-		free_tokens(token_list);
+		if (inpt)
+			free(inpt);
+		// if (token_list)
+			free_tokens(token_list);
 	}
-	free(inpt);
+	if (inpt)
+		free(inpt);
+	if (token_list)
+		free_tokens(token_list);
 	rl_clear_history();
     write(1, "exit\n", 5);
 	return (0);
