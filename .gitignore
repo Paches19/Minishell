@@ -7,3 +7,4 @@ a.out
 *.txt
 minishell
 obj
+install_readline

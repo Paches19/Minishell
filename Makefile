@@ -6,7 +6,7 @@
 #    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/10 12:11:32 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/15 14:18:30 by adpachec         ###   ########.fr        #
+#    Updated: 2023/03/15 16:04:31 by adpachec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,9 +30,9 @@ HEADER		=	$(I_DIR)minishell.h
 OBJS		=	$(OBJS_M)
 S_DIR		=	./srcs/
 
-INCL		=	-I$(HEADER)
+INCL		=	-I$(HEADER) -I ./vendor/readline/include
 
-LIBFLAGS	=	-Llibft -lft -lreadline
+LIBFLAGS	=	-Llibft -lft -lreadline -L ./vendor/readline/lib
 
 LEAKS		=	-g -fsanitize=address
 W_FLAGS		=	-Wall -Wextra -Werror
@@ -46,7 +46,7 @@ BLUE 		= 	\033[0;94m
 RESET		=	\033[0m
 
 # Rules
-all			:	$(NAME)
+all			: $(NAME)
 
 $(O_DIR)	:
 				@echo "Creating program $(YELLOW)$(NAME)$(RESET)"
@@ -54,12 +54,12 @@ $(O_DIR)	:
 
 $(O_DIR)%.o	:	$(S_DIR)%.c
 				@echo "$(BLUE)Compiling $@ ! $(RESET)\c"
-				@$(CC) $(W_FLAGS) -c $< -o $@
+				@$(CC) $(W_FLAGS) $(INCL) -c $< -o $@
 				@echo "... $(GREEN)OK$(RESET)" 
 
 $(NAME) 	:	$(LIB_N) $(O_DIR) $(OBJS)           
 				@echo "$(YELLOW)Linking object files ! $(RESET)\c"
-				@$(CC) $(OBJS) $(LEAKS) $(LIBFLAGS) $(MLXFLAGS) $(INCL) -o $(NAME)
+				@$(CC) $(OBJS) $(LIBFLAGS) $(MLXFLAGS) $(INCL) -o $(NAME)
 				@echo "$(GREEN)SUCCESS !$(RESET)"
 				@echo "$(NAME) created successfully !"
 

@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/14 17:38:53 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/15 16:07:33 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,36 +108,36 @@ int ft_env(t_token *token_list)
 // 	return (1);
 // }
 
+void	ft_leaks(void)
+{
+	system("leaks -q minishell");
+}
+
 int	main(void)
 {
 	t_token	*token_list;
 	char *inpt;
 
+	atexit(ft_leaks);
 	token_list = NULL;
 	splash();
-   	// newline if "Ctrl-C"
-	// signal(SIGINT, &renewprompt);
-	// ignore "Ctrl-\"
-	// signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, &renewprompt);
 	signal(SIGQUIT, SIG_IGN);
 	inpt = readline("minishell -> ");
 	while (inpt)
 	{
-		if (ft_strcmp(inpt, "exit") == 0 && ft_strlen(inpt) == 4)  //Ctrl-D pressed or command "exit" typed
+		if (ft_strcmp(inpt, "exit") == 0 && ft_strlen(inpt) == 4)
 			break;
 		if (inpt)
 		{
 			add_history(inpt);
 			token_list = tokenize_input(inpt);
+			free(inpt);
 		}
 		else
 			renewprompt(0);
-		if (inpt)
-			free(inpt);
 		print_token_list(&token_list);
-		if (token_list)
-			free_tokens(&token_list);
+		free_tokens(&token_list);
 		inpt = readline("minishell -> ");
 	}
 	if (inpt)
