@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/15 16:07:33 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/15 16:16:03 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ void	ft_leaks(void)
 int	main(void)
 {
 	t_token	*token_list;
-	char *inpt;
+	char 	*inpt;
 
 	atexit(ft_leaks);
 	token_list = NULL;
@@ -128,22 +128,22 @@ int	main(void)
 	{
 		if (ft_strcmp(inpt, "exit") == 0 && ft_strlen(inpt) == 4)
 			break;
-		if (inpt)
-		{
+		// if (inpt)
+		// {
+		if (*inpt != 0)
 			add_history(inpt);
-			token_list = tokenize_input(inpt);
-			free(inpt);
-		}
-		else
-			renewprompt(0);
+		token_list = tokenize_input(inpt);
+		free(inpt);
+		// }
+		// else
+			//renewprompt(0);
 		print_token_list(&token_list);
 		free_tokens(&token_list);
 		inpt = readline("minishell -> ");
 	}
 	if (inpt)
 		free(inpt);
-	if (token_list)
-		free_tokens(&token_list);
+	free_tokens(&token_list);
 	rl_clear_history();
     write(1, "exit\n", 5);
 	return (0);
