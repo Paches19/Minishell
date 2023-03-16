@@ -6,7 +6,7 @@
 #    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/10 12:11:32 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/15 16:04:31 by adpachec         ###   ########.fr        #
+#    Updated: 2023/03/16 16:12:37 by adpachec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,7 @@ INCL		=	-I$(HEADER) -I ./vendor/readline/include
 
 LIBFLAGS	=	-Llibft -lft -lreadline -L ./vendor/readline/lib
 
-LEAKS		=	-g -fsanitize=address
+LEAKS		=	-fsanitize=address -g
 W_FLAGS		=	-Wall -Wextra -Werror
 LIB_N		=	$(L_DIR)$(LIB_A)
 
@@ -59,7 +59,7 @@ $(O_DIR)%.o	:	$(S_DIR)%.c
 
 $(NAME) 	:	$(LIB_N) $(O_DIR) $(OBJS)           
 				@echo "$(YELLOW)Linking object files ! $(RESET)\c"
-				@$(CC) $(OBJS) $(LIBFLAGS) $(MLXFLAGS) $(INCL) -o $(NAME)
+				@$(CC) $(OBJS) $(LIBFLAGS) $(LEAKS) $(MLXFLAGS) $(INCL) -o $(NAME)
 				@echo "$(GREEN)SUCCESS !$(RESET)"
 				@echo "$(NAME) created successfully !"
 
