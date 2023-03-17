@@ -6,7 +6,7 @@
 #    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/10 12:11:32 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/16 16:12:37 by adpachec         ###   ########.fr        #
+#    Updated: 2023/03/17 13:58:53 by adpachec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,9 @@ HEADER		=	$(I_DIR)minishell.h
 OBJS		=	$(OBJS_M)
 S_DIR		=	./srcs/
 
-INCL		=	-I$(HEADER) -I ./vendor/readline/include
+INCL		=	
+# -I$(HEADER) 
+# -I ./vendor/readline/include
 
 LIBFLAGS	=	-Llibft -lft -lreadline -L ./vendor/readline/lib
 

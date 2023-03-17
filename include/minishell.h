@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/15 15:53:49 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/17 14:27:19 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ typedef struct s_token
 }                 t_token;
 
 t_token	*tokenize_input(const char *input);
-void	free_tokens(t_token **token_list);
-void	print_token_list(t_token **tokenize_list);
+void	   free_tokens(t_token **token_list);
+void	   print_token_list(t_token **tokenize_list);
+void	   free_matrix(char **matrix);
 
 #endif

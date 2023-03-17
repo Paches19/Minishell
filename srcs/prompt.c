@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/16 16:20:06 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/17 14:51:50 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,15 +130,26 @@ int ft_export(t_token *token_list)
 	extern char	**environ;
 	t_token		*p;
 	int			i;
+	int			len;
+	char		**new_env;
 
 	p = token_list->next;
 	if (!p)
 		return (ft_env());
+	len = 0;
+	while (environ[len])
+		len++;
+	new_env = (char **)ft_calloc(len + 1, sizeof(char *));
+	if (!new_env)
+		return (-1);
 	i = 0;
 	while (environ[i])
+	{
+		new_env[i] = ft_strdup(environ[i]);
 		i++;
-	environ[i] = p->token;
-	//environ[i + 1] = NULL;
+	}
+	new_env[i] = ft_strdup(p->token);
+	environ = new_env;
 	return (0);
 }
 
@@ -205,11 +216,16 @@ int	exec_builtins(t_token *token_list)
 // 	system("leaks -q minishell");
 // }
 
-void	ft_update_var(t_token **token_list)
+void	ft_update_var(char **token)
 {
-	free(token_list[0]->token);
-	token_list[0]->token = ft_calloc(2, 1);
-	token_list[0]->token[0] = 'a';
+	char *env_var;
+
+	env_var = getenv(*token + 1);
+	free(*token);
+	if (env_var != NULL)
+		*token = ft_strdup(env_var);
+	else
+		*token = NULL;
 }
 
 void	ft_check_vars(t_token **token_list)
@@ -220,7 +236,7 @@ void	ft_check_vars(t_token **token_list)
 	while(aux)
 	{
 		if (aux->type == VARIABLE)
-			ft_update_var(&aux);
+			ft_update_var(&(aux->token));
 		aux = aux->next;
 	}
 }

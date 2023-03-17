@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/14 17:26:00 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/17 14:26:57 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,22 @@ int	exit_error_token(int err, char *token)
 		write(2,"minishell: open quotes. Please close quotes if you use \
 		them\n", 65);
 	return (-1);
+}
+
+void	free_matrix(char **matrix)
+{
+	int	i;
+
+	if(!matrix || !*(matrix))
+		return ;
+	i = -1;
+	while(matrix[++i])
+	{
+		free(matrix[i]);
+		matrix[i] = NULL;
+	}
+	free(matrix);
+	matrix = NULL;
 }
 
 void	free_tokens(t_token **token_list) 
