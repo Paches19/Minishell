@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/17 14:51:50 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/20 13:15:56 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,68 @@ int	check_type_echo(t_token_type type)
 	|| type == SINGLE_QUOTE  || type == VARIABLE || type == BUILTIN);
 }
 
+t_env	*ft_env_last(t_env *lst)
+{
+	t_env	*aux;
+
+	if (!lst)
+		return (NULL);
+	aux = lst;
+	while (aux->next != NULL)
+		aux = aux->next;
+	return (aux);
+}
+
+void	ft_env_add_back(t_env **lst, t_env *new)
+{
+	t_env	*ptr;
+
+	if (!(*lst))
+	{
+		*lst = new;
+		return ;
+	}
+	ptr = ft_env_last(*lst);
+	ptr->next = new;
+}
+
+t_env	*add_env_to_list(t_env **env, char *environ)
+{
+	int		i;
+	int		j;
+	t_env	*new_env;
+
+	if (!env)
+		return (NULL);
+	new_env = (t_env *)ft_calloc(sizeof(t_env), 1);
+	if (!env) 
+		exit_error(errno); //error malloc
+	i = -1;
+	while(environ[++i] != '=');
+	new_env->var_name = ft_substr(environ, 0, i + 1);
+	j = -1;
+	while(environ[++j]);
+	new_env->content = ft_substr(environ, i + 1, j);
+	if (*env == NULL)
+		*env = new_env;
+	else
+		ft_env_add_back(env, new_env);
+	return (*env);
+}
+
+void	print_env_list(t_env **env_list)
+{
+	t_env	*aux;
+
+	printf("print env list\n");
+	aux = *env_list;
+	while(aux)
+	{
+		printf("%s%s\n", aux->var_name, aux->content);
+		aux = aux->next;
+	}
+}
+
 int ft_echo(t_token *token_list)
 {
 	t_token	*p;
@@ -56,7 +118,7 @@ int ft_echo(t_token *token_list)
 		p = p->next;
 		nl = 0;
 	}
-	while (p && check_type_echo(p->type))
+	while (p)
 	{
 		ft_putstr_fd(p->token, 1);
 		write(1, " ", 1);
@@ -99,17 +161,18 @@ int ft_pwd(void)
 	}	
 }
 
-int ft_env(void)
+int ft_env(t_env **env)
 {
-	extern char **environ;
-	char		**c;
+	// extern char **environ;
+	// char		**c;
 
-	c = environ;
-	while (*c)
-	{
-		printf("%s\n", *c);
-		c++;
-	}
+	// c = environ;
+	// while (*c)
+	// {
+	// 	printf("%s\n", *c);
+	// 	c++;
+	// }
+	print_env_list(env);
 	return (0);
 }
 int ft_exit(t_token *token_list)
@@ -125,7 +188,7 @@ int ft_exit(t_token *token_list)
 	return (i);
 }
 
-int ft_export(t_token *token_list)
+int ft_export(t_token *token_list, t_env **env)
 {
 	extern char	**environ;
 	t_token		*p;
@@ -135,21 +198,25 @@ int ft_export(t_token *token_list)
 
 	p = token_list->next;
 	if (!p)
-		return (ft_env());
+		return (ft_env(env));
 	len = 0;
 	while (environ[len])
 		len++;
 	new_env = (char **)ft_calloc(len + 1, sizeof(char *));
 	if (!new_env)
 		return (-1);
-	i = 0;
-	while (environ[i])
-	{
+	i = -1;
+	while (environ[++i])
 		new_env[i] = ft_strdup(environ[i]);
-		i++;
-	}
 	new_env[i] = ft_strdup(p->token);
-	environ = new_env;
+	//environ = new_env;
+	i = -1;
+	while (new_env[++i])
+	{
+		environ[i] = new_env[i];
+		//free(new_env[i]);
+	}
+	//free(new_env);
 	return (0);
 }
 
@@ -178,7 +245,7 @@ int ft_unset(t_token *token_list)
 	return (-1);
 }
 
-int	exec_builtins(t_token *token_list)
+int	exec_builtins(t_token *token_list, t_env **env)
 {
  	if (ft_strcmp(token_list->token, "echo") == 0)
  		return (ft_echo(token_list));
@@ -187,11 +254,11 @@ int	exec_builtins(t_token *token_list)
  	else if (ft_strcmp(token_list->token, "pwd") == 0)
  		return (ft_pwd());
  	else if (ft_strcmp(token_list->token, "export") == 0)
- 		return (ft_export(token_list));
+ 		return (ft_export(token_list, env));
  	else if (ft_strcmp(token_list->token, "unset") == 0)
  		return (ft_unset(token_list));
  	else
-	 	return (ft_env());
+	 	return (ft_env(env));
 }
 
 // int	its_builtin_command( *token)
@@ -209,11 +276,6 @@ int	exec_builtins(t_token *token_list)
 // 	else if (ft_strcmp(token, "env") == 0)
 // 		return (ft_env(token_list));
 // 	return (1);
-// }
-
-// void	ft_leaks(void)
-// {
-// 	system("leaks -q minishell");
 // }
 
 void	ft_update_var(char **token)
@@ -241,14 +303,34 @@ void	ft_check_vars(t_token **token_list)
 	}
 }
 
+void	ft_leaks(void)
+{
+	system("leaks -q minishell");
+}
+
+t_env	*ft_get_env(void)
+{
+	int			len;
+	extern char	**environ;
+	t_env		*env;
+
+	env = NULL;
+	len = -1;
+	while(environ[++len])
+		env = add_env_to_list(&env, environ[len]);
+	return (env);
+}
+
 int	main(void)
 {
 	t_token	*token_list;
 	char 	*inpt;
 	int		status;
 	int		s_exit;
+	t_env	*env;
 
-	// atexit(ft_leaks);
+	atexit(ft_leaks);
+	env = ft_get_env();
 	token_list = NULL;
 	splash();
 	signal(SIGINT, &renewprompt);
@@ -269,12 +351,13 @@ int	main(void)
 		}
 		ft_check_vars(&token_list);
 		if (token_list->type == BUILTIN)
-			status = exec_builtins(token_list);
-		free(inpt);
+			status = exec_builtins(token_list, &env);
 		print_token_list(&token_list);
 		free_tokens(&token_list);
+		free(inpt);
 		inpt = readline("minishell -> ");
 	}
+	free_env(&env);
 	free(inpt);
 	free_tokens(&token_list);
 	rl_clear_history();

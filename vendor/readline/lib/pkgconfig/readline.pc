@@ -1,4 +1,4 @@
-prefix=/Users/adpachec/42cursus/Minishell/vendor/readline
+prefix=/root/42cursus/Minishell/vendor/readline
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
