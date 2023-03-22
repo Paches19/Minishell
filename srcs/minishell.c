@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/20 12:30:25 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/22 10:59:04 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,24 +52,24 @@ void	free_matrix(char **matrix)
 	matrix = NULL;
 }
 
-void	free_env(t_env **env_list) 
-{
-	t_env *current_node;
-	t_env *next_node;
+// void	free_env(t_env **env_list) 
+// {
+// 	t_env *current_node;
+// 	t_env *next_node;
 
-	if (!env_list || !(*env_list))
-		return;
-	current_node = *env_list;
-	while (current_node != NULL) 
-	{
-		next_node = current_node->next;
-		free(current_node->var_name);
-		free(current_node->content);
-		free(current_node);
-		current_node = next_node;
-	}
-	*env_list = NULL;
-}
+// 	if (!env_list || !(*env_list))
+// 		return;
+// 	current_node = *env_list;
+// 	while (current_node != NULL) 
+// 	{
+// 		next_node = current_node->next;
+// 		free(current_node->var_name);
+// 		free(current_node->content);
+// 		free(current_node);
+// 		current_node = next_node;
+// 	}
+// 	*env_list = NULL;
+// }
 
 void	free_tokens(t_token **token_list) 
 {
@@ -326,6 +326,8 @@ t_token	*tokenize_input(const char *input)
 	char 			*token;
 	int				len;
 
+	if (!input)
+		return (NULL);
 	token_list = NULL;
 	// head_token_list = NULL;
 	while (*input)
