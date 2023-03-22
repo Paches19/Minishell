@@ -6,7 +6,7 @@
 #    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/10 12:11:32 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/17 13:58:53 by adpachec         ###   ########.fr        #
+#    Updated: 2023/03/22 10:56:30 by adpachec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,11 +30,12 @@ HEADER		=	$(I_DIR)minishell.h
 OBJS		=	$(OBJS_M)
 S_DIR		=	./srcs/
 
-INCL		=	
+INCL		= -I$(I_DIR) -I ./vendor/readline/include
 # -I$(HEADER) 
 # -I ./vendor/readline/include
 
 LIBFLAGS	=	-Llibft -lft -lreadline -L ./vendor/readline/lib
+#-L ./vendor/readline/lib
 
 LEAKS		=	-fsanitize=address -g
 W_FLAGS		=	-Wall -Wextra -Werror
@@ -61,7 +62,7 @@ $(O_DIR)%.o	:	$(S_DIR)%.c
 
 $(NAME) 	:	$(LIB_N) $(O_DIR) $(OBJS)           
 				@echo "$(YELLOW)Linking object files ! $(RESET)\c"
-				@$(CC) $(OBJS) $(LIBFLAGS) $(LEAKS) $(MLXFLAGS) $(INCL) -o $(NAME)
+				@$(CC) $(OBJS) $(LIBFLAGS) $(LEAKS) $(INCL) -o $(NAME)
 				@echo "$(GREEN)SUCCESS !$(RESET)"
 				@echo "$(NAME) created successfully !"
 
