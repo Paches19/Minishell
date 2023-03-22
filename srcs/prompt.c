@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/22 12:50:42 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/22 16:11:01 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,22 +203,17 @@ int ft_exit(t_token *token_list, int *status)
 	return (*status);
 }
 
-int ft_unset(t_token *token_list, char ***new_environ)
+int	ft_delete_var(t_token *p, char ***new_environ)
 {
-	t_token		*p;
-	int			i;
-	char		*temp;
-	int			stat;
+	int		stat;
+	int		i;
+	char	*temp;
 
-	p = token_list->next;
-	if (!p)
-		return (ft_errors('u'));
 	stat = 0;
 	while (p)
 	{
-		i = 0;
-		while ((*new_environ)[i] && ft_strstr((*new_environ)[i], p->token) == 0)
-			i++;
+		i = -1;
+		while ((*new_environ)[++i] && ft_strcmp((*new_environ)[i], p->token));
 		if ((*new_environ)[i])
 		{
 			temp = (*new_environ)[i];
@@ -236,51 +231,71 @@ int ft_unset(t_token *token_list, char ***new_environ)
 	return (stat);
 }
 
-void	unset_var_names(t_token *token_list, char ***new_environ)
+int ft_unset(t_token *token_list, char ***new_environ)
 {
-	int 	i;
-	char	*s;
 	t_token	*p;
-	char	*temp;
+	int		stat;
 
 	p = token_list->next;
-	while (p)
+	stat = 0;
+	while (p && p->type == COMMAND)
 	{
-		i = 0;
-		s = ft_strdup(p->token);
-		while (s[i] && s[i] != '=')
-			i++;
-		while (s[i])
-		{
-			s[i] = 0;
-			i++;
-		}
-		i = 0;
-		while ((*new_environ)[i] && ft_strstr((*new_environ)[i], s) == 0)
-			i++;
-		free(s);
-		if ((*new_environ)[i])
-		{
-			temp = (*new_environ)[i];
-			while ((*new_environ)[i])
-			{
-				(*new_environ)[i] = (*new_environ)[i + 1];
-				i++;
-			}
-			free((*new_environ)[i]);
-			free(temp);
-		}
+		if (!p)
+		return (ft_errors('u'));
+		if (ft_strchr(p->token, '='))
+		return (ft_errors('e'));
+		stat = ft_delete_var(p, new_environ);
 		p = p->next;
 	}
+	return (stat);
+}
+
+int	ft_check_var_exist(char *token, char ***new_environ)
+{
+	int	i;
+	int	j;
+	int	len;
+
+	len = -1;
+	while (token[++len] && token[len] != '=');
+	i = -1;
+	while ((*new_environ)[++i])
+	{
+		j = -1;
+		while ((*new_environ)[i][++j] != '=');
+		if (len == j && !ft_strncmp(token, (*new_environ)[i], j))
+			return (i);
+	}
+	return (-1);
+}
+
+void	ft_replace_var(char *token, char ***new_environ, int i)
+{
+	free((*new_environ)[i]);
+	(*new_environ)[i] = ft_strdup(token);
+}
+
+void	ft_extend_env(char *token, char ***new_environ, int len)
+{
+	char	**extend_env;
+	int		i;
+
+	extend_env = (char **)ft_calloc(len + 2, sizeof(char *));
+	if (!extend_env)
+		return ;
+	i = -1;
+	while ((*new_environ)[++i])
+		extend_env[i] = ft_strdup((*new_environ)[i]);
+	extend_env[i] = ft_strdup(token);
+	free_environ(new_environ);
+	*new_environ = extend_env;
 }
 
 int ft_export(t_token *token_list, char ***new_environ)
 {
-	t_token		*p;
-	int			i;
-	int			len;
-	char		**extend_env;
-	char		*s;
+	t_token	*p;
+	int		i;
+	int		len;
 	
 	len = 0;
 	while ((*new_environ)[len])
@@ -288,26 +303,17 @@ int ft_export(t_token *token_list, char ***new_environ)
 	p = token_list->next;
 	if (!p)
 		return (ft_env_in_order(*new_environ, len));
-	while (p)
+	while (p && p->type == COMMAND)
 	{
 		if (!ft_isalpha(p->token[0]))
 			return (ft_errors('e'));
 		if (!ft_strchr(p->token, '='))
-		{
-			s = p->token;
-			p->token = ft_strjoin(s, "=''");
-			free(s);
-		}
-		unset_var_names(token_list, new_environ);
-		extend_env = (char **)ft_calloc(len + 2, sizeof(char *));
-		if (!extend_env)
-			return (-1);
-		i = -1;
-		while ((*new_environ)[++i])
-			extend_env[i] = ft_strdup((*new_environ)[i]);
-		extend_env[i] = ft_strdup(p->token);
-		free_environ(new_environ);
-		*new_environ = extend_env;
+			p->token = ft_strjoin(p->token, "=''");
+		i = ft_check_var_exist(p->token, new_environ);
+		if (i >= 0)
+			ft_replace_var(p->token, new_environ, i);
+		else
+			ft_extend_env(p->token, new_environ, len);
 		p = p->next;
 	}
 	return (0);
@@ -446,12 +452,12 @@ int	main(int argc, char **argv, char **env)
 			add_history(inpt);
 		token_list = tokenize_input(inpt);
 		ft_check_vars(&token_list, new_environ);
-		sort_tokens(&token_list);
+		// sort_tokens(&token_list);
 		print_token_list(&token_list);
-		// if (token_list && token_list->type == BUILTIN)
-		// 	status = exec_builtins(token_list, &new_environ, &status);
-		// if (token_list && ft_strcmp(token_list->token, "exit") == 0)
-		// 	break;
+		if (token_list && token_list->type == BUILTIN)
+			status = exec_builtins(token_list, &new_environ, &status);
+		if (token_list && ft_strcmp(token_list->token, "exit") == 0)
+			break;
 		free(inpt);
 		//print_token_list(&token_list);
 		free_tokens(&token_list);
