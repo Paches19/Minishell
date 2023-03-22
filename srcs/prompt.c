@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/22 11:34:42 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/22 12:50:42 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -382,6 +382,45 @@ void	ft_check_vars(t_token **token_list, char **env)
 	}
 }
 
+void swap_tokens(t_token **token_list, t_token *t1, t_token *t2) 
+{
+    if (t1->prev) 
+        t1->prev->next = t2;
+    else 
+        *token_list = t2;
+    if (t2->next)
+        t2->next->prev = t1;
+    t1->next = t2->next;
+    t2->prev = t1->prev;
+    t1->prev = t2;
+    t2->next = t1;
+}
+
+void sort_tokens(t_token **token_list) 
+{
+    t_token *current;
+    int 	swap_occurred;
+
+	current = *token_list;
+	swap_occurred = 1;
+    while (swap_occurred) 
+	{
+        swap_occurred = 0;
+        while (current->next) 
+		{
+            if (current->type > current->next->type) 
+			{
+                swap_tokens(token_list, current, current->next);
+                current = current->prev;
+                swap_occurred = 1;
+            }
+            current = current->next;
+        }
+        while (current->prev)
+            current = current->prev;
+    }
+}
+
 int	main(int argc, char **argv, char **env)
 {
 	t_token	*token_list;
@@ -407,11 +446,12 @@ int	main(int argc, char **argv, char **env)
 			add_history(inpt);
 		token_list = tokenize_input(inpt);
 		ft_check_vars(&token_list, new_environ);
-		// print_token_list(&token_list);
-		if (token_list && token_list->type == BUILTIN)
-			status = exec_builtins(token_list, &new_environ, &status);
-		if (token_list && ft_strcmp(token_list->token, "exit") == 0)
-			break;
+		sort_tokens(&token_list);
+		print_token_list(&token_list);
+		// if (token_list && token_list->type == BUILTIN)
+		// 	status = exec_builtins(token_list, &new_environ, &status);
+		// if (token_list && ft_strcmp(token_list->token, "exit") == 0)
+		// 	break;
 		free(inpt);
 		//print_token_list(&token_list);
 		free_tokens(&token_list);

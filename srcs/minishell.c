@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/22 10:59:04 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/22 12:19:38 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,14 +124,14 @@ enum e_token_type	get_token_type(const char *token, int len)
 		return ARGUMENT;
 	else if (ft_strcmp(token, "|") == 0)
 		return PIPE;
+	else if (ft_strcmp(token, ">>") == 0 && len == 2)
+		return APPEND_REDIRECT;
+	else if (ft_strcmp(token, "<<") == 0 && len == 2)
+		return HEREDOC_REDIRECT;
 	else if (ft_strcmp(token, "<") == 0)
 		return INPUT_REDIRECT;
 	else if (ft_strcmp(token, ">") == 0)
 		return OUTPUT_REDIRECT;
-	else if (ft_strcmp(token, ">>") == 0)
-		return APPEND_REDIRECT;
-	else if (ft_strcmp(token, "<<") == 0)
-		return HEREDOC_REDIRECT;
 	else if (*token == '\"' && token[ft_strlen(token) - 1] == '\"')
 		return DOUBLE_QUOTE;
 	else if (*token == '\'' && token[ft_strlen(token) - 1] == '\'')
