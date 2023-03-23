@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/23 12:39:36 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/23 17:48:11 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -385,6 +385,77 @@ void	ft_update_var(char **token, char **env)
 	free(env_var);
 }
 
+int	count_vars(char *token)
+{
+	int	vars;
+	int	i;
+
+	vars = 1;
+	if (token[0] == '$')
+		vars = 0;
+	i = -1;
+	while(token[++i] != '\0')
+	{
+		if (token[i] == '$')
+			++vars;
+	}
+	return (vars);
+}
+
+char	**ft_split_var(char *token)
+{
+	int			vars;
+	int			i;
+	int			j;
+	const int	token_len = ft_strlen(token);
+	char		**matrix;
+
+	vars = count_vars(token);
+	matrix = (char **)ft_calloc(vars + 1, sizeof(char *));
+	vars = 0;
+	i = 0;
+	j = 0;
+	while (token[i] && vars <= token_len)
+	{
+		j = 0;
+		if (token[i + j] == '$')
+			++j;
+		while (token[i + j] && token[i + j] != '$')
+			++j;
+		matrix[vars] = ft_substr(token + i, 0, j);
+		++vars;
+		i += j;
+	}
+	return (matrix);
+}
+
+void	ft_update_double_quote(char **token, char **env)
+{
+	char	**matrix;
+	char	*expand_var;
+	int		i;
+
+	if (!ft_strchr(*token, '$'))
+		return ;
+	matrix = ft_split_var(*token);
+	free(*token);
+	*token = NULL;
+	i = -1;
+	while (matrix[++i])
+	{
+		if (matrix[i][0] == '$')
+		{
+			expand_var = ft_getenv(matrix[i], env);
+			*token = ft_strjoin2(*token, expand_var);	
+			free(expand_var);
+		}
+		else
+			*token = ft_strjoin2(*token, matrix[i]);
+		free(matrix[i]);
+	}
+	free(matrix);
+}
+
 void	ft_check_vars(t_token **token_list, char **env)
 {
 	t_token	*aux;
@@ -402,8 +473,10 @@ void	ft_check_vars(t_token **token_list, char **env)
 				free(aux->token);
 				aux->token = s;
 			}
-			if (aux ->type != SINGLE_QUOTE && (aux->type == VARIABLE || aux->token[0] == '$'))
+			if ((aux->type == VARIABLE))
 				ft_update_var(&(aux->token), env);
+			else if (aux->type == DOUBLE_QUOTE)
+				ft_update_double_quote(&(aux->token), env);
 		}	
 		aux = aux->next;
 	}

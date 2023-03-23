@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/23 11:10:10 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/23 16:03:04 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,13 @@ typedef struct s_token
 // 	struct s_env	*next;
 // }					t_env;
 
-t_token	*tokenize_input(const char *input);
-void	free_tokens(t_token **token_list);
-void	print_token_list(t_token **tokenize_list);
-void	free_matrix(char **matrix);
+t_token  *tokenize_input(const char *input);
+void	   free_tokens(t_token **token_list);
+void     print_token_list(t_token **tokenize_list);
+void	   free_matrix(char **matrix);
 // void	free_env(t_env **env);
-void	exit_error(int err);
-char	*ft_getenv(char *var_name, char **env);
+void	   exit_error(int err);
+char	   *ft_getenv(char *var_name, char **env);
+char	   **ft_split_var(char *token);
 
 #endif
