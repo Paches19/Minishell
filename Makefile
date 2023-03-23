@@ -6,7 +6,7 @@
 #    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/10 12:11:32 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/22 16:09:12 by adpachec         ###   ########.fr        #
+#    Updated: 2023/03/23 10:22:33 by adpachec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,11 +30,11 @@ HEADER		=	$(I_DIR)minishell.h
 OBJS		=	$(OBJS_M)
 S_DIR		=	./srcs/
 
-INCL		= -I$(I_DIR) -I ./vendor/readline/include
+INCL		= 
 # -I$(HEADER) 
 # -I ./vendor/readline/include
 
-LIBFLAGS	=	-Llibft -lft -lreadline -L ./vendor/readline/lib
+LIBFLAGS	=	-Llibft -lft -lreadline
 #-L ./vendor/readline/lib
 
 LEAKS		=	-fsanitize=address -g

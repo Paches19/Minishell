@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/22 16:11:01 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/23 10:25:24 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -453,7 +453,7 @@ int	main(int argc, char **argv, char **env)
 		token_list = tokenize_input(inpt);
 		ft_check_vars(&token_list, new_environ);
 		// sort_tokens(&token_list);
-		print_token_list(&token_list);
+		// print_token_list(&token_list);
 		if (token_list && token_list->type == BUILTIN)
 			status = exec_builtins(token_list, &new_environ, &status);
 		if (token_list && ft_strcmp(token_list->token, "exit") == 0)

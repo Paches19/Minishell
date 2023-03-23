@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/22 12:35:47 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/23 10:14:57 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <errno.h>
-# include "../libft/libft.h"
+# include "../libft/include/libft.h"
 
 typedef enum e_token_type
 {
