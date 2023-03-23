@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/23 10:24:30 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/23 12:12:20 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,7 @@ void	free_tokens(t_token **token_list)
 
 int ft_isspace(char const c)
 {
-    return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || \
-	c == '\v');
+    return (c < 33);
 }
 
 int ft_is_special(char const c)
@@ -172,7 +171,7 @@ int	ft_read_variable(const char ***input)
 		++len;
 	}
 	++**input;
-	return (++len);
+	return (len);
 }
 
 int	ft_check_special(const char *input)
@@ -236,7 +235,8 @@ void	print_token_list(t_token **tokenize_list)
 	while(aux)
 	{
 		printf("token %d: \n", ++i);
-		printf("\b\btoken: %s\n", aux->token);
+		//printf("\b\btoken: %s\n", aux->token);
+		printf("content: %s\n", aux->token);
 		printf("\b\btype: %s\n\n", ft_convert_type(aux->type));
 		aux = aux->next;
 	}

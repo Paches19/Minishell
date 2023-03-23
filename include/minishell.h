@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/23 10:14:57 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/23 11:10:10 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,5 +58,6 @@ void	print_token_list(t_token **tokenize_list);
 void	free_matrix(char **matrix);
 // void	free_env(t_env **env);
 void	exit_error(int err);
+char	*ft_getenv(char *var_name, char **env);
 
 #endif

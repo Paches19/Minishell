@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/23 10:25:24 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/23 12:39:36 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,24 +68,10 @@ char	*varname(char *s, char **new_environ)
 	return (0);
 }
 
-char	*ft_getenv(char *var_name, char **env)
+int	ft_printable_token(t_token *p)
 {
-	int		i;
-	int		j;
-
-	if (!env || !var_name)
-		return (NULL);
-	i = -1;
-	while (env[++i])
-	{
-		if  (!ft_strncmp(var_name, env[i], ft_strlen(var_name)))
-		{
-			j = -1;
-			while (env[i][++j] && env[i][j] != '=');
-			return (ft_substr(env[i], j + 1, ft_strlen(env[i] - j)));
-		}
-	}
-	return (NULL);
+	return (!(p->type == INPUT_REDIRECT || p->type == HEREDOC_REDIRECT || \
+	p->type == PIPE ||p->type == OUTPUT_REDIRECT ||p->type == APPEND_REDIRECT));
 }
 
 int ft_echo(t_token *token_list)
@@ -94,18 +80,19 @@ int ft_echo(t_token *token_list)
 	int		nl;
 
 	p = token_list->next;
-	if (!p || (ft_strcmp(p->token, "-n") != 0))
+	if (!p || !(!ft_strcmp(p->token, "-n") && ft_strlen(p->token) == 2))
 		nl = 1;
 	else
 	{
-		p = p->next;
+		while ((!ft_strcmp(p->token, "-n") && ft_strlen(p->token) == 2))
+			p = p->next;
 		nl = 0;
 	}
-	while (p)
+	while (p && ft_printable_token(p))
 	{
 		ft_putstr_fd(p->token, 1);
 		p = p->next;
-		if (p)
+		if (p && p->token)
 			write(1, " ", 1);
 	}
 	if (nl == 0)
@@ -363,27 +350,61 @@ char	**copy_environ(char **source)
 	return (dest);
 }
 
+char	*ft_getenv(char *var_name, char **env)
+{
+	int			i;
+	int			j;
+	const int	var_len = ft_strlen(++var_name);
+
+	if (!env || !var_name)
+		return (NULL);
+	i = -1;
+	while (env[++i])
+	{
+		if  (!ft_strncmp(var_name, env[i], var_len))
+		{
+			j = -1;
+			while (env[i][++j] && env[i][j] != '=');
+			if (var_len == j)
+				return (ft_substr(env[i], j + 1, ft_strlen(env[i] - j + 1)));
+		}
+	}
+	return (NULL);
+}
+
 void	ft_update_var(char **token, char **env)
 {
 	char *env_var;
 
-	env_var = ft_getenv(*token + 1, env);
+	env_var = ft_getenv(*token, env);
 	free(*token);
 	if (env_var != NULL)
 		*token = ft_strdup(env_var);
 	else
 		*token = NULL;
+	free(env_var);
 }
 
 void	ft_check_vars(t_token **token_list, char **env)
 {
 	t_token	*aux;
+	char	*s;
 
 	aux = *token_list;
 	while(aux)
 	{
-		if (aux->type == VARIABLE)
-			ft_update_var(&(aux->token), env);
+		if (aux->type == VARIABLE || aux->type == DOUBLE_QUOTE || aux->type == SINGLE_QUOTE)
+		{
+			if (aux->type == DOUBLE_QUOTE || aux->type == SINGLE_QUOTE)
+			{
+				s = ft_strdup(aux->token + 1);
+				s[ft_strlen(s) - 1] = 0;
+				free(aux->token);
+				aux->token = s;
+			}
+			if (aux ->type != SINGLE_QUOTE && (aux->type == VARIABLE || aux->token[0] == '$'))
+				ft_update_var(&(aux->token), env);
+		}	
 		aux = aux->next;
 	}
 }
@@ -452,8 +473,8 @@ int	main(int argc, char **argv, char **env)
 			add_history(inpt);
 		token_list = tokenize_input(inpt);
 		ft_check_vars(&token_list, new_environ);
+		print_token_list(&token_list);
 		// sort_tokens(&token_list);
-		// print_token_list(&token_list);
 		if (token_list && token_list->type == BUILTIN)
 			status = exec_builtins(token_list, &new_environ, &status);
 		if (token_list && ft_strcmp(token_list->token, "exit") == 0)
