@@ -18,8 +18,6 @@ char	*ft_strjoin2(char *s1, char *s2)
 	int		len_total;
 	int		i;
 
-	printf("s1: %s\n", s1);
-	printf("s2: %s\n", s2);
 	len_s1 = ft_strlen2(s1);
 	len_total = len_s1 + ft_strlen2(s2);
 	if (len_total == 0)
