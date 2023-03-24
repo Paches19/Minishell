@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
+/*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 12:33:05 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/24 13:28:14 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/24 20:55:28 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,14 +59,20 @@ static void	ft_extend_env(char *token, char ***new_environ, int len)
 static void	ft_execute_export(char **token, char ***new_environ, int len)
 {
 	int	i;
+	char	*s;
 	
 	if (!ft_strchr(*token, '='))
-			*token = ft_strjoin(*token, "=''");
+	{
+		s = ft_strjoin(*token, "=''");
+		free(*token);
+		*token = s;
+	}
 	i = ft_check_var_exist(*token, new_environ);
 	if (i >= 0)
 		ft_replace_var(*token, new_environ, i);
 	else
 		ft_extend_env(*token, new_environ, len);
+	
 }
 
 int ft_export(t_token *token_list, char ***new_environ)
@@ -81,14 +87,16 @@ int ft_export(t_token *token_list, char ***new_environ)
 	p = token_list->next;
 	if (!p)
 		return (ft_env_in_order(*new_environ, len));
-	i = -1;
-	while (p->token[++i] && p->token[i] != '=')
-	{
-		if (!ft_isalpha(p->token[i]) || p->token[0] == '=')
-			return (ft_builtins_errors('e'));
-	}
 	while (p && p->type == COMMAND)
 	{
+		i = -1;
+		if (p->token[0] == '=')
+			return (ft_builtins_errors('e'));
+		while (p->token[++i] && p->token[i] != '=')
+		{
+			if (!ft_isalpha(p->token[i]))
+				return (ft_builtins_errors('e'));
+		}
 		ft_execute_export(&p->token, new_environ, len);
 		p = p->next;
 	}

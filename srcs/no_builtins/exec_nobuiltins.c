@@ -1,35 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_vars.c                                         :+:      :+:    :+:   */
+/*   exec_nobuiltins.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/24 12:45:02 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/24 19:54:29 by jutrera-         ###   ########.fr       */
+/*   Created: 2023/03/24 21:28:04 by jutrera-          #+#    #+#             */
+/*   Updated: 2023/03/24 21:28:40 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-char	*ft_getenv(char *var_name, char **env)
+int exec_nobuiltins(t_token *token_list, char **env)
 {
-	int			i;
-	int			j;
-	const int	var_len = ft_strlen(++var_name);
-
-	if (!env || !var_name)
-		return (NULL);
-	i = -1;
-	while (env[++i])
-	{
-		if  (!ft_strncmp(var_name, env[i], var_len))
-		{
-			j = -1;
-			while (env[i][++j] && env[i][j] != '=');
-			if (var_len == j)
-				return (ft_substr(env[i], j + 1, ft_strlen(env[i]) - j + 1));
-		}
-	}
-	return (NULL);
+//voy a intentar implementar la ejecución de comandos no-builtins
 }

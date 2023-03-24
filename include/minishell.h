@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
+/*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/24 13:37:23 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/24 21:31:22 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,11 @@ void	free_tokens(t_token **token_list);
 void	print_token_list(t_token **tokenize_list);
 void	free_matrix(char **matrix);
 void	exit_error(int err);
-char	*ft_getenv(char *var_name, char **env);
-int		ft_is_special(char const c);
+char  *ft_getenv(char *var_name, char **env);
+int	   ft_is_special(char const c);
 int		ft_isspace(char const c);
 int		ft_is_quote(char const c);
+int   exec_nobuiltins(t_token *token_list, char **new_environ);
 int		exec_builtins(t_token *token_list, char ***new_environ, int *status);
 int		ft_builtins_errors(char e);
 int		ft_echo(t_token *token_list);
