@@ -5,86 +5,81 @@
 #                                                     +:+ +:+         +:+      #
 #    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/03/24 13:43:11 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/24 17:14:28 by adpachec         ###   ########.fr        #
+#    Created: 2023/03/10 12:11:32 by adpachec          #+#    #+#              #
+#    Updated: 2023/03/23 16:03:14 by adpachec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+#Program name
+NAME		=	minishell
 
-# Program name
-NAME := minishell
+# Paths
+L_DIR		=	./libft/
+O_DIR		=	./obj/
+I_DIR		=	./include/
 
-# Project directories
-SRCDIR := srcs
-INCDIR := include
-OBJDIR := obj
-LIBDIR := libft
+#Files
+LIB_A		=	libft.a
+SRCS_M		=	./srcs/minishell.c ./srcs/prompt.c
 
-# Compiler and flags
-CC := gcc
-CFLAGS := -Wall -Wextra -Werror
-INCLUDES := -I$(INCDIR)
-LDFLAGS := -Llibft -lft -lreadline
+# Sources and objects
+RM 			=	rm -rf
+OBJS_M		=	$(patsubst $(S_DIR)%, $(O_DIR)%, $(SRCS_M:.c=.o))
 
-# Source files
-SRCS := $(wildcard $(SRCDIR)/*.c) $(wildcard $(SRCDIR)/builtins/*.c) \
-	$(wildcard $(SRCDIR)/environ/*.c) $(wildcard $(SRCDIR)/prompt/*.c) \
-	$(wildcard $(SRCDIR)/style/*.c) $(wildcard $(SRCDIR)/tokenization/*.c)
+HEADER		=	$(I_DIR)minishell.h
+OBJS		=	$(OBJS_M)
+S_DIR		=	./srcs/
 
-# Object files
-OBJS := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCS))
+INCL		= 
+# -I$(HEADER) 
+# -I ./vendor/readline/include
 
-# Libraries
-LIBRARY := $(LIBDIR)/libft.a
+LIBFLAGS	=	-Llibft -lft -lreadline
+#-L ./vendor/readline/lib
 
-# Color codes for terminal output
-RED := \033[0;31m
-GREEN := \033[0;32m
-YELLOW := \033[0;33m
-RESET := \033[0m
+LEAKS		=	-fsanitize=address -g
+W_FLAGS		=	-Wall -Wextra -Werror
+LIB_N		=	$(L_DIR)$(LIB_A)
 
-# Delete files
-RM := rm -rf
+#  Colors
+CYAN		=	\033[1;36m
+YELLOW		=	\033[1;33m
+GREEN		=	\033[0;32m
+BLUE 		= 	\033[0;94m
+RESET		=	\033[0m
 
-# Default target
-all: $(NAME)
+# Rules
+all			: $(NAME)
 
-# Compile object files
-$(OBJDIR)/%.o: $(SRCDIR)/%.c
-	@mkdir -p $(dir $@)
-	@echo "$(YELLOW)Compiling $<...$(RESET)"
-	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
-	@echo "$(GREEN)Compiled $@ successfully!$(RESET)"
+$(O_DIR)	:
+				@echo "Creating program $(YELLOW)$(NAME)$(RESET)"
+				@mkdir -p $(O_DIR)
 
-# Compile library
-$(LIBRARY):
-	@echo "$(YELLOW)Compiling library...$(RESET)"
-	@$(MAKE) -C $(LIBDIR)
+$(O_DIR)%.o	:	$(S_DIR)%.c
+				@echo "$(BLUE)Compiling $@ ! $(RESET)\c"
+				@$(CC) $(W_FLAGS) $(INCL) -c $< -o $@
+				@echo "... $(GREEN)OK$(RESET)" 
 
-# Link program
-$(NAME): $(LIBRARY) $(OBJS)
-	@echo "$(YELLOW)Linking $(NAME)...$(RESET)"
-	@$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $(NAME)
-	@echo "$(GREEN)$(NAME) created successfully!$(RESET)"
+$(NAME) 	:	$(LIB_N) $(O_DIR) $(OBJS)           
+				@echo "$(YELLOW)Linking object files ! $(RESET)\c"
+				@$(CC) $(OBJS) $(LIBFLAGS) $(LEAKS) $(INCL) -o $(NAME)
+				@echo "$(GREEN)SUCCESS !$(RESET)"
+				@echo "$(NAME) created successfully !"
 
-# Clean object files and program
-clean:
-	@echo "$(RED)Deleting object files...$(RESET)"
-	@$(RM) $(OBJDIR)
-	@echo "$(RED)Deleting $(NAME)...$(RESET)"
-	@$(RM) $(NAME)
+$(LIB_N)	:		
+				@echo "Creating library $(YELLOW) $(LIB_A) $(RESET)"
+				@$(MAKE) --no-print-directory -C $(L_DIR)
 
-# Clean everything and recompile
-fclean: clean
-	@echo "$(RED)Deleting library...$(RESET)"
-	@$(MAKE) fclean -C $(LIBDIR)
-	@echo "$(GREEN)Finished cleaning!$(RESET)"
+clean		:	
+				@$(MAKE) --no-print-directory clean -C $(L_DIR) 
+				@$(RM) $(O_DIR)
+				@echo "$(CYAN)Deleted all the object files$(RESET)"
 
-# Recompile everything
-re: fclean all
+fclean		:	clean
+				@$(MAKE) --no-print-directory fclean -C $(L_DIR)
+				@$(RM) $(NAME)
+				@echo "$(CYAN)Deleted all the exec files$(RESET)"
 
-# Prevent errors if object files are deleted
--include $(OBJS:.o=.d)
+re			:	fclean all
 
-# Phony targets
-.PHONY: all clean fclean re
+.PHONY		:	all clean fclean re bonus
