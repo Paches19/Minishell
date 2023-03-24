@@ -6,7 +6,7 @@
 #    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/24 13:43:11 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/24 17:14:28 by adpachec         ###   ########.fr        #
+#    Updated: 2023/03/24 19:10:21 by adpachec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ LIBDIR := libft
 CC := gcc
 CFLAGS := -Wall -Wextra -Werror
 INCLUDES := -I$(INCDIR)
-LDFLAGS := -Llibft -lft -lreadline
+LDFLAGS := -L ./libft/ -lft -lreadline
 
 # Source files
 SRCS := $(wildcard $(SRCDIR)/*.c) $(wildcard $(SRCDIR)/builtins/*.c) \
@@ -64,7 +64,7 @@ $(LIBRARY):
 # Link program
 $(NAME): $(LIBRARY) $(OBJS)
 	@echo "$(YELLOW)Linking $(NAME)...$(RESET)"
-	@$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $(NAME)
+	@$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -lm -o $(NAME)
 	@echo "$(GREEN)$(NAME) created successfully!$(RESET)"
 
 # Clean object files and program
