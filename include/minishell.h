@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/23 16:03:04 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/24 10:30:05 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,5 +60,8 @@ void	   free_matrix(char **matrix);
 void	   exit_error(int err);
 char	   *ft_getenv(char *var_name, char **env);
 char	   **ft_split_var(char *token);
+int      ft_is_special(char const c);
+int      ft_isspace(char const c);
+int      ft_is_quote(char const c);
 
 #endif

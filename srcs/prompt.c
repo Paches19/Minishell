@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/23 17:48:11 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/24 10:58:04 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -385,45 +385,49 @@ void	ft_update_var(char **token, char **env)
 	free(env_var);
 }
 
-int	count_vars(char *token)
+int	ft_count_words(char *token)
 {
-	int	vars;
+	int	words;
 	int	i;
 
-	vars = 1;
+	words = 1;
 	if (token[0] == '$')
-		vars = 0;
+		words = 0;
 	i = -1;
-	while(token[++i] != '\0')
+	while(token[++i])
 	{
-		if (token[i] == '$')
-			++vars;
+		if (token[i] == '$' || ft_is_special(token[i]) || \
+		ft_isspace(token[i]) || ft_is_quote(token[i]) || \
+		!ft_isalpha(token[i]))
+			++words;
 	}
-	return (vars);
+	return (words);
 }
 
 char	**ft_split_var(char *token)
 {
-	int			vars;
+	int			words;
 	int			i;
 	int			j;
 	const int	token_len = ft_strlen(token);
 	char		**matrix;
 
-	vars = count_vars(token);
-	matrix = (char **)ft_calloc(vars + 1, sizeof(char *));
-	vars = 0;
+	words = ft_count_words(token);
+	matrix = (char **)ft_calloc(words + 1, sizeof(char *));
+	words = 0;
 	i = 0;
-	j = 0;
-	while (token[i] && vars <= token_len)
+	while (token[i] && i <= token_len)
 	{
 		j = 0;
-		if (token[i + j] == '$')
+		if (token[i + j] == '$' || ft_is_special(token[i + j]) || \
+		ft_isspace(token[i + j]) || ft_is_quote(token[i + j])\
+		|| !ft_isalpha(token[i + j]))
 			++j;
-		while (token[i + j] && token[i + j] != '$')
+		while (token[i + j] && token[i + j] != '$' && \
+		!ft_is_special(token[i + j]) && !ft_isspace(token[i + j])\
+		&& !ft_is_quote(token[i + j]) && ft_isalpha(token[i + j]))
 			++j;
-		matrix[vars] = ft_substr(token + i, 0, j);
-		++vars;
+		matrix[words++] = ft_substr(token + i, 0, j);
 		i += j;
 	}
 	return (matrix);

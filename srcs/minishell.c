@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/23 12:12:20 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/24 10:54:08 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,11 @@ int ft_is_special(char const c)
     return (c == '|' || c == '<' || c == '>' || c == '$');
 }
 
+int ft_is_quote(char const c)
+{
+    return (c == '"' || c == '\'');
+}
+
 int	check_builtin(const char *token, int len)
 {
 	if (!ft_strcmp(token, "echo") && len == 4)
@@ -139,7 +144,6 @@ enum e_token_type	get_token_type(const char *token, int len)
 	else
 		return (check_builtin(token, len));
 	return COMMAND;
-	//falta introducir built in
 }
 
 int	find_closing_quote(const char ***input, char quote)
