@@ -6,7 +6,7 @@
 /*   By: jutrera- <jutrera-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 21:28:04 by jutrera-          #+#    #+#             */
-/*   Updated: 2023/03/25 10:41:23 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/03/25 13:18:55 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,11 @@ int exec_nobuiltins(t_token *token_list, char **env)
 	char	**folders;
 	char	*path;
 	int		status;
-	char	*args[3];
+	char	*args[100];
 	char	*aux;
 	pid_t 	pid;
 	pid_t   child_pid;
+	int		i;
 
 	path = ft_getenv("$PATH", env);
 	if (path)
@@ -32,14 +33,21 @@ int exec_nobuiltins(t_token *token_list, char **env)
 		return (-1);
 	}
 	status = -1;
+	p = token_list->next;
+	i = 1;
+	args[1] = NULL;//aquí pondremos los argumentos del comando
+	while (p)
+	{
+		args[i] = p->token;
+		i++;
+		p = p->next;
+	}
 	p = token_list;
 	while (*folders && status != 0)
 	{
 		aux = ft_strjoin("/", p->token);
 		args[0] = ft_strjoin(*folders, aux);
 		free(aux);
-		args[1] = NULL;//aquí pondremos los argumentos del comando
-		args[2] = NULL;
 		pid = fork();  //crea proceso hijo
 		if (pid == 0) // entra en proceso hijo
 		{
@@ -50,8 +58,9 @@ int exec_nobuiltins(t_token *token_list, char **env)
 		else if (pid > 0) // entra en proceso padre
        	{
 			child_pid = wait(&status) ; // espera a que termine el proceso hijo
+			status = WEXITSTATUS(status);
 			if (WIFEXITED(status))
-            	printf("Child process %d exited with status %d\n", child_pid, WEXITSTATUS(status));
+            	printf("Child process %d exited with status %d\n", child_pid, status);
         	else
           		printf("Child process %d terminated abnormally\n", child_pid);
 		}
