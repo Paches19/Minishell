@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   prompt.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jutrera- <jutrera-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 10:44:18 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/24 21:28:41 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/03/25 09:48:55 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	main(int argc, char **argv, char **env)
 		if (*inpt != 0)
 			add_history(inpt);
 		token_list = tokenize_input(inpt);
-		print_token_list(&token_list);
+		//print_token_list(&token_list);
 		ft_check_vars(&token_list, new_environ);
 		
 		// sort_tokens(&token_list);
