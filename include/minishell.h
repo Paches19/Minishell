@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jutrera- <jutrera-@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/25 00:31:33 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/03/25 18:10:45 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,13 +56,13 @@ int	   ft_is_special(char const c);
 int		ft_isspace(char const c);
 int		ft_is_quote(char const c);
 int   exec_nobuiltins(t_token *token_list, char **new_environ);
-int		exec_builtins(t_token *token_list, char ***new_environ, int *status);
+int		exec_builtins(t_token *token_list, char ***new_environ, int status);
 int		ft_builtins_errors(char e);
 int		ft_echo(t_token *token_list);
 int		ft_cd(t_token *token_list, char **env);
 int		ft_env_in_order(char **new_environ, int len);
 int		ft_env(char ***new_environ);
-int		ft_exit(t_token *token_list, int *status);
+int		ft_exit(t_token *token_list, int status);
 int		ft_export(t_token *token_list, char ***new_environ);
 int		ft_pwd(void);
 int		ft_unset(t_token *token_list, char ***new_environ);

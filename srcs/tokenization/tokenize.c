@@ -6,7 +6,7 @@
 /*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/24 21:05:49 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/03/25 18:14:11 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,8 @@ int	check_builtin(const char *token, int len)
 	else if (!ft_strcmp(token, "unset") && len == 5)
 		return (BUILTIN);
 	else if (!ft_strcmp(token, "env") && len == 3)
+		return (BUILTIN);
+	else if (!ft_strcmp(token, "exit") && len == 4)
 		return (BUILTIN);
 	return (COMMAND);
 }

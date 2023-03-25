@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_builtins.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
+/*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 12:39:04 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/24 13:27:53 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/25 18:09:43 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-int	exec_builtins(t_token *token_list, char ***new_environ, int *status)
+int	exec_builtins(t_token *token_list, char ***new_environ, int status)
 {
  	if (ft_strcmp(token_list->token, "echo") == 0)
  		return (ft_echo(token_list));
