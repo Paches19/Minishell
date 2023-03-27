@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jutrera- <jutrera-@student.42madrid.com    +#+  +:+       +#+         #
+#    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/24 13:43:11 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/24 22:54:51 by jutrera-         ###   ########.fr        #
+#    Updated: 2023/03/27 12:30:57 by adpachec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,6 @@ LDFLAGS := -L ./libft/ -lft -lreadline
 SRCS := $(wildcard $(SRCDIR)/*.c) $(wildcard $(SRCDIR)/builtins/*.c) \
 	$(wildcard $(SRCDIR)/environ/*.c) $(wildcard $(SRCDIR)/prompt/*.c) \
 	$(wildcard $(SRCDIR)/style/*.c) $(wildcard $(SRCDIR)/tokenization/*.c) \
-	$(wildcard $(SRCDIR)/no_builtins/*.c)
 
 # Object files
 OBJS := $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCS))

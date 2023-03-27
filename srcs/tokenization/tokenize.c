@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/25 18:14:11 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/03/27 12:29:37 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,12 +171,11 @@ int	ft_read_variable(const char ***input)
 
 	++**input;
 	len = 1;
-	while (**input && !ft_isspace(***input) && !ft_is_special(***input))
+	while (**input && !ft_isspace(***input) && !ft_is_special(***input) && ft_isalpha(***input))
 	{
 		++**input;
 		++len;
 	}
-	//++**input;
 	return (len);
 }
 
@@ -268,9 +267,12 @@ int	ft_reading_token(const char **input)
 		}
 		else if (!ft_isspace(**input) && !ft_is_special(**input))
 		{
-			//printf("is not special\n");
-			++len;
-			++*input;
+			while (!ft_isspace(**input) && !ft_is_special(**input))
+			{
+				++len;
+				++*input;
+			}
+			return (len);
 		}
 		else
 			return (len);
@@ -327,14 +329,12 @@ t_token	*add_token_to_list(t_token **list, char *token, int len)
 t_token	*tokenize_input(const char *input) 
 {
 	t_token 		*token_list;
-	//t_token			*head_token_list;
 	char 			*token;
 	int				len;
 
 	if (!input)
 		return (NULL);
 	token_list = NULL;
-	// head_token_list = NULL;
 	while (*input)
 	{
 		while (ft_isspace(*input))
@@ -343,7 +343,6 @@ t_token	*tokenize_input(const char *input)
 			exit(1); //error en introduccion de comandos no ha leido nada
 		token = (char *) input;
 		len = ft_reading_token(&input);
-		// printf("len: %d\n", len);
 		if (len < 0)
 		{
 			exit_error_token(len, token);
@@ -351,10 +350,7 @@ t_token	*tokenize_input(const char *input)
 			return (NULL);
 		}
 		add_token_to_list(&token_list, token, len);
-		// if (!head_token_list)
-		// 	head_token_list = token_list;
 	}
-	// print_token_list(&token_list);
 	return (token_list);
 }
 
