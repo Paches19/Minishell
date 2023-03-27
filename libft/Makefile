@@ -3,60 +3,52 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+         #
+#    By: jutrera- <jutrera-@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/09/21 11:25:04 by adpachec          #+#    #+#              #
-#    Updated: 2023/03/14 11:47:06 by adpachec         ###   ########.fr        #
+#    Created: 2022/09/27 18:05:52 by jutrera-          #+#    #+#              #
+#    Updated: 2022/10/15 11:35:42 by jutrera-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = libft.a
+NAME		=	libft.a
+CC			=	gcc
+CFLAGS		=	-Wall -Wextra -Werror 
 
-SRCM = ft_atoi.c ft_bzero.c ft_calloc.c ft_isalnum.c ft_isalpha.c ft_isascii.c\
-ft_isdigit.c ft_isprint.c ft_itoa.c ft_memchr.c ft_memcmp.c ft_memcpy.c\
-ft_memmove.c ft_memset.c ft_putchar_fd.c ft_putendl_fd.c ft_putnbr_fd.c\
-ft_putnbr_fd.c ft_putstr_fd.c ft_split.c ft_strchr.c ft_strdup.c ft_striteri.c\
-ft_strjoin.c ft_strlcat.c ft_strlcpy.c ft_strlen.c ft_strmapi.c ft_strncmp.c\
-ft_strnstr.c ft_strrchr.c ft_strtrim.c ft_substr.c ft_tolower.c ft_toupper.c \
-ft_strcmp.c ft_lstnew.c ft_lstadd_front.c ft_lstsize.c ft_lstlast.c\
-ft_lstadd_back.c ft_lstdelone.c ft_lstclear.c ft_lstiter.c ft_lstmap.c
+I_DIR		=	include/
+O_DIR		=	obj/
+S_DIR		=	srcs/
+SRCS		=	$(wildcard $(S_DIR)*.c)
+OBJS		=	$(patsubst $(S_DIR)%, $(O_DIR)%, $(SRCS:.c=.o))
 
-SRCB = ft_lstnew.c ft_lstadd_front.c ft_lstsize.c ft_lstlast.c\
-ft_lstadd_back.c ft_lstdelone.c ft_lstclear.c ft_lstiter.c ft_lstmap.c
+NRM 		= 	\033[0;39m
+RED 		= 	\033[0;91m
+GREEN 		= 	\033[0;92m
+YELLOW 		= 	\033[0;93m
+BLUE 		= 	\033[0;94m
 
-CC = @gcc
-FLAGS = -Wall -Wextra -Werror
+all			:	${NAME}
 
-ifdef BONUS
-OBJ = $(SRCM:.c=.o) $(SRCB:.c=.o)
-else
-OBJ = $(SRCM:.c=.o)
-endif
+$(O_DIR)	:
+				@mkdir -p $(O_DIR)
 
-INCLUDE = libft.h
+$(O_DIR)%.o	:	$(S_DIR)%.c
+				@echo "$(BLUE)Compiling $@ !... $(NRM)\c"
+				@${CC} ${CFLAGS} -I$(I_DIR) -c $< -o $@
+				@echo "$(GREEN)OK$(NRM)"
 
-LIB = @ar rcs
-RM = @rm -f
+${NAME}		:	$(O_DIR) $(OBJS)
+				@echo "$(YELLOW)Linking object files ! $(NRM)\c"
+				@ar rcs ${NAME} ${OBJS}
+				@echo "$(GREEN)SUCCESS !$(NRM)"
+				@ranlib $(NAME)
+				@echo "libft.a created successfully !"
 
-all: $(NAME)
+clean		:
+				@rm -Rf $(O_DIR)/
 
+fclean		:	clean
+				@rm -f ${NAME}
 
-$(NAME): $(OBJ) $(INCLUDE) 
-		$(LIB) $(NAME) $(OBJ)
-		ranlib $(NAME)
+re			:	fclean all
 
-bonus:
-		@$(MAKE) BONUS=1 all
-		
-%(O_DIR).o: %.c
-		$(CC) $(FLAGS) -c -o $@ $<
-
-clean:
-		$(RM) $(SRCM:.c=.o) $(SRCB:.c=.o)
-
-fclean: clean
-		$(RM) $(NAME)
-
-re: fclean all
-
-.PHONY: all clean fclean re bonus
+.PHONY		:	all clean fclean re
