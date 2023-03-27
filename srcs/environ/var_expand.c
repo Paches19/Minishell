@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   var_expand.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
+/*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 12:42:50 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/24 13:28:32 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/24 19:42:28 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	ft_check_vars(t_token **token_list, char **env)
 				free(aux->token);
 				aux->token = s;
 			}
-			if ((aux->type == VARIABLE))
+			if (aux->type == VARIABLE)
 				ft_update_var(&(aux->token), env);
 			else if (aux->type == DOUBLE_QUOTE)
 				ft_update_double_quote(&(aux->token), env);

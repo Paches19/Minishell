@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
+/*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:29 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/24 13:28:49 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/25 18:14:11 by jutrera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,8 @@ int	check_builtin(const char *token, int len)
 		return (BUILTIN);
 	else if (!ft_strcmp(token, "env") && len == 3)
 		return (BUILTIN);
+	else if (!ft_strcmp(token, "exit") && len == 4)
+		return (BUILTIN);
 	return (COMMAND);
 }
 
@@ -174,7 +176,7 @@ int	ft_read_variable(const char ***input)
 		++**input;
 		++len;
 	}
-	++**input;
+	//++**input;
 	return (len);
 }
 
