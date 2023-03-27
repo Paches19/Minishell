@@ -6,21 +6,11 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 12:46:20 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/24 13:28:24 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/27 13:24:45 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
-void	free_environ(char ***e)
-{
-	int	i;
-
-	i = 0;
-	while ((*e)[i])
-		free((*e)[i++]);
-	free(*e);
-}
 
 char	**copy_environ(char **source)
 {

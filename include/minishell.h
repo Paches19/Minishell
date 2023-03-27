@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/25 18:10:45 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/03/27 13:27:48 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,10 @@ void	free_tokens(t_token **token_list);
 void	print_token_list(t_token **tokenize_list);
 void	free_matrix(char **matrix);
 void	exit_error(int err);
-char  *ft_getenv(char *var_name, char **env);
-int	   ft_is_special(char const c);
+char	*ft_getenv(char *var_name, char **env);
+int		ft_is_special(char const c);
 int		ft_isspace(char const c);
 int		ft_is_quote(char const c);
-int   exec_nobuiltins(t_token *token_list, char **new_environ);
 int		exec_builtins(t_token *token_list, char ***new_environ, int status);
 int		ft_builtins_errors(char e);
 int		ft_echo(t_token *token_list);
@@ -72,6 +71,15 @@ char	**copy_environ(char **source);
 char	*ft_getenv(char *var_name, char **env);
 void	free_environ(char ***e);
 void	splash(void);
-void 	sort_tokens(t_token **token_list);
+void	sort_tokens(t_token **token_list);
+void	renewprompt(int signal);
+void	ft_leaks(void);
+t_token	*tokenize_input(const char *input);
+int		ft_reading_token(const char **input);
+t_token	*ft_token_last(t_token *lst);
+void	ft_token_add_back(t_token **lst, t_token *new);
+void	print_token_list(t_token **tokenize_list);
+int		exit_error_token(int err, char *token);
+void	exit_error(int err);
 
 #endif
