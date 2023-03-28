@@ -6,20 +6,20 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/27 13:12:53 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/27 13:18:11 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/28 11:36:22 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-static int	ft_check_special(const char *input)
+static int	ft_check_special(char *input)
 {
 	if (input[-2] == input[-1])
 		return(2);
 	return(-1);
 }
 
-static int	find_closing_quote(const char ***input, char quote)
+static int	find_closing_quote(char ***input, char quote)
 {
 	int	len;
 
@@ -36,7 +36,7 @@ static int	find_closing_quote(const char ***input, char quote)
 	return (++len);
 }
 
-static int	ft_read_variable(const char ***input)
+static int	ft_read_variable(char ***input)
 {
 	int	len;
 
@@ -50,7 +50,7 @@ static int	ft_read_variable(const char ***input)
 	return (len);
 }
 
-static int	read_special_char(const char **input)
+static int	read_special_char(char **input)
 {
 	int	i;
 
@@ -66,20 +66,22 @@ static int	read_special_char(const char **input)
 	return (-1);
 }
 
-int	ft_reading_token(const char **input)
+int	ft_reading_token(char **input)
 {
 	int	len;
 
 	len = 0;
 	while (**input != '\0')
 	{
+		while (ft_isspace(**input) && **input != '\0')
+			++*input;
 		if (**input == '\'' || **input == '\"')
 			return (find_closing_quote(&input, **input));
 		else if(**input == '$')
 			return (ft_read_variable(&input));
 		else if(ft_is_special(**input))
 			return (read_special_char(input));
-		else
+		else if (**input != '\0')
 		{
 			while (!ft_isspace(**input) && !ft_is_special(**input))
 			{
@@ -88,8 +90,6 @@ int	ft_reading_token(const char **input)
 			}
 			return (len);
 		}
-		if (len == 0)
-			return (-1);
 	}
 	return (len);
 }

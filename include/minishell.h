@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/27 13:27:48 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/28 11:28:57 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,15 +46,13 @@ typedef struct s_token
 	struct s_token	*prev;
 }                 t_token;
 
-t_token	*tokenize_input(const char *input);
+t_token	*tokenize_input(char *input);
 void	free_tokens(t_token **token_list);
-void	print_token_list(t_token **tokenize_list);
 void	free_matrix(char **matrix);
-void	exit_error(int err);
 char	*ft_getenv(char *var_name, char **env);
-int		ft_is_special(char const c);
-int		ft_isspace(char const c);
-int		ft_is_quote(char const c);
+int		ft_is_special(char c);
+int		ft_isspace(char c);
+int		ft_is_quote(char c);
 int		exec_builtins(t_token *token_list, char ***new_environ, int status);
 int		ft_builtins_errors(char e);
 int		ft_echo(t_token *token_list);
@@ -68,14 +66,12 @@ int		ft_unset(t_token *token_list, char ***new_environ);
 void	ft_check_vars(t_token **token_list, char **env);
 void	ft_update_double_quote(char **token, char **env);
 char	**copy_environ(char **source);
-char	*ft_getenv(char *var_name, char **env);
 void	free_environ(char ***e);
 void	splash(void);
 void	sort_tokens(t_token **token_list);
 void	renewprompt(int signal);
 void	ft_leaks(void);
-t_token	*tokenize_input(const char *input);
-int		ft_reading_token(const char **input);
+int		ft_reading_token(char **input);
 t_token	*ft_token_last(t_token *lst);
 void	ft_token_add_back(t_token **lst, t_token *new);
 void	print_token_list(t_token **tokenize_list);
