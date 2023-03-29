@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/27 13:15:15 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/29 10:32:48 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/29 10:45:55 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,6 @@ static char	*ft_convert_type(t_token_type   type)
 		return ("VARIABLE");
 	else if (type == BUILTIN)
 		return ("BUILTIN");
-	else if (type == PROCESSED)
-		return ("PROCESSED");
 	else
 		return ("UNKNOWN");
 }
