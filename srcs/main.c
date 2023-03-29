@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/27 12:37:43 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/27 12:41:20 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/29 10:42:02 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ int	main(int argc, char **argv, char **env)
 	if (argv)
 		argv = 0;
 	atexit(ft_leaks);
-	token_list = NULL;
 	splash();
 	signal(SIGINT, &renewprompt);
 	signal(SIGQUIT, SIG_IGN);
@@ -38,15 +37,15 @@ int	main(int argc, char **argv, char **env)
 		token_list = tokenize_input(inpt);
 		// print_token_list(&token_list);
 		ft_check_vars(&token_list, new_environ);
-		// sort_tokens(&token_list);
 		if (token_list && token_list->type == BUILTIN)
 			status = exec_builtins(token_list, &new_environ, status);
+		// sort_tokens(&token_list);
 		if (token_list && ft_strcmp(token_list->token, "exit") == 0)
 			break;
 		// if (token_list && token_list->type == COMMAND)
 		// 	status = exec_nobuiltins(token_list, new_environ);
 		free(inpt);
-		// print_token_list(&token_list);
+		print_token_list(&token_list);
 		free_tokens(&token_list);
 		inpt = readline("minishell -> ");
 	}
@@ -54,7 +53,6 @@ int	main(int argc, char **argv, char **env)
 	free_tokens(&token_list);
 	free_environ(&new_environ);
 	rl_clear_history();
-    //write(1, "exit\n", 5);
 	printf("exit (with status %i)\n", status);
 	return (status);
 }
