@@ -1,5 +1,6 @@
 #hidden files
 .DS_store
+.vscode
 .git
 *.o
 *.a

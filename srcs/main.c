@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/27 12:37:43 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/29 10:43:01 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/29 12:29:42 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int	main(int argc, char **argv, char **env)
 		// sort_tokens(&token_list);
 		if (token_list && ft_strcmp(token_list->token, "exit") == 0)
 			break;
+		pipex(token_list, new_environ);
 		// if (token_list && token_list->type == COMMAND)
 		// 	status = exec_nobuiltins(token_list, new_environ);
 		free(inpt);

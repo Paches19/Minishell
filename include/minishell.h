@@ -6,13 +6,16 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/29 10:44:31 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/29 13:14:13 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
+
+# define READ_END 0
+# define WRITE_END 1
 
 # include <stdio.h>
 # include <stdlib.h>
@@ -23,6 +26,9 @@
 # include <errno.h>
 # include <sys/wait.h>
 # include "../libft/include/libft.h"
+# include <sys/wait.h>
+# include <string.h>
+# include <fcntl.h>
 
 typedef enum e_token_type
 {
@@ -46,6 +52,20 @@ typedef struct s_token
 	struct s_token	*next;
 	struct s_token	*prev;
 }                 t_token;
+
+typedef struct s_pipe
+{
+	int		i;
+	int		*fd;
+	int		status;
+	int		err;
+	pid_t	pid;
+	char	**paths;
+	char	**cmd;
+	char	*file_path;
+	int		fd_input;
+	int		fd_exit;
+}			t_pipe;
 
 t_token	*tokenize_input(char *input);
 void	free_tokens(t_token **token_list);
@@ -77,6 +97,16 @@ t_token	*ft_token_last(t_token *lst);
 void	ft_token_add_back(t_token **lst, t_token *new);
 void	print_token_list(t_token **tokenize_list);
 int		exit_error_token(int err, char *token);
-void	exit_error(int err);
+
+void	pipex(t_token *token_list, char **new_environ);
+void	pipe_exec(t_token *token_list, char **new_environ, int n_pipe);
+void	first_son(int fd1[2], t_token *token_list, char **new_environ);
+void	second_son(int fd1[2], t_token *token_list, char **new_environ);
+void	ft_init_matrix(const char *s, char c, char **res, size_t words);
+char	**get_path(char **envp);
+int		get_size_cmd(char **cmd);
+char	**get_av(char **cmd);
+char	*try_access(char **cmd, char **paths);
+char	*get_paths_cmd_son_2(char ***paths, char ***cmd, char *const *argv, char **envp);
 
 #endif
