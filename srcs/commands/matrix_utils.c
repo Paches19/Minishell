@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 10:49:42 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/29 10:51:24 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/30 12:35:32 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	size_t			len_s;
 
 	if (!s)
-		error_management(ENOMEM);
+		exit_error(ENOMEM);
 	len_s = ft_strlen(s);
 	if (start >= len_s)
 	{
@@ -32,7 +32,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	else
 		str = (char *) malloc(sizeof(char) * (len + 1));
 	if (!str)
-		error_management(ENOMEM);
+		exit_error(ENOMEM);
 	i = -1;
 	while (++i < len && s[start + i])
 		str[i] = s[start + i];
@@ -98,8 +98,8 @@ void	ft_init_matrix(const char *s, char c, char **res, size_t words)
 			res[j] = ft_substr(s - temp, 0, temp);
 			if (!res[j++])
 			{
-				ft_free_matrix(res);
-				error_management(ENOMEM);
+				free_matrix(res);
+				exit_error(ENOMEM);
 			}
 		}
 	}

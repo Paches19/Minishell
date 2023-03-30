@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 10:48:22 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/29 10:54:23 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/30 11:12:47 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	error_cmd(int err)
 {
 	perror(strerror(err));
-	exit(err);
+	// exit(err);
 }
 
 void	ft_bzero(void *s, size_t n)
