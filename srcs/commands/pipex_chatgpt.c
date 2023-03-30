@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 13:33:14 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/30 13:56:03 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/30 16:39:17 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,9 +136,10 @@ t_pipe	initialize_pipe_struct(t_token *token_list, char **new_environ)
 
 void	pipe_exec(char **cmd, char **new_environ, t_pipe *pipe_s, int i)
 {
-	pid_t   pid;
-	int	 fd_in;
-	int	 fd_out;
+	pid_t	pid;
+	int		fd_in;
+	int		fd_out;
+	char	**split_cmd;
 
 	pipe_s->i++;
 	fd_in = pipe_s->fd[(pipe_s->i - 1) * 2];
@@ -148,7 +149,6 @@ void	pipe_exec(char **cmd, char **new_environ, t_pipe *pipe_s, int i)
 		perror("pipe");
 		exit(EXIT_FAILURE);
 	}
-
 	pid = fork();
 	if (pid < 0)
 	{
@@ -176,14 +176,10 @@ void	pipe_exec(char **cmd, char **new_environ, t_pipe *pipe_s, int i)
 			}
 			close(fd_out);
 		}
-		pipe_s->file_path = try_access(pipe_s->cmd, pipe_s->paths, \
-		pipe_s->i - 1);
-		char **split = ft_split(cmd[i], ' ');
-		int j = -1;
-		while (split[++j])
-			printf("cmd[j]: %s\n", split[j]);
+		split_cmd = ft_split(cmd[i], ' ');
+		pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
 		printf("fp: %s\n", pipe_s->file_path);
-		if (execve(pipe_s->file_path, ft_split(cmd[i], ' '), new_environ) < 0)
+		if (execve(pipe_s->file_path, split_cmd, new_environ) < 0)
 		{
 			perror("execve");
 			exit(EXIT_FAILURE);
@@ -199,13 +195,40 @@ void	pipe_exec(char **cmd, char **new_environ, t_pipe *pipe_s, int i)
 	}
 }
 
+int	exec_command(t_pipe pipe_s, char **new_environ)
+{
+	pid_t	pid;
+	char	**split_cmd;
+
+	pid = fork();
+	if (!pid)
+	{
+		dup2(pipe_s.fd_in, STDIN_FILENO);
+		dup2(pipe_s.fd_out, STDOUT_FILENO);
+		split_cmd = ft_split(pipe_s.cmd[pipe_s.i], ' ');
+		pipe_s.file_path = try_access(split_cmd, pipe_s.paths);
+		// printf("file_path: %s\n", pipe_s.file_path);
+		pipe_s.err = execve(pipe_s.file_path, \
+		split_cmd, new_environ);
+		free_matrix(split_cmd);
+		close(pipe_s.fd_in);
+		close(pipe_s.fd_out);
+		// printf("\nerr: %d\n", pipe_s.err);
+	}
+	else
+		waitpid(pid, &pipe_s.status, 0);
+	return (pipe_s.err);
+}
+
 void execute_commands(t_token *token_list, char **new_environ)
 {
 	t_pipe	pipe_s;
 	int		i;
 
 	pipe_s = initialize_pipe_struct(token_list, new_environ);
-	pipe_s.fd = (int *) malloc(sizeof(int) * 2 * pipe_s.num_pipes);
+	if (pipe_s.num_pipes == 0)
+		exec_command(pipe_s, new_environ);
+	pipe_s.fd = (int *) ft_calloc((sizeof(int) * 2) + 1, pipe_s.num_pipes);
 	if (!pipe_s.fd)
 	{
 		perror("malloc");

@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/27 12:37:43 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/30 13:43:36 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/30 16:25:16 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	main(int argc, char **argv, char **env)
 		// // sort_tokens(&token_list);
 		if (token_list && ft_strcmp(token_list->token, "exit") == 0)
 			break;
-		printf("pree pipex\n");
+		// printf("pree pipex\n");
 		// pipex(token_list, new_environ);
 		execute_commands(token_list, new_environ);
 		// if (token_list && token_list->type == COMMAND)
@@ -50,7 +50,7 @@ int	main(int argc, char **argv, char **env)
 		free(inpt);
 		// print_token_list(&token_list);
 		free_tokens(&token_list);
-		printf("pree leer\n");
+		// printf("pree leer\n");
 		inpt = readline("minishell -> ");
 	}
 	free(inpt);

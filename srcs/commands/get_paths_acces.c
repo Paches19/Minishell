@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 10:48:58 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/30 13:16:51 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/30 16:38:22 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ char	**get_av(char **cmd)
 	return (av);
 }
 
-char	*try_access(char **cmd, char **paths, int j)
+char	*try_access(char **cmd, char **paths)
 {
 	char	*file_path;
 	int		err;
@@ -83,12 +83,12 @@ char	*try_access(char **cmd, char **paths, int j)
 			free(file_path);
 		if (paths[i][ft_strlen(paths[i]) - 1] != '/')
 			paths[i] = ft_strjoin2(paths[i], "/");
-		file_path = ft_strjoin(paths[i], cmd[j]);
+		file_path = ft_strjoin(paths[i], cmd[0]);
 		err = access(file_path, X_OK);
 	}
 	if (err < 0)
 	{
-		write(2, cmd[j], ft_strlen(cmd[j]));
+		write(2, cmd[0], ft_strlen(cmd[0]));
 		write(2, ": command not found\n", 20);
 		free(file_path);
 		file_path = NULL;
@@ -104,6 +104,6 @@ char	*get_paths_cmd_son_2(char ***paths, char ***cmd, char *const *argv, char **
 
 	paths[0] = get_path(envp);
 	cmd[0] = ft_split(argv[3], ' ');
-	file_path = try_access(cmd[0], paths[0], 0);
+	file_path = try_access(cmd[0], paths[0]);
 	return (file_path);
 }

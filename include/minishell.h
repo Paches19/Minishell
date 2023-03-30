@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/30 13:50:42 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/30 16:34:29 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ void	ft_init_matrix(const char *s, char c, char **res, size_t words);
 char	**get_path(char **envp);
 int		get_size_cmd(char **cmd);
 char	**get_av(char **cmd);
-char	*try_access(char **cmd, char **paths, int j);
+char	*try_access(char **cmd, char **paths);
 char	*get_paths_cmd_son_2(char ***paths, char ***cmd, char *const *argv, char **envp);
 void	error_cmd(int err);
 void	execute_commands(t_token *token_list, char **new_environ);
