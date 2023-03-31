@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex_chatgpt.c                                    :+:      :+:    :+:   */
+/*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/30 13:33:14 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/30 16:39:17 by adpachec         ###   ########.fr       */
+/*   Created: 2023/03/31 11:13:20 by adpachec          #+#    #+#             */
+/*   Updated: 2023/03/31 12:47:46 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,17 @@ int	get_outfile(t_token *token_list)
 	return (STDOUT_FILENO);
 }
 
+int	get_num_cmds(char **cmd)
+{
+	int	i;
+
+	if (!cmd || !*cmd)
+		return (0);
+	i = -1;
+	while (cmd[++i]);
+	return (i);
+}
+
 t_pipe	initialize_pipe_struct(t_token *token_list, char **new_environ)
 {
     t_pipe  pipe_s;
@@ -130,69 +141,8 @@ t_pipe	initialize_pipe_struct(t_token *token_list, char **new_environ)
 	pipe_s.err = 0;
 	pipe_s.paths = get_path(new_environ);
 	pipe_s.cmd = get_cmd(token_list, pipe_s.num_pipes);
+	pipe_s.num_cmds = get_num_cmds(pipe_s.cmd);
 	return (pipe_s);
-}
-
-
-void	pipe_exec(char **cmd, char **new_environ, t_pipe *pipe_s, int i)
-{
-	pid_t	pid;
-	int		fd_in;
-	int		fd_out;
-	char	**split_cmd;
-
-	pipe_s->i++;
-	fd_in = pipe_s->fd[(pipe_s->i - 1) * 2];
-	fd_out = pipe_s->fd[pipe_s->i * 2 + 1];
-	if (pipe(pipe_s->fd + pipe_s->i * 2) < 0)
-	{
-		perror("pipe");
-		exit(EXIT_FAILURE);
-	}
-	pid = fork();
-	if (pid < 0)
-	{
-		perror("fork");
-		exit(EXIT_FAILURE);
-	}
-	else if (pid == 0)
-	{
-		if (pipe_s->i > 0)
-		{
-			if (dup2(fd_in, STDIN_FILENO) < 0)
-			{
-				perror("dup2");
-				exit(EXIT_FAILURE);
-			}
-			close(fd_in);
-		}
-
-		if (pipe_s->i < pipe_s->num_pipes)
-		{
-			if (dup2(fd_out, STDOUT_FILENO) < 0)
-			{
-				perror("dup2");
-				exit(EXIT_FAILURE);
-			}
-			close(fd_out);
-		}
-		split_cmd = ft_split(cmd[i], ' ');
-		pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
-		printf("fp: %s\n", pipe_s->file_path);
-		if (execve(pipe_s->file_path, split_cmd, new_environ) < 0)
-		{
-			perror("execve");
-			exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		if (pipe_s->i > 0)
-			close(fd_in);
-		if (pipe_s->i < pipe_s->num_pipes)
-			close(fd_out);
-		waitpid(pid, NULL, 0);
-	}
 }
 
 int	exec_command(t_pipe pipe_s, char **new_environ)
@@ -220,22 +170,89 @@ int	exec_command(t_pipe pipe_s, char **new_environ)
 	return (pipe_s.err);
 }
 
+// void	pipe_exec(char **new_environ, t_pipe *pipe_s)
+// {
+// 	pid_t	pid;
+
+// 	pipe_s->status = 0;
+// 	pipe_s->err = pipe(pipe_s->fd);
+// 	if (pipe_s->err < 0)
+// 		error_cmd(pipe_s->err);
+// 	pid = fork();
+// 	if (pid)
+// 	{
+// 		printf("pipeexec if\n");
+// 		close(pipe_s->fd[WRITE_END]);
+// 		dup2(pipe_s->fd[READ_END], STDIN_FILENO);
+// 		// close(pipe_s->fd[READ_END]);
+// 		waitpid(pid, &pipe_s->status, 0);
+// 	}
+// 	else
+// 	{
+// 		printf("pipeexec else\n");
+// 		close(pipe_s->fd[READ_END]);
+// 		dup2(pipe_s->fd[WRITE_END], STDOUT_FILENO);
+// 		pipe_s->file_path = try_access(pipe_s->cmd, pipe_s->paths);
+// 		printf("file_path: %s\n", pipe_s->file_path);
+// 		pipe_s->err = execve(pipe_s->file_path, 
+// 		ft_split(pipe_s->cmd[pipe_s->i], ' '), new_environ);
+// 		// close(pipe_s->fd[WRITE_END]);
+// 	}
+// }
+
+void	pipex(char **new_environ, t_pipe *pipe_s)
+{
+	int		fd[pipe_s->num_cmds];
+	int		j;
+	int		i;
+	pid_t	pid;
+
+	pipe_s->status = 0;
+	pipe_s->i = -1;
+	while (++pipe_s->i < pipe_s->num_cmds)
+	{
+		if (pipe(fd + pipe_s->i * 2) < 0) 
+		{
+      		perror("couldn't pipe");
+     		 exit(EXIT_FAILURE);
+		}
+	}
+	pipe_s->i = -1;
+	j = 0;
+	while (pipe_s->cmd[++pipe_s->i])
+	{
+		pid = fork();
+		if (!pid)
+		{
+			if (pipe_s->cmd[pipe_s->i + 1])
+				dup2(fd[j + 1], STDOUT_FILENO);
+			if (j != 0)
+				dup2(fd[j - 2], STDIN_FILENO);
+		i = -1;
+		while (++i < 2 * pipe_s->num_cmds)
+			close(fd[i]);
+		pipe_s->file_path = try_access(pipe_s->cmd, pipe_s->paths);
+		pipe_s->err = execve(pipe_s->file_path, \
+		ft_split(pipe_s->cmd[pipe_s->i], ' '), new_environ);
+		}
+		j += 2;
+	}
+	i = -1;
+	while (++i < pipe_s->num_cmds)
+		close(fd[i]);
+	i = -1;
+	while (++i < pipe_s->num_cmds)
+		waitpid(pid, &pipe_s->status, 0);
+}
+
 void execute_commands(t_token *token_list, char **new_environ)
 {
 	t_pipe	pipe_s;
-	int		i;
 
 	pipe_s = initialize_pipe_struct(token_list, new_environ);
 	if (pipe_s.num_pipes == 0)
 		exec_command(pipe_s, new_environ);
-	pipe_s.fd = (int *) ft_calloc((sizeof(int) * 2) + 1, pipe_s.num_pipes);
-	if (!pipe_s.fd)
-	{
-		perror("malloc");
-		exit(EXIT_FAILURE);
-	}
-	i = -1;
-	while (++i < pipe_s.num_pipes)
-		pipe_exec(pipe_s.cmd, new_environ, &pipe_s, i);
-	free(pipe_s.fd);
+	else
+		pipex(new_environ, &pipe_s);
 }
+

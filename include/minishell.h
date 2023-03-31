@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/30 16:34:29 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/31 12:44:36 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ typedef struct s_pipe
 	char	*file_path;
 	int		fd_in;
 	int		fd_out;
+	int		num_cmds;
 }			t_pipe;
 
 t_token	*tokenize_input(char *input);
@@ -103,9 +104,8 @@ void	print_token_list(t_token **tokenize_list);
 int		exit_error_token(int err, char *token);
 void	exit_error(int err);
 
-void	pipex(t_token *token_list, char **new_environ);
-// void	pipe_exec(char **new_environ, t_pipe *pipe_s);
-void	pipe_exec(char **cmd, char **new_environ, t_pipe *pipe_s, int i);
+void	pipex(char **new_environ, t_pipe *pipe_s);
+void 	pipe_exec(char **new_environ, t_pipe *pipe_s, int in_fd);
 void	first_son(int fd1[2], t_token *token_list, char **new_environ);
 void	second_son(int fd1[2], t_token *token_list, char **new_environ);
 void	ft_init_matrix(const char *s, char c, char **res, size_t words);
