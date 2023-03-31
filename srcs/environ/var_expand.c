@@ -35,11 +35,13 @@ static void	ft_update_var(char **token, char **env)
 		return ;
 	}
 	env_var = ft_getenv(*token, env);
-	free(*token);
 	if (env_var != NULL)
+	{
+		free(*token);
 		*token = ft_strdup(env_var);
-	else
-		*token = NULL;
+	}
+	//else
+	//	*token = NULL;
 	free(env_var);
 }
 

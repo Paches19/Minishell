@@ -254,5 +254,7 @@ void execute_commands(t_token *token_list, char **new_environ)
 		exec_command(pipe_s, new_environ);
 	else
 		pipex(new_environ, &pipe_s);
+	free_matrix(pipe_s.paths);
+	free_matrix(pipe_s.cmd);
 }
 

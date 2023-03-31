@@ -55,9 +55,9 @@ int	main(int argc, char **argv, char **env)
 		if (*inpt != 0)
 			add_history(inpt);
 		token_list = tokenize_input(inpt);
-		// print_token_list(&token_list);
+		print_token_list(&token_list);
 		ft_check_vars(&token_list, new_environ);
-		// print_token_list(&token_list);
+		print_token_list(&token_list);
 		if (token_list && token_list->type == BUILTIN)
 			status = exec_builtins(token_list, &new_environ, status);
 		// // sort_tokens(&token_list);
@@ -79,7 +79,7 @@ int	main(int argc, char **argv, char **env)
 	free(inpt);
 	free_tokens(&token_list);
 	free_environ(&new_environ);
-	rl_clear_history();
+	// rl_clear_history();
 	printf("exit (with status %u)\n", (unsigned char)status);
 	return ((unsigned char)status);
 }

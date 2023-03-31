@@ -12,14 +12,19 @@
 
 #include "../../include/minishell.h"
 
-static void	ft_write_echo(char *s)
+static void	ft_write_echo(char *s, int status)
 {
 	int	i;
 
 	i = 0;
 	while (s[i])
 	{
-		if (!ft_is_quote(s[i]))
+		if (s[i] == '$')
+			while (s[i] && !ft_is_quote(s[i]))
+				i++;
+		if (s[i] == '?')
+			printf("%d", status);
+		else if (!ft_is_quote(s[i]))
 			ft_putchar(s[i]);
 		i++;
 	}
@@ -45,13 +50,14 @@ int ft_echo(t_token *token_list, int status)
 			p = p->next;
 		nl = 0;
 	}
-	while (p && (ft_printable_token(p) || !ft_strcmp(p->token, "?")))
+	while (p && (ft_printable_token(p) || !ft_strcmp(p->token, "$?")))
 	{
-		if (!ft_strcmp(p->token, "?"))
+		if (!ft_strcmp(p->token, "$?"))
 			printf("%d", status);
 		else
-			ft_write_echo(p->token);
+			ft_write_echo(p->token, status);
 		p = p->next;
+		
 		if (p && p->token)
 			write(1, " ", 1);
 	}
