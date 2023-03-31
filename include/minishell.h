@@ -81,7 +81,7 @@ int		ft_isspace(char c);
 int		ft_is_quote(char c);
 int		exec_builtins(t_token *token_list, char ***new_environ, int status);
 int		ft_builtins_errors(char e);
-int		ft_echo(t_token *token_list);
+int		ft_echo(t_token *token_list, int status);
 int		ft_cd(t_token *token_list, char **env);
 int		ft_env_in_order(char **new_environ, int len);
 int		ft_env(char ***new_environ);

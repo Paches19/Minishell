@@ -12,6 +12,26 @@
 
 #include "../include/minishell.h"
 
+int	lots_of_args(t_token *token_list)
+{
+	int	i;
+	t_token	*p;
+
+	i = 0;
+	p = token_list->next;
+	while (p)
+	{
+		i++;
+		p = p->next;
+	}
+	if (i > 1)
+	{
+		perror("exit: Too many arguments");
+		return(1);
+	}
+	return (0);
+}
+
 int	main(int argc, char **argv, char **env)
 {
 	t_token	*token_list;
@@ -46,7 +66,7 @@ int	main(int argc, char **argv, char **env)
 		// printf("pree pipex\n");
 		// pipex(token_list, new_environ);
 
-		if (token_list && ft_strcmp(token_list->token, "exit") == 0)
+		if (token_list && ft_strcmp(token_list->token, "exit") == 0 && !lots_of_args(token_list))
 			break;
 		// if (token_list && token_list->type == COMMAND)
 		// 	status = exec_nobuiltins(token_list, new_environ);
@@ -60,6 +80,6 @@ int	main(int argc, char **argv, char **env)
 	free_tokens(&token_list);
 	free_environ(&new_environ);
 	rl_clear_history();
-	printf("exit (with status %i)\n", status);
-	return (status);
+	printf("exit (with status %u)\n", (unsigned char)status);
+	return ((unsigned char)status);
 }
