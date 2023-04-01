@@ -105,9 +105,9 @@ int		exit_error_token(int err, char *token);
 void	exit_error(int err);
 
 void	pipex(char **new_environ, t_pipe *pipe_s);
-void 	pipe_exec(char **new_environ, t_pipe *pipe_s, int in_fd);
-void	first_son(int fd1[2], t_token *token_list, char **new_environ);
-void	second_son(int fd1[2], t_token *token_list, char **new_environ);
+//void 	pipe_exec(char **new_environ, t_pipe *pipe_s, int in_fd);
+//void	first_son(int fd1[2], t_token *token_list, char **new_environ);
+//void	second_son(int fd1[2], t_token *token_list, char **new_environ);
 void	ft_init_matrix(const char *s, char c, char **res, size_t words);
 char	**get_path(char **envp);
 int		get_size_cmd(char **cmd);
@@ -115,6 +115,6 @@ char	**get_av(char **cmd);
 char	*try_access(char **cmd, char **paths);
 char	*get_paths_cmd_son_2(char ***paths, char ***cmd, char *const *argv, char **envp);
 void	error_cmd(int err);
-void	execute_commands(t_token *token_list, char **new_environ);
+int		execute_commands(t_token *token_list, char **new_environ);
 
 #endif

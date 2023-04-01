@@ -46,13 +46,16 @@ int ft_unset(t_token *token_list, char ***new_environ)
 	if (!p)
 		return (ft_builtins_errors('u'));
 	stat = 0;
-	while (p && p->type == COMMAND)
+	while (p)
 	{
 		if (!p)
 			return (ft_builtins_errors('u'));
-		if (ft_strchr(p->token, '='))
-			return (ft_builtins_errors('e'));
-		stat = ft_delete_var(p, new_environ);
+		if (ft_strchr(p->token, '=') ||
+			(!ft_isalpha(p->token[0]) && p->token[0] != '_') ||
+			ft_strlen(p->token) == 0)
+			stat = ft_builtins_errors('e');
+		else
+			stat = ft_delete_var(p, new_environ);
 		p = p->next;
 	}
 	return (stat);

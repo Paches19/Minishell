@@ -145,7 +145,7 @@ t_pipe	initialize_pipe_struct(t_token *token_list, char **new_environ)
 	return (pipe_s);
 }
 
-int	exec_command(t_pipe pipe_s, char **new_environ)
+void	exec_command(t_pipe *pipe_s, char **new_environ)
 {
 	pid_t	pid;
 	char	**split_cmd;
@@ -153,21 +153,22 @@ int	exec_command(t_pipe pipe_s, char **new_environ)
 	pid = fork();
 	if (!pid)
 	{
-		dup2(pipe_s.fd_in, STDIN_FILENO);
-		dup2(pipe_s.fd_out, STDOUT_FILENO);
-		split_cmd = ft_split(pipe_s.cmd[pipe_s.i], ' ');
-		pipe_s.file_path = try_access(split_cmd, pipe_s.paths);
-		// printf("file_path: %s\n", pipe_s.file_path);
-		pipe_s.err = execve(pipe_s.file_path, \
+		dup2(pipe_s->fd_in, STDIN_FILENO);
+		dup2(pipe_s->fd_out, STDOUT_FILENO);
+		split_cmd = ft_split(pipe_s->cmd[pipe_s->i], ' ');
+		pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
+		pipe_s->err = execve(pipe_s->file_path, \
 		split_cmd, new_environ);
 		free_matrix(split_cmd);
-		close(pipe_s.fd_in);
-		close(pipe_s.fd_out);
-		// printf("\nerr: %d\n", pipe_s.err);
+		close(pipe_s->fd_in);
+		close(pipe_s->fd_out);
+		if (pipe_s->err == -1)
+			exit(EXIT_FAILURE);
+			// printf("\nerr: %d\n", pipe_s.err);
 	}
 	else
-		waitpid(pid, &pipe_s.status, 0);
-	return (pipe_s.err);
+		waitpid(pid, &pipe_s->status, 0);
+	
 }
 
 // void	pipe_exec(char **new_environ, t_pipe *pipe_s)
@@ -245,14 +246,14 @@ void	pipex(char **new_environ, t_pipe *pipe_s)
 		waitpid(pid, &pipe_s->status, 0);
 }
 
-void execute_commands(t_token *token_list, char **new_environ)
+int execute_commands(t_token *token_list, char **new_environ)
 {
 	t_pipe	pipe_s;
 
 	pipe_s = initialize_pipe_struct(token_list, new_environ);
 	if (pipe_s.num_pipes == 0)
-		exec_command(pipe_s, new_environ);
+		exec_command(&pipe_s, new_environ);
 	else
 		pipex(new_environ, &pipe_s);
+	return (pipe_s.status % 129);
 }
-

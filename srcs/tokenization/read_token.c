@@ -41,6 +41,11 @@ static int	ft_read_variable(char ***input)
 	int	len;
 
 	++**input;
+	if (***input == '?')
+	{
+		++**input;
+		return (2);
+	}
 	len = 1;
 	while (**input && !ft_isspace(***input) && !ft_is_special(***input) && ft_isalpha(***input))
 	{

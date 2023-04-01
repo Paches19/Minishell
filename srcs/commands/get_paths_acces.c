@@ -22,6 +22,8 @@ char	**get_path(char **envp)
 	i = 0;
 	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5))
 		++i;
+	if (!envp[i])
+		return (NULL);
 	env = ft_substr(envp[i], 5, ft_strlen(envp[i]));
 	paths = ft_split(env, ':');
 	free (env);
@@ -76,7 +78,9 @@ char	*try_access(char **cmd, char **paths)
 	i = -1;
 	file_path = NULL;
 	// printf("path[0]: %s\n", paths[0]);
-	while (paths[++i] && err < 0)
+	if (cmd[0][0] == '/')  //Nos dan el path
+		return(*cmd);
+	while (paths && paths[++i] && err < 0)
 	{
 		// printf("llego: %d\n", i);
 		if (file_path)

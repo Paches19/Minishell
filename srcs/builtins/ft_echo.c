@@ -20,7 +20,7 @@ static void	ft_write_echo(char *s)
 	while (s[i])
 	{
 		if (!ft_is_quote(s[i]))
-			ft_putchar(s[i]);
+			printf("%c", s[i]);
 		i++;
 	}
 }
@@ -41,16 +41,19 @@ int ft_echo(t_token *token_list, int status)
 		nl = 1;
 	else
 	{
-		while ((!ft_strcmp(p->token, "-n") && ft_strlen(p->token) == 2))
+		while (p && (!ft_strcmp(p->token, "-n") && ft_strlen(p->token) == 2))
 			p = p->next;
 		nl = 0;
 	}
-	while (p && (ft_printable_token(p) || !ft_strcmp(p->token, "?")))
+	while (p && (ft_printable_token(p) || !ft_strcmp(p->token, "$?")))
 	{
-		if (!ft_strcmp(p->token, "?"))
-			printf("%d", status);
-		else
-			ft_write_echo(p->token);
+		if (p->token)
+		{
+			if (!ft_strcmp(p->token, "$?"))
+				printf("%d", status);
+			else
+				ft_write_echo(p->token);
+		}
 		p = p->next;
 		if (p && p->token)
 			write(1, " ", 1);
