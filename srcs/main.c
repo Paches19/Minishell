@@ -46,7 +46,7 @@ int	main(int argc, char **argv, char **env)
 	atexit(ft_leaks);
 	splash();
 	signal(SIGINT, &renewprompt);  //Ctrl+C
-	signal(SIGQUIT, SIG_IGN);	//Ctrl + slash
+	signal(SIGQUIT, SIG_IGN);	//Ctrl-\ ignored
 	//Ctrl+D = '\0', so is not a signal !!!
 	status = 0;
 	new_environ = copy_environ(env);
