@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/31 11:13:20 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/31 12:47:46 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/03 11:19:41 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,49 +200,102 @@ int	exec_command(t_pipe pipe_s, char **new_environ)
 // 	}
 // }
 
+// void	pipex(char **new_environ, t_pipe *pipe_s)
+// {
+// 	int		fd[pipe_s->num_cmds];
+// 	int		j;
+// 	int		i;
+// 	pid_t	pid;
+
+// 	pipe_s->status = 0;
+// 	pipe_s->i = -1;
+// 	while (++pipe_s->i < pipe_s->num_cmds)
+// 	{
+// 		if (pipe(fd + pipe_s->i * 2) < 0) 
+// 		{
+//       		perror("couldn't pipe");
+//      		 exit(EXIT_FAILURE);
+// 		}
+// 	}
+// 	pipe_s->i = -1;
+// 	j = 0;
+// 	while (pipe_s->cmd[++pipe_s->i])
+// 	{
+// 		pid = fork();
+// 		if (!pid)
+// 		{
+// 			if (pipe_s->cmd[pipe_s->i + 1])
+// 				dup2(fd[j + 1], STDOUT_FILENO);
+// 			if (j != 0)
+// 				dup2(fd[j - 2], STDIN_FILENO);
+// 		i = -1;
+// 		while (++i < 2 * pipe_s->num_cmds)
+// 			close(fd[i]);
+// 		pipe_s->file_path = try_access(pipe_s->cmd, pipe_s->paths);
+// 		pipe_s->err = execve(pipe_s->file_path, 
+// 		ft_split(pipe_s->cmd[pipe_s->i], ' '), new_environ);
+// 		}
+// 		j += 2;
+// 	}
+// 	i = -1;
+// 	while (++i < pipe_s->num_cmds)
+// 		close(fd[i]);
+// 	i = -1;
+// 	while (++i < pipe_s->num_cmds)
+// 		waitpid(pid, &pipe_s->status, 0);
+// }
+
 void	pipex(char **new_environ, t_pipe *pipe_s)
 {
-	int		fd[pipe_s->num_cmds];
-	int		j;
-	int		i;
+	int		fd[2];
+	int		fd_in;
 	pid_t	pid;
 
-	pipe_s->status = 0;
+	fd_in = pipe_s->fd_in;
 	pipe_s->i = -1;
 	while (++pipe_s->i < pipe_s->num_cmds)
 	{
-		if (pipe(fd + pipe_s->i * 2) < 0) 
+		if (pipe(fd) < 0)
 		{
-      		perror("couldn't pipe");
-     		 exit(EXIT_FAILURE);
+			perror("couldn't pipe");
+			exit(EXIT_FAILURE);
 		}
-	}
-	pipe_s->i = -1;
-	j = 0;
-	while (pipe_s->cmd[++pipe_s->i])
-	{
 		pid = fork();
-		if (!pid)
+		if (pid == -1)
 		{
-			if (pipe_s->cmd[pipe_s->i + 1])
-				dup2(fd[j + 1], STDOUT_FILENO);
-			if (j != 0)
-				dup2(fd[j - 2], STDIN_FILENO);
-		i = -1;
-		while (++i < 2 * pipe_s->num_cmds)
-			close(fd[i]);
-		pipe_s->file_path = try_access(pipe_s->cmd, pipe_s->paths);
-		pipe_s->err = execve(pipe_s->file_path, \
-		ft_split(pipe_s->cmd[pipe_s->i], ' '), new_environ);
+			perror("couldn't fork");
+			exit(EXIT_FAILURE);
 		}
-		j += 2;
+		else if (pid == 0)
+		{
+			if (pipe_s->i == 0)
+				dup2(fd_in, STDIN_FILENO);
+			else
+				dup2(fd_in, STDIN_FILENO);
+			if (pipe_s->i == pipe_s->num_cmds - 1)
+				dup2(pipe_s->fd_out, STDOUT_FILENO);
+			else
+				dup2(fd[1], STDOUT_FILENO);
+			close(fd[0]);
+			close(fd[1]);
+			fprintf(stderr, "i: %d\n", pipe_s->i);
+			pipe_s->file_path = try_access(ft_split(pipe_s->cmd[pipe_s->i], ' '), \
+			pipe_s->paths);
+			fprintf(stderr, "fp: %s\n", pipe_s->file_path);
+			int h = -1;
+			char **com = ft_split(pipe_s->cmd[pipe_s->i], ' ');
+			while (com[++h])
+				fprintf(stderr, "com: %s\n", com[h]);
+			pipe_s->err = execve(pipe_s->file_path, \
+			ft_split(pipe_s->cmd[pipe_s->i], ' '), new_environ);
+		}
+		else
+		{
+			waitpid(pid, &pipe_s->status, 0);
+			close(fd[1]);
+			fd_in = fd[0];
+		}
 	}
-	i = -1;
-	while (++i < pipe_s->num_cmds)
-		close(fd[i]);
-	i = -1;
-	while (++i < pipe_s->num_cmds)
-		waitpid(pid, &pipe_s->status, 0);
 }
 
 void execute_commands(t_token *token_list, char **new_environ)
