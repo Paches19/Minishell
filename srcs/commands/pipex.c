@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/31 11:13:20 by adpachec          #+#    #+#             */
-/*   Updated: 2023/04/03 11:31:11 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/03 11:59:12 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,6 +174,7 @@ void	pipex(char **new_environ, t_pipe *pipe_s)
 {
 	int		fd_in;
 	pid_t	pid;
+	char	**split_cmds;
 
 	fd_in = pipe_s->fd_in;
 	pipe_s->i = -1;
@@ -204,15 +205,16 @@ void	pipex(char **new_environ, t_pipe *pipe_s)
 			close(pipe_s->fd[READ_END]);
 			close(pipe_s->fd[WRITE_END]);
 			// fprintf(stderr, "i: %d\n", pipe_s->i);
-			pipe_s->file_path = try_access(ft_split(pipe_s->cmd[pipe_s->i], ' '), \
-			pipe_s->paths);
+			split_cmds = ft_split(pipe_s->cmd[pipe_s->i], ' ');
+			pipe_s->file_path = try_access(split_cmds, pipe_s->paths);
 			// fprintf(stderr, "fp: %s\n", pipe_s->file_path);
 			// int h = -1;
 			// char **com = ft_split(pipe_s->cmd[pipe_s->i], ' ');
 			// while (com[++h])
 			// 	fprintf(stderr, "com: %s\n", com[h]);
-			pipe_s->err = execve(pipe_s->file_path, \
-			ft_split(pipe_s->cmd[pipe_s->i], ' '), new_environ);
+			pipe_s->err = execve(pipe_s->file_path, split_cmds, new_environ);
+			free_matrix(split_cmds);
+			free(pipe_s->file_path);
 		}
 		else
 		{
@@ -223,10 +225,12 @@ void	pipex(char **new_environ, t_pipe *pipe_s)
 	}
 }
 
-// void	free_pipe(t_pipe *pipe_s)
-// {
-	
-// }
+void	free_pipe(t_pipe *pipe_s)
+{
+	free_matrix(pipe_s->cmd);
+	free_matrix(pipe_s->paths);
+}
+
 void	execute_commands(t_token *token_list, char **new_environ)
 {
 	t_pipe	pipe_s;
@@ -236,6 +240,6 @@ void	execute_commands(t_token *token_list, char **new_environ)
 		exec_command(pipe_s, new_environ);
 	else
 		pipex(new_environ, &pipe_s);
-	// free_pipe(&pipe_s);
+	free_pipe(&pipe_s);
 }
 

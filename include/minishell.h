@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/04/03 11:29:09 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/03 11:54:47 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ typedef struct s_pipe
 	int		fd[2];
 	int		status;
 	int		err;
-	pid_t	pid;
 	char	**paths;
 	char	**cmd;
 	char	*file_path;
