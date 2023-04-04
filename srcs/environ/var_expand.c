@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   var_expand.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jutrera- <jutrera-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 12:42:50 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/24 19:42:28 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/03/30 16:53:18 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,26 @@ static void	ft_update_var(char **token, char **env)
 {
 	char *env_var;
 
+	if (!ft_strcmp(*token, "$\0") && ft_strlen(*token) == 1)
+	{
+		free(*token);
+		*token = ft_strdup("$");
+		return ;
+	}
+	if (!ft_strcmp(*token, "$?\0") && ft_strlen(*token) == 2)
+	{
+		free(*token);
+		*token = ft_strdup("$?");
+		return ;
+	}
 	env_var = ft_getenv(*token, env);
-	free(*token);
 	if (env_var != NULL)
+	{
+		free(*token);
 		*token = ft_strdup(env_var);
-	else
-		*token = NULL;
+	}
+	//else
+	//	*token = NULL;
 	free(env_var);
 }
 

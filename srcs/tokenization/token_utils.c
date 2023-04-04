@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/27 13:15:15 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/29 10:45:55 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/29 10:45:30 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,10 @@ void	print_token_list(t_token **tokenize_list)
 	i = 0;
 	while(aux)
 	{
-		printf("token %d: \n", ++i);
+		printf("token[%d]: ", ++i);
 		//printf("\b\btoken: %s\n", aux->token);
-		printf("content: %s\n", aux->token);
-		printf("\b\btype: %s\n\n", ft_convert_type(aux->type));
+		printf("content [%s]", aux->token);
+		printf(" type [%s]\n", ft_convert_type(aux->type));
 		aux = aux->next;
 	}
 }

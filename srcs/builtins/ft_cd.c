@@ -19,12 +19,20 @@ int ft_cd(t_token *token_list, char **env)
 	int		i;
 
 	p = token_list->next;
+	if (p && p->next && p->next->token[0] != '\0')
+	{
+		printf("cd : Too many arguments\n");
+		return (1);
+	}
 	if (!p)
-		dir = ft_getenv("HOME", env);
+		dir = ft_getenv("$HOME", env);
 	else
-		dir = p->token;
+		dir = ft_strtrim(p->token, " ");
 	i = chdir(dir);
 	if (i == -1)
+	{
 		perror("cd");
-	return (i);
+		return (1);
+	}
+	return (0);
 }

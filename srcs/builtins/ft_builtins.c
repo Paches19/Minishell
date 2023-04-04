@@ -15,7 +15,7 @@
 int	exec_builtins(t_token *token_list, char ***new_environ, int status)
 {
  	if (ft_strcmp(token_list->token, "echo") == 0)
- 		return (ft_echo(token_list));
+ 		return (ft_echo(token_list, status));
  	else if (ft_strcmp(token_list->token, "cd") == 0)
  		return (ft_cd(token_list, *new_environ));
  	else if (ft_strcmp(token_list->token, "pwd") == 0)
@@ -27,4 +27,5 @@ int	exec_builtins(t_token *token_list, char ***new_environ, int status)
  	else if (ft_strcmp(token_list->token, "exit") == 0)
 		return (ft_exit(token_list, status));
  	return (ft_env(new_environ));
+  
 }

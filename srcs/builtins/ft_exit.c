@@ -21,5 +21,7 @@ int ft_exit(t_token *token_list, int status)
 	if (!p)
 		return (status);
 	s = ft_atoi(p->token);
+	if (ft_strcmp(p->token, "0") != 0 && s == 0)
+		s = 255;
 	return (s);
 }

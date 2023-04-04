@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/27 12:42:02 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/27 13:26:31 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/03/30 11:19:32 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ static t_token	*add_token_to_list(t_token **list, char *token, int len)
 	new_token = (t_token *)ft_calloc(sizeof(t_token), 1);
 	if (!token) 
 		exit_error(errno); //error malloc
+	token = token - len;
 	new_token->token = ft_substr(token, 0, len);
 	new_token->type = get_token_type(new_token->token, len);
 	if (*list == NULL)
@@ -74,7 +75,7 @@ static t_token	*add_token_to_list(t_token **list, char *token, int len)
 	return (*list);
 }
 
-t_token	*tokenize_input(const char *input) 
+t_token	*tokenize_input(char *input) 
 {
 	t_token 		*token_list;
 	char 			*token;
@@ -85,10 +86,10 @@ t_token	*tokenize_input(const char *input)
 	token_list = NULL;
 	while (*input)
 	{
-		while (ft_isspace(*input))
-			input++;
-		if (*input == '\0')
-			exit(1); //error en introduccion de comandos no ha leido nada
+		// while (ft_isspace(*input))
+		// 	input++;
+		// if (*input == '\0')
+		// 	exit(1); //error en introduccion de comandos no ha leido nada
 		token = (char *) input;
 		len = ft_reading_token(&input);
 		if (len < 0)
@@ -97,7 +98,7 @@ t_token	*tokenize_input(const char *input)
 			free_tokens(&token_list);
 			return (NULL);
 		}
-		add_token_to_list(&token_list, token, len);
+		add_token_to_list(&token_list, input, len);
 	}
 	return (token_list);
 }
