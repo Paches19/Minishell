@@ -79,7 +79,7 @@ char	*try_access(char **cmd, char **paths)
 	// printf("path[0]: %s\n", paths[0]);
 	if (cmd[0][0] == '/')  //Nos dan el path
 		return(*cmd);
-	while (paths[++i] && err < 0)
+	while (paths && paths[++i] && err < 0)
 	{
 		// printf("llego: %d\n", i);
 		if (file_path)

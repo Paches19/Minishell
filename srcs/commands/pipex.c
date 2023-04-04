@@ -162,6 +162,8 @@ int	exec_command(t_pipe *pipe_s, char **new_environ)
 		free_matrix(split_cmd);
 		close(pipe_s->fd_in);
 		close(pipe_s->fd_out);
+		if (pipe_s->err == -1)
+			exit(EXIT_FAILURE);
 		// printf("\nerr: %d\n", pipe_s->err);
 	}
 	else
@@ -193,10 +195,7 @@ void	pipex(char **new_environ, t_pipe *pipe_s)
 		}
 		else if (pid == 0)
 		{
-			if (pipe_s->i == 0)
-				dup2(fd_in, STDIN_FILENO);
-			else
-				dup2(fd_in, STDIN_FILENO);
+			dup2(fd_in, STDIN_FILENO);
 			if (pipe_s->i == pipe_s->num_cmds - 1)
 				dup2(pipe_s->fd_out, STDOUT_FILENO);
 			else
@@ -230,14 +229,17 @@ void	free_pipe(t_pipe *pipe_s)
 	free_matrix(pipe_s->paths);
 }
 
-void	execute_commands(t_token *token_list, char **new_environ)
+int 	execute_commands(t_token *token_list, char **new_environ)
 {
 	t_pipe	pipe_s;
+	int		status;
 
 	pipe_s = initialize_pipe_struct(token_list, new_environ);
 	if (pipe_s.num_pipes == 0)
 		exec_command(&pipe_s, new_environ);
 	else
 		pipex(new_environ, &pipe_s);
+	status = pipe_s.status % 129;
 	free_pipe(&pipe_s);
+	return (status);
 }

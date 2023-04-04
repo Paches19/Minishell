@@ -111,6 +111,6 @@ char	**get_av(char **cmd);
 char	*try_access(char **cmd, char **paths);
 char	*get_paths_cmd_son_2(char ***paths, char ***cmd, char *const *argv, char **envp);
 void	error_cmd(int err);
-void	execute_commands(t_token *token_list, char **new_environ);
+int	execute_commands(t_token *token_list, char **new_environ);
 
 #endif
