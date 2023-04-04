@@ -27,5 +27,4 @@ int	exec_builtins(t_token *token_list, char ***new_environ, int status)
  	else if (ft_strcmp(token_list->token, "exit") == 0)
 		return (ft_exit(token_list, status));
  	return (ft_env(new_environ));
-  
 }

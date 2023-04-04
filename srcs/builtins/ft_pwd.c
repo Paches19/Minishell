@@ -26,3 +26,4 @@ int ft_pwd(void)
 		printf("%s\n", dir);
 		return (0);
 	}	
+}
