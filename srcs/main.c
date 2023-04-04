@@ -43,7 +43,7 @@ int	main(int argc, char **argv, char **env)
 		argc = 0;
 	if (argv)
 		argv = 0;
-	atexit(ft_leaks);
+	// atexit(ft_leaks);
 	splash();
 	signal(SIGINT, &renewprompt);  //Ctrl+C
 	signal(SIGQUIT, SIG_IGN); //Ctrl-\ ignored
@@ -78,7 +78,8 @@ int	main(int argc, char **argv, char **env)
 	}
 	if (inpt)
 		free(inpt);
-	free_tokens(&token_list);
+	// if (token_list)
+	// 	free_tokens(&token_list);
 	free_environ(&new_environ);
 	rl_clear_history();
 	printf("exit (with status %i)\n", status);
