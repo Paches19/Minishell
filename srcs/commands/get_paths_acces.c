@@ -6,12 +6,11 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 10:48:58 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/30 16:38:22 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/04 10:33:10 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
 
 char	**get_path(char **envp)
 {
@@ -80,7 +79,7 @@ char	*try_access(char **cmd, char **paths)
 	// printf("path[0]: %s\n", paths[0]);
 	if (cmd[0][0] == '/')  //Nos dan el path
 		return(*cmd);
-	while (paths && paths[++i] && err < 0)
+	while (paths[++i] && err < 0)
 	{
 		// printf("llego: %d\n", i);
 		if (file_path)

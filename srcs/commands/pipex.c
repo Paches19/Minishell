@@ -6,12 +6,11 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/31 11:13:20 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/31 12:47:46 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/04 10:42:32 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
 
 int	ft_count_pipes(t_token *token_list)
 {
@@ -59,12 +58,12 @@ char	**get_cmd(t_token *token_list, int n_pipes)
 	char	**cmd;
 	int		i;
 
-	cmd = (char	**) ft_calloc(n_pipes + 1, sizeof(char*));	
+	cmd = (char	**) ft_calloc(n_pipes + 2, sizeof(char*));	
 	t = token_list;
 	i = -1;
 	while (t)
 	{
-		if (t->type == COMMAND )
+		if (t->type == COMMAND)
 			cmd[++i] = ft_strdup(t->token);
 		else if (t->type == ARGUMENT)
 			cmd[i] = ft_strjoin_space(cmd[i], t->token);
@@ -145,7 +144,7 @@ t_pipe	initialize_pipe_struct(t_token *token_list, char **new_environ)
 	return (pipe_s);
 }
 
-void	exec_command(t_pipe *pipe_s, char **new_environ)
+int	exec_command(t_pipe *pipe_s, char **new_environ)
 {
 	pid_t	pid;
 	char	**split_cmd;
@@ -157,96 +156,81 @@ void	exec_command(t_pipe *pipe_s, char **new_environ)
 		dup2(pipe_s->fd_out, STDOUT_FILENO);
 		split_cmd = ft_split(pipe_s->cmd[pipe_s->i], ' ');
 		pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
+		// printf("file_path: %s\n", pipe_s->file_path);
 		pipe_s->err = execve(pipe_s->file_path, \
 		split_cmd, new_environ);
 		free_matrix(split_cmd);
 		close(pipe_s->fd_in);
 		close(pipe_s->fd_out);
-		if (pipe_s->err == -1)
-			exit(EXIT_FAILURE);
-			// printf("\nerr: %d\n", pipe_s.err);
+		// printf("\nerr: %d\n", pipe_s->err);
 	}
 	else
 		waitpid(pid, &pipe_s->status, 0);
-	
+	return (pipe_s->err);
 }
-
-// void	pipe_exec(char **new_environ, t_pipe *pipe_s)
-// {
-// 	pid_t	pid;
-
-// 	pipe_s->status = 0;
-// 	pipe_s->err = pipe(pipe_s->fd);
-// 	if (pipe_s->err < 0)
-// 		error_cmd(pipe_s->err);
-// 	pid = fork();
-// 	if (pid)
-// 	{
-// 		printf("pipeexec if\n");
-// 		close(pipe_s->fd[WRITE_END]);
-// 		dup2(pipe_s->fd[READ_END], STDIN_FILENO);
-// 		// close(pipe_s->fd[READ_END]);
-// 		waitpid(pid, &pipe_s->status, 0);
-// 	}
-// 	else
-// 	{
-// 		printf("pipeexec else\n");
-// 		close(pipe_s->fd[READ_END]);
-// 		dup2(pipe_s->fd[WRITE_END], STDOUT_FILENO);
-// 		pipe_s->file_path = try_access(pipe_s->cmd, pipe_s->paths);
-// 		printf("file_path: %s\n", pipe_s->file_path);
-// 		pipe_s->err = execve(pipe_s->file_path, 
-// 		ft_split(pipe_s->cmd[pipe_s->i], ' '), new_environ);
-// 		// close(pipe_s->fd[WRITE_END]);
-// 	}
-// }
 
 void	pipex(char **new_environ, t_pipe *pipe_s)
 {
-	int		fd[pipe_s->num_cmds];
-	int		j;
-	int		i;
+	int		fd_in;
 	pid_t	pid;
+	char	**split_cmds;
 
-	pipe_s->status = 0;
+	fd_in = pipe_s->fd_in;
 	pipe_s->i = -1;
+	// fprintf(stderr, "ncmds: %d\n", pipe_s->num_cmds);
 	while (++pipe_s->i < pipe_s->num_cmds)
 	{
-		if (pipe(fd + pipe_s->i * 2) < 0) 
+		if (pipe(pipe_s->fd) < 0)
 		{
-      		perror("couldn't pipe");
-     		 exit(EXIT_FAILURE);
+			perror("couldn't pipe");
+			exit(EXIT_FAILURE);
 		}
-	}
-	pipe_s->i = -1;
-	j = 0;
-	while (pipe_s->cmd[++pipe_s->i])
-	{
 		pid = fork();
-		if (!pid)
+		if (pid == -1)
 		{
-			if (pipe_s->cmd[pipe_s->i + 1])
-				dup2(fd[j + 1], STDOUT_FILENO);
-			if (j != 0)
-				dup2(fd[j - 2], STDIN_FILENO);
-		i = -1;
-		while (++i < 2 * pipe_s->num_cmds)
-			close(fd[i]);
-		pipe_s->file_path = try_access(pipe_s->cmd, pipe_s->paths);
-		pipe_s->err = execve(pipe_s->file_path, \
-		ft_split(pipe_s->cmd[pipe_s->i], ' '), new_environ);
+			perror("couldn't fork");
+			exit(EXIT_FAILURE);
 		}
-		j += 2;
+		else if (pid == 0)
+		{
+			if (pipe_s->i == 0)
+				dup2(fd_in, STDIN_FILENO);
+			else
+				dup2(fd_in, STDIN_FILENO);
+			if (pipe_s->i == pipe_s->num_cmds - 1)
+				dup2(pipe_s->fd_out, STDOUT_FILENO);
+			else
+				dup2(pipe_s->fd[WRITE_END], STDOUT_FILENO);
+			close(pipe_s->fd[READ_END]);
+			close(pipe_s->fd[WRITE_END]);
+			// fprintf(stderr, "i: %d\n", pipe_s->i);
+			split_cmds = ft_split(pipe_s->cmd[pipe_s->i], ' ');
+			pipe_s->file_path = try_access(split_cmds, pipe_s->paths);
+			// fprintf(stderr, "fp: %s\n", pipe_s->file_path);
+			// int h = -1;
+			// char **com = ft_split(pipe_s->cmd[pipe_s->i], ' ');
+			// while (com[++h])
+			// 	fprintf(stderr, "com: %s\n", com[h]);
+			pipe_s->err = execve(pipe_s->file_path, split_cmds, new_environ);
+			free_matrix(split_cmds);
+			free(pipe_s->file_path);
+		}
+		else
+		{
+			waitpid(pid, &pipe_s->status, 0);
+			close(pipe_s->fd[WRITE_END]);
+			fd_in = pipe_s->fd[READ_END];
+		}
 	}
-	i = -1;
-	while (++i < pipe_s->num_cmds)
-		close(fd[i]);
-	i = -1;
-	while (++i < pipe_s->num_cmds)
-		waitpid(pid, &pipe_s->status, 0);
 }
 
-int execute_commands(t_token *token_list, char **new_environ)
+void	free_pipe(t_pipe *pipe_s)
+{
+	free_matrix(pipe_s->cmd);
+	free_matrix(pipe_s->paths);
+}
+
+void	execute_commands(t_token *token_list, char **new_environ)
 {
 	t_pipe	pipe_s;
 
@@ -255,5 +239,5 @@ int execute_commands(t_token *token_list, char **new_environ)
 		exec_command(&pipe_s, new_environ);
 	else
 		pipex(new_environ, &pipe_s);
-	return (pipe_s.status % 129);
+	free_pipe(&pipe_s);
 }
