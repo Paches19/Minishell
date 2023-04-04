@@ -64,11 +64,40 @@ static int	read_special_char(char **input)
 		++(*input);
 	if (i > 1)
 		return (-2);
-	if (i == 0)
+	else if (i == 0)
 		return (1);
-	if (i == 1)
+	else if (i == 1)
 		return (ft_check_special(*input));
 	return (-1);
+}
+
+static int	ft_read_redirect(char ***input)
+{
+	int	len;
+	int	i;
+
+	len = 1;
+	i = -1;
+	while (!ft_isspace(***input) && ft_is_special(***input) && ++i > -1)
+		++(**input);
+	if (i > 1)
+		len = -2;
+	else if (i == 0)
+		len = 1;
+	else if (i == 1)
+		len = ft_check_special(**input);
+	while (ft_isspace(***input))
+		++**input;
+	if (len > 0)
+	{
+		len = 0;
+		while (**input && !ft_isspace(***input) && !ft_is_special(***input))
+		{
+			++**input;
+			++len;
+		}
+	}
+	return (len);
 }
 
 int	ft_reading_token(char **input)
@@ -84,6 +113,8 @@ int	ft_reading_token(char **input)
 			return (find_closing_quote(&input, **input));
 		else if(**input == '$')
 			return (ft_read_variable(&input));
+		else if (ft_is_redirect(**input))
+			return (ft_read_redirect(&input));
 		else if(ft_is_special(**input))
 			return (read_special_char(input));
 		else if (**input != '\0')

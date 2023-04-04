@@ -77,6 +77,7 @@ char	*ft_getenv(char *var_name, char **env);
 int		ft_is_special(char c);
 int		ft_isspace(char c);
 int		ft_is_quote(char c);
+int 	ft_is_redirect(char c);
 int		exec_builtins(t_token *token_list, char ***new_environ, int status);
 int		ft_builtins_errors(char e);
 int		ft_echo(t_token *token_list, int status);

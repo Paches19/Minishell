@@ -58,12 +58,12 @@ int	main(int argc, char **argv, char **env)
 		token_list = tokenize_input(inpt);
 		// print_token_list(&token_list);
 		ft_check_vars(&token_list, new_environ);
-		// print_token_list(&token_list);
-		if (token_list && token_list->type == BUILTIN)
-			status = exec_builtins(token_list, &new_environ, status);
+		print_token_list(&token_list);
 		// // sort_tokens(&token_list);
-		else
-			execute_commands(token_list, new_environ);
+		// if (token_list && token_list->type == BUILTIN)
+		// 	status = exec_builtins(token_list, &new_environ, status);
+		// else
+		// 	execute_commands(token_list, new_environ);
 		// printf("pree pipex\n");
 		// pipex(token_list, new_environ);
 		if (token_list && !ft_strcmp(token_list->token, "exit") && !lots_of_args(token_list))
