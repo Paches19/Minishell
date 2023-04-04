@@ -66,7 +66,7 @@ int	main(int argc, char **argv, char **env)
 			execute_commands(token_list, new_environ);
 		// printf("pree pipex\n");
 		// pipex(token_list, new_environ);
-		if (token_list && ft_strcmp(!token_list->token, "exit") && !lots_of_args(token_list))
+		if (token_list && !ft_strcmp(token_list->token, "exit") && !lots_of_args(token_list))
 			break;
 		// if (token_list && token_list->type == COMMAND)
 		// 	status = exec_nobuiltins(token_list, new_environ);
