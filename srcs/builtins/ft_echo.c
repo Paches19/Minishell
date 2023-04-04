@@ -12,13 +12,26 @@
 
 #include "../../include/minishell.h"
 
+static void	ft_write_echo(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		if (!ft_is_quote(s[i]))
+			printf("%c", s[i]);
+		i++;
+	}
+}
+
 static int	ft_printable_token(t_token *p)
 {
 	return (!(p->type == INPUT_REDIRECT || p->type == HEREDOC_REDIRECT || \
 	p->type == PIPE ||p->type == OUTPUT_REDIRECT ||p->type == APPEND_REDIRECT));
 }
 
-int ft_echo(t_token *token_list)
+int ft_echo(t_token *token_list, int status)
 {
 	t_token	*p;
 	int		nl;
@@ -28,13 +41,19 @@ int ft_echo(t_token *token_list)
 		nl = 1;
 	else
 	{
-		while ((!ft_strcmp(p->token, "-n") && ft_strlen(p->token) == 2))
+		while (p && (!ft_strcmp(p->token, "-n") && ft_strlen(p->token) == 2))
 			p = p->next;
 		nl = 0;
 	}
-	while (p && ft_printable_token(p))
+	while (p && (ft_printable_token(p) || !ft_strcmp(p->token, "$?")))
 	{
-		ft_putstr_fd(p->token, 1);
+		if (p->token)
+		{
+			if (!ft_strcmp(p->token, "$?"))
+				printf("%d", status);
+			else
+				ft_write_echo(p->token);
+		}
 		p = p->next;
 		if (p && p->token)
 			write(1, " ", 1);
@@ -42,6 +61,6 @@ int ft_echo(t_token *token_list)
 	if (nl == 0)
 		printf("\x1B[30m\x1B[47m%%\x1B[0m\x1B[0m\n");
 	else
-		write(1, "\n", 1);
+		printf("\n");
 	return (0);
 }

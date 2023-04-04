@@ -50,10 +50,10 @@ void	print_token_list(t_token **tokenize_list)
 	i = 0;
 	while(aux)
 	{
-		printf("token %d: \n", ++i);
+		printf("token[%d]: ", ++i);
 		//printf("\b\btoken: %s\n", aux->token);
-		printf("content: %s\n", aux->token);
-		printf("\b\btype: %s\n\n", ft_convert_type(aux->type));
+		printf("content [%s]", aux->token);
+		printf(" type [%s]\n", ft_convert_type(aux->type));
 		aux = aux->next;
 	}
 }

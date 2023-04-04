@@ -47,11 +47,16 @@ int ft_env_in_order(char **new_environ, int len)
 int ft_env(char ***new_environ)
 {
 	int	i;
+	int	len;
 
 	if (!(*new_environ) || !(*new_environ[0]))
 		return (-1);
 	i = -1;
 	while ((*new_environ)[++i])
-		printf("%s\n", (*new_environ)[i]);
+	{
+		len = ft_strlen((*new_environ)[i]);
+		if (ft_strcmp((*new_environ)[i] + len - 2, "''"))
+			printf("%s\n", (*new_environ)[i]);
+	}
 	return (0);
 }

@@ -6,12 +6,11 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 10:48:58 by adpachec          #+#    #+#             */
-/*   Updated: 2023/04/03 11:04:49 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/04 10:33:10 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
 
 char	**get_path(char **envp)
 {
@@ -22,6 +21,8 @@ char	**get_path(char **envp)
 	i = 0;
 	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5))
 		++i;
+	if (!envp[i])
+		return (NULL);
 	env = ft_substr(envp[i], 5, ft_strlen(envp[i]));
 	paths = ft_split(env, ':');
 	free (env);
@@ -76,6 +77,8 @@ char	*try_access(char **cmd, char **paths)
 	i = -1;
 	file_path = NULL;
 	// printf("path[0]: %s\n", paths[0]);
+	if (cmd[0][0] == '/')  //Nos dan el path
+		return(*cmd);
 	while (paths[++i] && err < 0)
 	{
 		// printf("llego: %d\n", i);

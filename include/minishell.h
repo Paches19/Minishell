@@ -6,10 +6,9 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 11:41:46 by adpachec          #+#    #+#             */
-/*   Updated: 2023/04/03 11:54:47 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/04 10:39:38 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -80,7 +79,7 @@ int		ft_isspace(char c);
 int		ft_is_quote(char c);
 int		exec_builtins(t_token *token_list, char ***new_environ, int status);
 int		ft_builtins_errors(char e);
-int		ft_echo(t_token *token_list);
+int		ft_echo(t_token *token_list, int status);
 int		ft_cd(t_token *token_list, char **env);
 int		ft_env_in_order(char **new_environ, int len);
 int		ft_env(char ***new_environ);
@@ -105,8 +104,6 @@ void	exit_error(int err);
 
 void	pipex(char **new_environ, t_pipe *pipe_s);
 void 	pipe_exec(char **new_environ, t_pipe *pipe_s, int in_fd);
-void	first_son(int fd1[2], t_token *token_list, char **new_environ);
-void	second_son(int fd1[2], t_token *token_list, char **new_environ);
 void	ft_init_matrix(const char *s, char c, char **res, size_t words);
 char	**get_path(char **envp);
 int		get_size_cmd(char **cmd);

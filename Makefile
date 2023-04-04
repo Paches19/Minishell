@@ -60,12 +60,12 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 # Compile library
 $(LIBRARY):
 	@echo "$(YELLOW)Compiling library...$(RESET)"
-	@$(MAKE) -C $(LIBDIR)
+	@$(MAKE) --no-print-directory -C $(LIBDIR)
 
 # Link program
 $(NAME): $(LIBRARY) $(OBJS)
 	@echo "$(YELLOW)Linking $(NAME)...$(RESET)"
-	@$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -lm -o $(NAME)
+	@$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -o $(NAME)
 	@echo "$(GREEN)$(NAME) created successfully!$(RESET)"
 
 # Clean object files and program
@@ -78,7 +78,7 @@ clean:
 # Clean everything and recompile
 fclean: clean
 	@echo "$(RED)Deleting library...$(RESET)"
-	@$(MAKE) fclean -C $(LIBDIR)
+	@$(MAKE) fclean --no-print-directory -C $(LIBDIR)
 	@echo "$(GREEN)Finished cleaning!$(RESET)"
 
 # Recompile everything

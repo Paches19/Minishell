@@ -34,12 +34,20 @@ static void	ft_update_var(char **token, char **env)
 		*token = ft_strdup("$");
 		return ;
 	}
+	if (!ft_strcmp(*token, "$?\0") && ft_strlen(*token) == 2)
+	{
+		free(*token);
+		*token = ft_strdup("$?");
+		return ;
+	}
 	env_var = ft_getenv(*token, env);
-	free(*token);
 	if (env_var != NULL)
+	{
+		free(*token);
 		*token = ft_strdup(env_var);
-	else
-		*token = NULL;
+	}
+	//else
+	//	*token = NULL;
 	free(env_var);
 }
 

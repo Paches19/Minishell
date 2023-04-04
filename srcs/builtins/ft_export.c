@@ -37,12 +37,12 @@ static void	ft_replace_var(char *token, char ***new_environ, int i)
 	(*new_environ)[i] = ft_strdup(token);
 }
 
-static void	ft_extend_env(char *token, char ***new_environ, int len)
+static void	ft_extend_env(char *token, char ***new_environ, int *len)
 {
 	char	**extend_env;
 	int		i;
 
-	extend_env = (char **)ft_calloc(len + 2, sizeof(char *));
+	extend_env = (char **)ft_calloc(*len + 2, sizeof(char *));
 	if (!extend_env)
 		return ;
 	i = -1;
@@ -54,11 +54,12 @@ static void	ft_extend_env(char *token, char ***new_environ, int len)
 	extend_env[i] = ft_strdup(token);
 	free(*new_environ);
 	*new_environ = extend_env;
+	++*len;
 }
 
-static void	ft_execute_export(char **token, char ***new_environ, int len)
+static void	ft_execute_export(char **token, char ***new_environ, int *len)
 {
-	int	i;
+	int		i;
 	char	*s;
 	
 	if (!ft_strchr(*token, '='))
@@ -94,10 +95,10 @@ int ft_export(t_token *token_list, char ***new_environ)
 			return (ft_builtins_errors('e'));
 		while (p->token[++i] && p->token[i] != '=')
 		{
-			if (!ft_isalpha(p->token[i]))
+			if (!ft_isalpha(p->token[i]) && p->token[i] != '_')
 				return (ft_builtins_errors('e'));
 		}
-		ft_execute_export(&p->token, new_environ, len);
+		ft_execute_export(&p->token, new_environ, &len);
 		p = p->next;
 	}
 	return (0);

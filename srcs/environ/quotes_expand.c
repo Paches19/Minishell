@@ -65,8 +65,10 @@ void	ft_update_double_quote(char **token, char **env)
 	char	**matrix;
 	char	*expand_var;
 	int		i;
+	char	*dollar;
 
-	if (!ft_strchr(*token, '$'))
+	dollar = ft_strchr(*token, '$');
+	if (!dollar || (dollar && *(dollar+1) == ' '))
 		return ;
 	matrix = ft_split_var(*token);
 	free(*token);
