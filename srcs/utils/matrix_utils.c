@@ -12,6 +12,22 @@
 
 #include "../../include/minishell.h"
 
+void	free_matrix(char **matrix)
+{
+	int	i;
+
+	if(!matrix || !*(matrix))
+		return ;
+	i = -1;
+	while(matrix[++i])
+	{
+		free(matrix[i]);
+		matrix[i] = NULL;
+	}
+	free(matrix);
+	matrix = NULL;
+}
+
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
 	char			*str;
@@ -63,19 +79,6 @@ size_t	ft_words(const char *s, char c)
 	return (words);
 }
 
-void	ft_free_matrix(char **matrix)
-{
-	size_t	i;
-
-	i = 0;
-	while (matrix[i])
-	{
-		free(matrix[i]);
-		matrix[i] = NULL;
-		++i;
-	}
-	free(matrix);
-}
 
 void	ft_init_matrix(const char *s, char c, char **res, size_t words)
 {

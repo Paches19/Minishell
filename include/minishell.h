@@ -113,5 +113,6 @@ char	*try_access(char **cmd, char **paths);
 char	*get_paths_cmd_son_2(char ***paths, char ***cmd, char *const *argv, char **envp);
 void	error_cmd(int err);
 int		execute_commands(t_token *token_list, char **new_environ);
+int		exec_builtins_pipex(char *token, char ***new_environ, int status);
 
 #endif

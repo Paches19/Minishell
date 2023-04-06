@@ -29,6 +29,7 @@ int ft_cd(t_token *token_list, char **env)
 	else
 		dir = ft_strtrim(p->token, " ");
 	i = chdir(dir);
+	free (dir);
 	if (i == -1)
 	{
 		perror("cd");

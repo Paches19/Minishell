@@ -28,7 +28,8 @@ static void	ft_write_echo(char *s)
 static int	ft_printable_token(t_token *p)
 {
 	return (!(p->type == INPUT_REDIRECT || p->type == HEREDOC_REDIRECT || \
-	p->type == PIPE ||p->type == OUTPUT_REDIRECT ||p->type == APPEND_REDIRECT));
+	p->type == PIPE || p->type == OUTPUT_REDIRECT || \
+	p->type == APPEND_REDIRECT));
 }
 
 int ft_echo(t_token *token_list, int status)

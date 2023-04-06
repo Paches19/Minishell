@@ -52,6 +52,12 @@ char	*ft_strjoin_space(char *s1, char *s2)
 	return (str);
 }
 
+int	ft_is_redirect_token(t_token *token)
+{
+	return (token->type == INPUT_REDIRECT || token->type == OUTPUT_REDIRECT \
+	|| token->type == APPEND_REDIRECT || token->type == HEREDOC_REDIRECT);
+}
+
 char	**get_cmd(t_token *token_list, int n_pipes)
 {
 	t_token	*t;
@@ -64,10 +70,17 @@ char	**get_cmd(t_token *token_list, int n_pipes)
 	while (t)
 	{
 		if (t->type == COMMAND)
+		{
 			cmd[++i] = ft_strdup(t->token);
-		else if (t->type == ARGUMENT)
-			cmd[i] = ft_strjoin_space(cmd[i], t->token);
-		t = t->next;
+			t = t->next;
+			while (t && t->type != PIPE && !ft_is_redirect_token(t))
+			{
+				cmd[i] = ft_strjoin_space(cmd[i], t->token);
+				t = t->next;
+			}
+		}
+		else
+			t = t->next;
 	}
 	return (cmd);
 }
@@ -85,15 +98,15 @@ int	get_infile(t_token *token_list)
 	}
 	if (t && t->type == INPUT_REDIRECT)
 	{
-		if (access(t->next->token, F_OK))
+		if (access(t->token, F_OK))
 		{
 			error_cmd(errno);
 			return (STDIN_FILENO);
 		}
-		return (open(t->next->token, O_RDONLY));
+		return (open(t->token, O_RDONLY));
 	}
 	else if (t && t->type == HEREDOC_REDIRECT)
-		return (open(t->next->token, O_RDONLY));
+		return (open(t->token, O_RDONLY));
 	return (STDIN_FILENO);
 }
 
@@ -109,10 +122,10 @@ int	get_outfile(t_token *token_list)
 		t = t->next;
 	}
 	if (t && t->type == OUTPUT_REDIRECT)
-		return (open(t->next->token, O_WRONLY | O_CREAT | O_TRUNC, \
+		return (open(t->token, O_WRONLY | O_CREAT | O_TRUNC, \
 		S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH));
 	else if (t && t->type == APPEND_REDIRECT)
-		return (open(t->next->token, O_WRONLY | O_CREAT | O_APPEND, \
+		return (open(t->token, O_WRONLY | O_CREAT | O_APPEND, \
 		S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH));
 	return (STDOUT_FILENO);
 }
@@ -156,7 +169,6 @@ int	exec_command(t_pipe *pipe_s, char **new_environ)
 		dup2(pipe_s->fd_out, STDOUT_FILENO);
 		split_cmd = ft_split(pipe_s->cmd[pipe_s->i], ' ');
 		pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
-		// printf("file_path: %s\n", pipe_s->file_path);
 		pipe_s->err = execve(pipe_s->file_path, \
 		split_cmd, new_environ);
 		free_matrix(split_cmd);
@@ -164,7 +176,6 @@ int	exec_command(t_pipe *pipe_s, char **new_environ)
 		close(pipe_s->fd_out);
 		if (pipe_s->err == -1)
 			exit(EXIT_FAILURE);
-		// printf("\nerr: %d\n", pipe_s->err);
 	}
 	else
 		waitpid(pid, &pipe_s->status, 0);
@@ -202,7 +213,6 @@ void	pipex(char **new_environ, t_pipe *pipe_s)
 				dup2(pipe_s->fd[WRITE_END], STDOUT_FILENO);
 			close(pipe_s->fd[READ_END]);
 			close(pipe_s->fd[WRITE_END]);
-			// fprintf(stderr, "i: %d\n", pipe_s->i);
 			split_cmds = ft_split(pipe_s->cmd[pipe_s->i], ' ');
 			pipe_s->file_path = try_access(split_cmds, pipe_s->paths);
 			// fprintf(stderr, "fp: %s\n", pipe_s->file_path);
@@ -213,6 +223,11 @@ void	pipex(char **new_environ, t_pipe *pipe_s)
 			pipe_s->err = execve(pipe_s->file_path, split_cmds, new_environ);
 			free_matrix(split_cmds);
 			free(pipe_s->file_path);
+			if (pipe_s->err < 0)
+			{
+				fprintf(stderr, "err: %d\n", pipe_s->err);
+				exit( pipe_s->err);
+			}		
 		}
 		else
 		{
@@ -234,12 +249,25 @@ int 	execute_commands(t_token *token_list, char **new_environ)
 	t_pipe	pipe_s;
 	int		status;
 
-	pipe_s = initialize_pipe_struct(token_list, new_environ);
+	status = 0;
 	if (pipe_s.num_pipes == 0)
-		exec_command(&pipe_s, new_environ);
+	{
+		if (token_list && token_list->type == BUILTIN)
+			exec_builtins(token_list, &new_environ, status);
+		else
+		{
+			pipe_s = initialize_pipe_struct(token_list, new_environ);
+			exec_command(&pipe_s, new_environ);
+			free_pipe(&pipe_s);
+			status = pipe_s.status % 129;
+		}
+	}
 	else
+	{
+		pipe_s = initialize_pipe_struct(token_list, new_environ);
 		pipex(new_environ, &pipe_s);
-	status = pipe_s.status % 129;
-	free_pipe(&pipe_s);
+		free_pipe(&pipe_s);
+		status = pipe_s.status % 129;
+	}
 	return (status);
 }

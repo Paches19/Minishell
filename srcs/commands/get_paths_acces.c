@@ -76,12 +76,12 @@ char	*try_access(char **cmd, char **paths)
 	err = -1;
 	i = -1;
 	file_path = NULL;
-	// printf("path[0]: %s\n", paths[0]);
-	if (cmd[0][0] == '/')  //Nos dan el path
+	if (!cmd)
+		return (NULL);
+	if (*cmd && **cmd == '/')  //Nos dan el path
 		return(*cmd);
 	while (paths && paths[++i] && err < 0)
 	{
-		// printf("llego: %d\n", i);
 		if (file_path)
 			free(file_path);
 		if (paths[i][ft_strlen(paths[i]) - 1] != '/')
@@ -95,8 +95,6 @@ char	*try_access(char **cmd, char **paths)
 		write(2, ": command not found\n", 20);
 		free(file_path);
 		file_path = NULL;
-		//return ("^");
-		//exit(127);
 	}
 	return (file_path);
 }

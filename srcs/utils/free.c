@@ -12,22 +12,6 @@
 
 #include "../../include/minishell.h"
 
-void	free_matrix(char **matrix)
-{
-	int	i;
-
-	if(!matrix || !*(matrix))
-		return ;
-	i = -1;
-	while(matrix[++i])
-	{
-		free(matrix[i]);
-		matrix[i] = NULL;
-	}
-	free(matrix);
-	matrix = NULL;
-}
-
 void	free_environ(char ***e)
 {
 	int	i;
