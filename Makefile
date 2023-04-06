@@ -23,8 +23,15 @@ LIBDIR := libft
 # Compiler and flags
 CC := gcc
 CFLAGS := -Wall -Wextra -Werror
-INCLUDES := -I$(INCDIR)
-LDFLAGS := -L ./libft/ -lft -lreadline
+
+# Para los MAC de 42
+INCLUDES := -I$(INCDIR) -I/Users/jutrera-/.brew/opt/readline/include
+LDFLAGS := -L ./libft/ -lft -L/Users/jutrera-/.brew/opt/readline/lib/ -lreadline
+
+# Para mi Windows
+# INCLUDES := -I$(INCDIR)
+# LDFLAGS := -L ./libft/ -lft -lreadline
+
 LEAKS := -fsanitize=address -g
 
 # Source files

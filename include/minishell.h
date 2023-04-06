@@ -53,7 +53,7 @@ typedef struct s_token
 	t_token_type	type;
 	struct s_token	*next;
 	struct s_token	*prev;
-}                 t_token;
+}	t_token;
 
 typedef struct s_pipe
 {
@@ -70,49 +70,74 @@ typedef struct s_pipe
 	int		num_cmds;
 }			t_pipe;
 
-t_token	*tokenize_input(char *input);
-void	free_tokens(t_token **token_list);
-void	free_matrix(char **matrix);
-char	*ft_getenv(char *var_name, char **env);
-int		ft_is_special(char c);
-int		ft_isspace(char c);
-int		ft_is_quote(char c);
-int 	ft_is_redirect(char c);
+// ******************************* builtins
+//	L ft_builtins.c
 int		exec_builtins(t_token *token_list, char ***new_environ, int status);
-int		ft_builtins_errors(char e);
-int		ft_echo(t_token *token_list, int status);
+//	L ft_cd.c
 int		ft_cd(t_token *token_list, char **env);
+//	L ft_echo.c
+int		ft_echo(t_token *token_list, int status);
+//	L ft_env.c
 int		ft_env_in_order(char **new_environ, int len);
 int		ft_env(char ***new_environ);
+//	L ft_exit.c
 int		ft_exit(t_token *token_list, int status);
+//	L ft_export.c
 int		ft_export(t_token *token_list, char ***new_environ);
+//	L ft_pwd.c
 int		ft_pwd(void);
+//	L ft_unseat.c
 int		ft_unset(t_token *token_list, char ***new_environ);
-void	ft_check_vars(t_token **token_list, char **env);
-void	ft_update_double_quote(char **token, char **env);
-char	**copy_environ(char **source);
-void	free_environ(char ***e);
-void	splash(void);
-void	sort_tokens(t_token **token_list);
-void	renewprompt(int signal);
-void	ft_leaks(void);
-int		ft_reading_token(char **input);
-t_token	*ft_token_last(t_token *lst);
-void	ft_token_add_back(t_token **lst, t_token *new);
-void	print_token_list(t_token **tokenize_list);
-int		exit_error_token(int err, char *token);
-void	exit_error(int err);
-
-void	pipex(char **new_environ, t_pipe *pipe_s);
-void 	pipe_exec(char **new_environ, t_pipe *pipe_s, int in_fd);
-void	ft_init_matrix(const char *s, char c, char **res, size_t words);
+// ******************************* commands
+//	L get_paths_access.c
 char	**get_path(char **envp);
 int		get_size_cmd(char **cmd);
 char	**get_av(char **cmd);
 char	*try_access(char **cmd, char **paths);
-char	*get_paths_cmd_son_2(char ***paths, char ***cmd, char *const *argv, char **envp);
-void	error_cmd(int err);
+//	L pipex.c
 int		execute_commands(t_token *token_list, char **new_environ);
-int		exec_builtins_pipex(char *token, char ***new_environ, int status);
-
+// ******************************* environ
+//	L get_environ.c
+char	**copy_environ(char **source);
+//	L get_vars.c
+char	*ft_getenv(char *var_name, char **env);
+//	L quotes_expand.c
+void	ft_update_double_quote(char **token, char **env);
+//	L var_expand.c
+void	ft_check_vars(t_token **token_list, char **env);
+// ******************************* prompt
+//	L prompt.c
+void	renewprompt(int signal);
+// ******************************* style
+//	L splash.c
+void	splash(void);
+// ******************************* tokenization
+//	L ft_is.c
+int		ft_is_special(char c);
+int		ft_isspace(char c);
+int		ft_is_quote(char c);
+int 	ft_is_redirect(char c);
+int 	ft_is_builtin(char *s);
+//	L read_token.c
+int		ft_reading_token(char **input);
+//	L sort_tokens.c
+void	sort_tokens(t_token **token_list);
+//	L tokenize_input.c
+t_token	*tokenize_input(char *input);
+//	L tokenize_utils.c
+t_token	*ft_token_last(t_token *lst);
+void	ft_token_add_back(t_token **lst, t_token *new);
+void	print_token_list(t_token **tokenize_list);
+// ******************************* utils
+//	L free.c
+void	free_matrix(char **matrix);
+void	free_environ(char ***e);
+void	free_tokens(t_token **token_list);
+//	L matrix_utils.c
+void	ft_init_matrix(const char *s, char c, char **res, size_t words);
+//	L ft_errors.c
+int		ft_builtins_errors(char e);
+int		exit_error_token(int err, char *token);
+void	error_cmd(int err);
+void	exit_error(int err);
 #endif

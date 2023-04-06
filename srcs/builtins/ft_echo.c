@@ -20,15 +20,15 @@ static void	ft_write_echo(char *s)
 	while (s[i])
 	{
 		if (!ft_is_quote(s[i]))
-			printf("%c", s[i]);
+			ft_putchar_fd(s[i], STDOUT_FILENO);
 		i++;
 	}
 }
 
 static int	ft_printable_token(t_token *p)
 {
-	return (!(p->type == INPUT_REDIRECT || p->type == HEREDOC_REDIRECT || \
-	p->type == PIPE || p->type == OUTPUT_REDIRECT || \
+	return (!(p->type == INPUT_REDIRECT || p->type == HEREDOC_REDIRECT ||
+	p->type == PIPE || p->type == OUTPUT_REDIRECT ||
 	p->type == APPEND_REDIRECT));
 }
 
@@ -51,17 +51,17 @@ int ft_echo(t_token *token_list, int status)
 		if (p->token)
 		{
 			if (!ft_strcmp(p->token, "$?"))
-				printf("%d", status);
+				ft_putnbr_fd(status, STDOUT_FILENO);
 			else
 				ft_write_echo(p->token);
 		}
 		p = p->next;
 		if (p && p->token)
-			write(1, " ", 1);
+			ft_putchar_fd(' ', STDOUT_FILENO);
 	}
 	if (nl == 0)
-		printf("\x1B[30m\x1B[47m%%\x1B[0m\x1B[0m\n");
+		ft_putstr_fd("\x1B[30m\x1B[47m%\x1B[0m\x1B[0m\n", STDOUT_FILENO);
 	else
-		printf("\n");
+		ft_putchar_fd('\n', STDOUT_FILENO);
 	return (0);
 }

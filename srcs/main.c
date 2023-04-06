@@ -12,7 +12,12 @@
 
 #include "../include/minishell.h"
 
-int	lots_of_args(t_token *token_list)
+void	ft_leaks(void)
+{
+	system("leaks -q minishell");
+}
+
+static int	lots_of_args(t_token *token_list)
 {
 	int	i;
 	t_token	*p;
@@ -43,7 +48,7 @@ int	main(int argc, char **argv, char **env)
 		argc = 0;
 	if (argv)
 		argv = 0;
-	// atexit(ft_leaks);
+	//atexit(ft_leaks);
 	splash();
 	signal(SIGINT, &renewprompt);  //Ctrl+C
 	signal(SIGQUIT, SIG_IGN); //Ctrl-\ ignored
@@ -56,23 +61,14 @@ int	main(int argc, char **argv, char **env)
 		if (*inpt != 0)
 			add_history(inpt);
 		token_list = tokenize_input(inpt);
-		// print_token_list(&token_list);
+		//print_token_list(&token_list);
 		ft_check_vars(&token_list, new_environ);
-		// print_token_list(&token_list);
-		// // sort_tokens(&token_list);
-		// if (token_list && token_list->type == BUILTIN)
-		// 	status = exec_builtins(token_list, &new_environ, status);
-		// else
+		//print_token_list(&token_list);
 		status = execute_commands(token_list, new_environ);
-		// fprintf(stderr, "status: %d\n", status);
 		if (token_list && !ft_strcmp(token_list->token, "exit") && !lots_of_args(token_list))
 			break;
-		// if (token_list && token_list->type == COMMAND)
-		// 	status = exec_nobuiltins(token_list, new_environ);
 		free(inpt);
-		// print_token_list(&token_list);
 		free_tokens(&token_list);
-		// printf("pree leer\n");
 		inpt = readline("minishell -> ");
 	}
 	if (inpt)

@@ -23,7 +23,7 @@ int ft_pwd(void)
 	}
 	else
 	{
-		printf("%s\n", dir);
+		ft_putstr_fd(dir, 1);
 		return (0);
 	}	
 }

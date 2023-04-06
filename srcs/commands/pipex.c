@@ -12,7 +12,7 @@
 
 #include "../../include/minishell.h"
 
-int	ft_count_pipes(t_token *token_list)
+static int	ft_count_pipes(t_token *token_list)
 {
 	int		num;
 	t_token	*t;
@@ -28,7 +28,7 @@ int	ft_count_pipes(t_token *token_list)
 	return (num);
 }
 
-char	*ft_strjoin_space(char *s1, char *s2)
+static char	*ft_strjoin_space(char *s1, char *s2)
 {
 	char	*str;
 	size_t	i;
@@ -52,13 +52,13 @@ char	*ft_strjoin_space(char *s1, char *s2)
 	return (str);
 }
 
-int	ft_is_redirect_token(t_token *token)
+static int	ft_is_redirect_token(t_token *token)
 {
 	return (token->type == INPUT_REDIRECT || token->type == OUTPUT_REDIRECT \
 	|| token->type == APPEND_REDIRECT || token->type == HEREDOC_REDIRECT);
 }
 
-char	**get_cmd(t_token *token_list, int n_pipes)
+static char	**get_cmd(t_token *token_list, int n_pipes)
 {
 	t_token	*t;
 	char	**cmd;
@@ -69,7 +69,7 @@ char	**get_cmd(t_token *token_list, int n_pipes)
 	i = -1;
 	while (t)
 	{
-		if (t->type == COMMAND)
+		if (t->type == COMMAND || t->type == BUILTIN)
 		{
 			cmd[++i] = ft_strdup(t->token);
 			t = t->next;
@@ -85,7 +85,7 @@ char	**get_cmd(t_token *token_list, int n_pipes)
 	return (cmd);
 }
 
-int	get_infile(t_token *token_list)
+static int	get_infile(t_token *token_list)
 {
 	t_token	*t;
 
@@ -110,7 +110,7 @@ int	get_infile(t_token *token_list)
 	return (STDIN_FILENO);
 }
 
-int	get_outfile(t_token *token_list)
+static int	get_outfile(t_token *token_list)
 {
 	t_token	*t;
 
@@ -130,7 +130,7 @@ int	get_outfile(t_token *token_list)
 	return (STDOUT_FILENO);
 }
 
-int	get_num_cmds(char **cmd)
+static int	get_num_cmds(char **cmd)
 {
 	int	i;
 
@@ -141,7 +141,7 @@ int	get_num_cmds(char **cmd)
 	return (i);
 }
 
-t_pipe	initialize_pipe_struct(t_token *token_list, char **new_environ)
+static t_pipe	initialize_pipe_struct(t_token *token_list, char **new_environ)
 {
     t_pipe  pipe_s;
 
@@ -157,10 +157,11 @@ t_pipe	initialize_pipe_struct(t_token *token_list, char **new_environ)
 	return (pipe_s);
 }
 
-int	exec_command(t_pipe *pipe_s, char **new_environ)
+static int	exec_command(t_pipe *pipe_s, char **new_environ)
 {
 	pid_t	pid;
 	char	**split_cmd;
+	t_token	*token_list;
 
 	pid = fork();
 	if (!pid)
@@ -168,9 +169,18 @@ int	exec_command(t_pipe *pipe_s, char **new_environ)
 		dup2(pipe_s->fd_in, STDIN_FILENO);
 		dup2(pipe_s->fd_out, STDOUT_FILENO);
 		split_cmd = ft_split(pipe_s->cmd[pipe_s->i], ' ');
-		pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
-		pipe_s->err = execve(pipe_s->file_path, \
-		split_cmd, new_environ);
+		if (ft_is_builtin(split_cmd[0]))
+		{
+			token_list = tokenize_input(pipe_s->cmd[pipe_s->i]);
+			ft_check_vars(&token_list, new_environ);
+			pipe_s->err = exec_builtins(token_list, &new_environ, pipe_s->status);
+			free_tokens(&token_list);
+		}
+		else
+		{
+			pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
+			pipe_s->err = execve(pipe_s->file_path, split_cmd, new_environ);
+		}
 		free_matrix(split_cmd);
 		close(pipe_s->fd_in);
 		close(pipe_s->fd_out);
@@ -182,11 +192,12 @@ int	exec_command(t_pipe *pipe_s, char **new_environ)
 	return (pipe_s->err);
 }
 
-void	pipex(char **new_environ, t_pipe *pipe_s)
+static void	pipex(t_pipe *pipe_s, char **new_environ)
 {
 	int		fd_in;
 	pid_t	pid;
 	char	**split_cmds;
+	t_token	*token_list;
 
 	fd_in = pipe_s->fd_in;
 	pipe_s->i = -1;
@@ -214,18 +225,24 @@ void	pipex(char **new_environ, t_pipe *pipe_s)
 			close(pipe_s->fd[READ_END]);
 			close(pipe_s->fd[WRITE_END]);
 			split_cmds = ft_split(pipe_s->cmd[pipe_s->i], ' ');
-			pipe_s->file_path = try_access(split_cmds, pipe_s->paths);
-			// fprintf(stderr, "fp: %s\n", pipe_s->file_path);
-			// int h = -1;
-			// char **com = ft_split(pipe_s->cmd[pipe_s->i], ' ');
-			// while (com[++h])
-			// 	fprintf(stderr, "com: %s\n", com[h]);
-			pipe_s->err = execve(pipe_s->file_path, split_cmds, new_environ);
+			if (ft_is_builtin(split_cmds[0]))
+			{
+				token_list = tokenize_input(pipe_s->cmd[pipe_s->i]);
+				ft_check_vars(&token_list, new_environ);
+				pipe_s->err = exec_builtins(token_list, &new_environ, pipe_s->status);
+				free_tokens(&token_list);
+			}
+			else
+			{
+				pipe_s->file_path = try_access(split_cmds, pipe_s->paths);
+				pipe_s->err = execve(pipe_s->file_path, split_cmds, new_environ);
+			}
 			free_matrix(split_cmds);
-			free(pipe_s->file_path);
 			if (pipe_s->err < 0)
 			{
-				fprintf(stderr, "err: %d\n", pipe_s->err);
+				ft_putstr_fd("err: ", STDERR_FILENO);
+				ft_putnbr_fd(pipe_s->err, STDERR_FILENO);
+				ft_putchar_fd('\n', STDERR_FILENO);
 				exit( pipe_s->err);
 			}		
 		}
@@ -238,36 +255,24 @@ void	pipex(char **new_environ, t_pipe *pipe_s)
 	}
 }
 
-void	free_pipe(t_pipe *pipe_s)
+static void	free_pipe(t_pipe *pipe_s)
 {
 	free_matrix(pipe_s->cmd);
 	free_matrix(pipe_s->paths);
 }
 
-int 	execute_commands(t_token *token_list, char **new_environ)
+int execute_commands(t_token *token_list, char **new_environ)
 {
 	t_pipe	pipe_s;
 	int		status;
 
 	status = 0;
+	pipe_s = initialize_pipe_struct(token_list, new_environ);
 	if (pipe_s.num_pipes == 0)
-	{
-		if (token_list && token_list->type == BUILTIN)
-			exec_builtins(token_list, &new_environ, status);
-		else
-		{
-			pipe_s = initialize_pipe_struct(token_list, new_environ);
-			exec_command(&pipe_s, new_environ);
-			free_pipe(&pipe_s);
-			status = pipe_s.status % 129;
-		}
-	}
+		exec_command(&pipe_s, new_environ);
 	else
-	{
-		pipe_s = initialize_pipe_struct(token_list, new_environ);
-		pipex(new_environ, &pipe_s);
-		free_pipe(&pipe_s);
-		status = pipe_s.status % 129;
-	}
+		pipex(&pipe_s, new_environ);
+	free_pipe(&pipe_s);
+	status = pipe_s.status % 129;
 	return (status);
 }

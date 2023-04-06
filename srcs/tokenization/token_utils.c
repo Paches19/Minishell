@@ -58,25 +58,6 @@ void	print_token_list(t_token **tokenize_list)
 	}
 }
 
-void	free_tokens(t_token **token_list) 
-{
-	t_token *current_node;
-	t_token *next_node;
-
-	if (!token_list || !(*token_list))
-		return;
-	current_node = *token_list;
-	while (current_node != NULL) 
-	{
-		next_node = current_node->next;
-		if (current_node->token != NULL)
-			free(current_node->token);
-		free(current_node);
-		current_node = next_node;
-	}
-	*token_list = NULL;
-}
-
 t_token	*ft_token_last(t_token *lst)
 {
 	t_token	*aux;

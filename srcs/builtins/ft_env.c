@@ -39,7 +39,10 @@ int ft_env_in_order(char **new_environ, int len)
 	}
 	i = -1;
 	while (temp[++i])
-		printf("%s\n", temp[i]);
+	{
+		ft_putstr_fd(temp[i], STDOUT_FILENO);
+		ft_putchar_fd('\n', STDOUT_FILENO);
+	}
 	free_environ(&temp);
 	return (0);
 }
@@ -56,7 +59,10 @@ int ft_env(char ***new_environ)
 	{
 		len = ft_strlen((*new_environ)[i]);
 		if (ft_strcmp((*new_environ)[i] + len - 2, "''"))
-			printf("%s\n", (*new_environ)[i]);
+		{
+			ft_putstr_fd((*new_environ)[i], STDOUT_FILENO);
+			ft_putchar_fd('\n', STDOUT_FILENO);
+		}
 	}
 	return (0);
 }

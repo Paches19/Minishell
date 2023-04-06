@@ -98,13 +98,3 @@ char	*try_access(char **cmd, char **paths)
 	}
 	return (file_path);
 }
-
-char	*get_paths_cmd_son_2(char ***paths, char ***cmd, char *const *argv, char **envp)
-{
-	char	*file_path;
-
-	paths[0] = get_path(envp);
-	cmd[0] = ft_split(argv[3], ' ');
-	file_path = try_access(cmd[0], paths[0]);
-	return (file_path);
-}

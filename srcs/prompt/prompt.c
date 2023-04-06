@@ -20,8 +20,3 @@ void renewprompt(int signal)
 	rl_on_new_line();
 	rl_redisplay();
 }
-
-void	ft_leaks(void)
-{
-	system("leaks -q minishell");
-}

@@ -1,16 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   token_error.c                                      :+:      :+:    :+:   */
+/*   ft_errors.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/27 13:22:45 by adpachec          #+#    #+#             */
-/*   Updated: 2023/03/27 13:23:01 by adpachec         ###   ########.fr       */
+/*   Created: 2023/03/24 12:53:17 by adpachec          #+#    #+#             */
+/*   Updated: 2023/03/24 13:27:28 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+
+int	ft_builtins_errors(char e)
+{
+	if (e == 'u')
+		printf("unset: not enough arguments\n");
+	if (e == 'e')
+		printf("export: bad identifier\n");
+	return (1);
+}
+
+void	error_cmd(int err)
+{
+	perror(strerror(err));
+	// exit(err);
+}
 
 void	exit_error(int err)
 {

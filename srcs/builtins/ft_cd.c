@@ -21,7 +21,7 @@ int ft_cd(t_token *token_list, char **env)
 	p = token_list->next;
 	if (p && p->next && p->next->token[0] != '\0')
 	{
-		printf("cd : Too many arguments\n");
+		write(2,"cd : Too many arguments\n", 24);
 		return (1);
 	}
 	if (!p)

@@ -12,18 +12,6 @@
 
 #include "../../include/minishell.h"
 
-// char	*varname(char *s, char **new_environ)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	while (new_environ[i] && ft_strstr(new_environ[i], s + 1) == 0)
-// 		i++;
-// 	if (new_environ[i])
-// 		return(ft_strchr(new_environ[i], '=') + 1);
-// 	return (0);
-// }
-
 static void	ft_update_var(char **token, char **env)
 {
 	char *env_var;

@@ -31,3 +31,14 @@ int ft_is_redirect(char c)
 {
     return (c == '<' || c == '>');
 }
+
+int ft_is_builtin(char *s)
+{
+    return ((ft_strcmp(s, "echo") == 0) ||
+        (ft_strcmp(s, "cd") == 0) ||
+        (ft_strcmp(s, "pwd") == 0) ||
+ 		(ft_strcmp(s, "export") == 0) ||
+ 		(ft_strcmp(s, "unset") == 0) ||
+ 		(ft_strcmp(s, "exit") == 0) ||
+		(ft_strcmp(s, "env") == 0));
+}
