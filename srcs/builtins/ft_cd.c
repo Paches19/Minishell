@@ -12,7 +12,7 @@
 
 #include "../../include/minishell.h"
 
-int ft_cd(t_token *token_list, char **env)
+int ft_cd(t_token *token_list, char **env, int is_pipe)
 {
 	char	*dir;
 	t_token	*p;
@@ -21,7 +21,9 @@ int ft_cd(t_token *token_list, char **env)
 	p = token_list->next;
 	if (p && p->next && p->next->token[0] != '\0')
 	{
-		write(2,"cd : Too many arguments\n", 24);
+		write(STDERR_FILENO,"cd : Too many arguments\n", 24);
+		if (is_pipe)
+			exit(1);
 		return (1);
 	}
 	if (!p)
@@ -33,7 +35,11 @@ int ft_cd(t_token *token_list, char **env)
 	if (i == -1)
 	{
 		perror("cd");
+		if (is_pipe)
+			exit(1);
 		return (1);
 	}
+	if (is_pipe)
+		exit(0);
 	return (0);
 }

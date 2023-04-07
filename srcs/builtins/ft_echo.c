@@ -32,7 +32,7 @@ static int	ft_printable_token(t_token *p)
 	p->type == APPEND_REDIRECT));
 }
 
-int ft_echo(t_token *token_list, int status)
+int ft_echo(t_token *token_list, int status, int is_pipe)
 {
 	t_token	*p;
 	int		nl;
@@ -63,5 +63,7 @@ int ft_echo(t_token *token_list, int status)
 		ft_putstr_fd("\x1B[30m\x1B[47m%\x1B[0m\x1B[0m\n", STDOUT_FILENO);
 	else
 		ft_putchar_fd('\n', STDOUT_FILENO);
+	if (is_pipe)
+		exit (0);
 	return (0);
 }

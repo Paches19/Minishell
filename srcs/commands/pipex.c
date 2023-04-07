@@ -157,50 +157,75 @@ static t_pipe	initialize_pipe_struct(t_token *token_list, char **new_environ)
 	return (pipe_s);
 }
 
+static void	ft_dup_fd(t_pipe **pipe_s)
+{
+	if (pipe_s[0]->fd_in != 0)
+	{
+		dup2(pipe_s[0]->fd_in, STDIN_FILENO);
+		close(pipe_s[0]->fd_in);
+	}
+	if (pipe_s[0]->fd_out != 1)
+	{
+		dup2(pipe_s[0]->fd_out, STDOUT_FILENO);
+		close(pipe_s[0]->fd_out);
+	}
+}
+
+static void	ft_close_out(int stdout_cpy)
+{
+	close(STDOUT_FILENO);
+	dup2(stdout_cpy, STDOUT_FILENO);
+	close(stdout_cpy);
+}
+
 static int	exec_command(t_pipe *pipe_s, char **new_environ)
 {
 	pid_t	pid;
 	char	**split_cmd;
 	t_token	*token_list;
+	int		stdout_cpy;
 
-	pid = fork();
-	if (!pid)
+	split_cmd = ft_split(pipe_s->cmd[pipe_s->i], ' ');
+	if (ft_is_builtin(split_cmd[0]))
 	{
-		dup2(pipe_s->fd_in, STDIN_FILENO);
-		dup2(pipe_s->fd_out, STDOUT_FILENO);
-		split_cmd = ft_split(pipe_s->cmd[pipe_s->i], ' ');
-		if (ft_is_builtin(split_cmd[0]))
-		{
-			token_list = tokenize_input(pipe_s->cmd[pipe_s->i]);
-			ft_check_vars(&token_list, new_environ);
-			pipe_s->err = exec_builtins(token_list, &new_environ, pipe_s->status);
-			free_tokens(&token_list);
-		}
-		else
-		{
-			pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
-			pipe_s->err = execve(pipe_s->file_path, split_cmd, new_environ);
-		}
-		free_matrix(split_cmd);
-		close(pipe_s->fd_in);
-		close(pipe_s->fd_out);
+		stdout_cpy = dup(STDOUT_FILENO);
+		ft_dup_fd(&pipe_s);
+		token_list = tokenize_input(pipe_s->cmd[pipe_s->i]);
+		ft_check_vars(&token_list, new_environ);
+		pipe_s->err = exec_builtins(token_list, &new_environ, pipe_s->status, 0);
+		free_tokens(&token_list);
+		ft_close_out(stdout_cpy);
 		if (pipe_s->err == -1)
 			exit(EXIT_FAILURE);
 	}
 	else
-		waitpid(pid, &pipe_s->status, 0);
+	{
+		pid = fork();
+		if (!pid)
+		{
+			ft_dup_fd(&pipe_s);
+			pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
+			pipe_s->err = execve(pipe_s->file_path, split_cmd, new_environ);
+			if (pipe_s->err == -1)	
+				exit(EXIT_FAILURE);
+		}
+		else
+			waitpid(pid, &pipe_s->status, 0);
+	
+	}
+	free_matrix(split_cmd);
 	return (pipe_s->err);
 }
 
 static void	pipex(t_pipe *pipe_s, char **new_environ)
 {
-	int		fd_in;
 	pid_t	pid;
 	char	**split_cmds;
 	t_token	*token_list;
+	int		fd_in;
 
-	fd_in = pipe_s->fd_in;
 	pipe_s->i = -1;
+	fd_in = pipe_s->fd_in;
 	// fprintf(stderr, "ncmds: %d\n", pipe_s->num_cmds);
 	while (++pipe_s->i < pipe_s->num_cmds)
 	{
@@ -229,7 +254,7 @@ static void	pipex(t_pipe *pipe_s, char **new_environ)
 			{
 				token_list = tokenize_input(pipe_s->cmd[pipe_s->i]);
 				ft_check_vars(&token_list, new_environ);
-				pipe_s->err = exec_builtins(token_list, &new_environ, pipe_s->status);
+				pipe_s->err = exec_builtins(token_list, &new_environ, pipe_s->status, 1);
 				free_tokens(&token_list);
 			}
 			else
@@ -243,7 +268,7 @@ static void	pipex(t_pipe *pipe_s, char **new_environ)
 				ft_putstr_fd("err: ", STDERR_FILENO);
 				ft_putnbr_fd(pipe_s->err, STDERR_FILENO);
 				ft_putchar_fd('\n', STDERR_FILENO);
-				exit( pipe_s->err);
+				exit(pipe_s->err);
 			}		
 		}
 		else

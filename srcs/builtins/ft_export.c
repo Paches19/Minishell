@@ -12,6 +12,41 @@
 
 #include "../../include/minishell.h"
 
+static int ft_env_in_order(char **new_environ, int len)
+{
+	int		i;
+	int 	j;
+	char	*x;
+	char	**temp;
+
+	i = -1;
+	temp = (char **)ft_calloc(len + 1, sizeof(char *));
+	while (new_environ[++i])
+		temp[i] = ft_strdup(new_environ[i]);
+	i = -1;
+	while (temp[++i])
+	{
+		j = i;
+		while (temp[++j])
+		{
+			if (ft_strcmp(temp[i], temp[j]) > 0)
+			{
+				x = temp[i];
+				temp[i] = temp[j];
+				temp[j] = x;
+			}
+		}
+	}
+	i = -1;
+	while (temp[++i])
+	{
+		ft_putstr_fd(temp[i], STDOUT_FILENO);
+		ft_putchar_fd('\n', STDOUT_FILENO);
+	}
+	free_environ(&temp);
+	return (0);
+}
+
 static int	ft_check_var_exist(char *token, char ***new_environ)
 {
 	int	i;
@@ -73,10 +108,9 @@ static void	ft_execute_export(char **token, char ***new_environ, int *len)
 		ft_replace_var(*token, new_environ, i);
 	else
 		ft_extend_env(*token, new_environ, len);
-	
 }
 
-int ft_export(t_token *token_list, char ***new_environ)
+int ft_export(t_token *token_list, char ***new_environ, int is_pipe)
 {
 	t_token	*p;
 	int		i;
@@ -87,19 +121,33 @@ int ft_export(t_token *token_list, char ***new_environ)
 		len++;
 	p = token_list->next;
 	if (!p)
+	{
+		if (is_pipe)
+			exit (ft_env_in_order(*new_environ, len));
 		return (ft_env_in_order(*new_environ, len));
+	}
 	while (p && p->type == COMMAND)
 	{
 		i = -1;
 		if (p->token[0] == '=')
+		{
+			if (is_pipe)
+				exit(ft_builtins_errors('e'));
 			return (ft_builtins_errors('e'));
+		}
 		while (p->token[++i] && p->token[i] != '=')
 		{
 			if (!ft_isalpha(p->token[i]) && p->token[i] != '_')
+			{
+				if (is_pipe)
+					exit(ft_builtins_errors('e'));
 				return (ft_builtins_errors('e'));
+			}
 		}
 		ft_execute_export(&p->token, new_environ, &len);
 		p = p->next;
 	}
+	if (is_pipe)
+		exit (0);
 	return (0);
 }

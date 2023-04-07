@@ -25,12 +25,12 @@ CC := gcc
 CFLAGS := -Wall -Wextra -Werror
 
 # Para los MAC de 42
-INCLUDES := -I$(INCDIR) -I/Users/jutrera-/.brew/opt/readline/include
-LDFLAGS := -L ./libft/ -lft -L/Users/jutrera-/.brew/opt/readline/lib/ -lreadline
+# INCLUDES := -I$(INCDIR) -I/Users/jutrera-/.brew/opt/readline/include
+# LDFLAGS := -L ./libft/ -lft -L/Users/jutrera-/.brew/opt/readline/lib/ -lreadline
 
 # Para mi Windows
-# INCLUDES := -I$(INCDIR)
-# LDFLAGS := -L ./libft/ -lft -lreadline
+INCLUDES := -I$(INCDIR)
+LDFLAGS := -L ./libft/ -lft -lreadline
 
 LEAKS := -fsanitize=address -g
 

@@ -37,19 +37,27 @@ static int	ft_delete_var(t_token *p, char ***new_environ)
 	return (stat);
 }
 
-int ft_unset(t_token *token_list, char ***new_environ)
+int ft_unset(t_token *token_list, char ***new_environ, int is_pipe)
 {
 	t_token	*p;
 	int		stat;
 
 	p = token_list->next;
 	if (!p)
+	{
+		if (is_pipe)
+			exit (ft_builtins_errors('u'));
 		return (ft_builtins_errors('u'));
+	}
 	stat = 0;
 	while (p)
 	{
 		if (!p)
+		{
+			if (is_pipe)
+				exit (ft_builtins_errors('u'));
 			return (ft_builtins_errors('u'));
+		}
 		if (ft_strchr(p->token, '=') ||
 			(!ft_isalpha(p->token[0]) && p->token[0] != '_') ||
 			ft_strlen(p->token) == 0)
@@ -58,6 +66,8 @@ int ft_unset(t_token *token_list, char ***new_environ)
 			stat = ft_delete_var(p, new_environ);
 		p = p->next;
 	}
+	if (is_pipe)
+		exit(stat);
 	return (stat);
 }
 

@@ -72,22 +72,21 @@ typedef struct s_pipe
 
 // ******************************* builtins
 //	L ft_builtins.c
-int		exec_builtins(t_token *token_list, char ***new_environ, int status);
+int		exec_builtins(t_token *token_list, char ***new_environ, int status, int is_pipe);
 //	L ft_cd.c
-int		ft_cd(t_token *token_list, char **env);
+int		ft_cd(t_token *token_list, char **env, int is_pipe);
 //	L ft_echo.c
-int		ft_echo(t_token *token_list, int status);
+int		ft_echo(t_token *token_list, int status, int is_pipe);
 //	L ft_env.c
-int		ft_env_in_order(char **new_environ, int len);
-int		ft_env(char ***new_environ);
+int		ft_env(char ***new_environ, int is_pipe);
 //	L ft_exit.c
-int		ft_exit(t_token *token_list, int status);
+int		ft_exit(t_token *token_list, int status, int is_pipe);
 //	L ft_export.c
-int		ft_export(t_token *token_list, char ***new_environ);
+int		ft_export(t_token *token_list, char ***new_environ, int is_pipe);
 //	L ft_pwd.c
-int		ft_pwd(void);
+int		ft_pwd(int is_pipe);
 //	L ft_unseat.c
-int		ft_unset(t_token *token_list, char ***new_environ);
+int		ft_unset(t_token *token_list, char ***new_environ, int is_pipe);
 // ******************************* commands
 //	L get_paths_access.c
 char	**get_path(char **envp);

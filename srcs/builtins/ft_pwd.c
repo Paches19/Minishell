@@ -12,18 +12,23 @@
 
 #include "../../include/minishell.h"
 
-int ft_pwd(void)
+int ft_pwd(int is_pipe)
 {
 	char	dir[1024];
 
 	if (getcwd(dir, sizeof(dir)) == NULL)
 	{
 		perror("pwd");
+		if (is_pipe)
+			exit (1);
 		return (1);
 	}
 	else
 	{
 		ft_putstr_fd(dir, 1);
+		ft_putchar_fd('\n', 1);
+		if (is_pipe)
+			exit (0);
 		return (0);
 	}	
 }
