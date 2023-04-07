@@ -67,15 +67,16 @@ int	main(int argc, char **argv, char **env)
 			//print_token_list(&token_list);
 			status = execute_commands(token_list, new_environ);
 			if (token_list && !ft_strcmp(token_list->token, "exit") && !lots_of_args(token_list))
+			{
+				free(inpt);
+				free_tokens(&token_list);
 				break;
+			}
 			free_tokens(&token_list);
 		}
 		free(inpt);
 		inpt = readline("minishell -> ");
 	}
-	if (inpt)
-		free(inpt);
-	free_tokens(&token_list);
 	free_environ(&new_environ);
 	rl_clear_history();
 	printf("exit (with status %i)\n", status);

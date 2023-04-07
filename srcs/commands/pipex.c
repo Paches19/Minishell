@@ -292,12 +292,15 @@ int execute_commands(t_token *token_list, char **new_environ)
 	int		status;
 
 	status = 0;
-	pipe_s = initialize_pipe_struct(token_list, new_environ);
-	if (pipe_s.num_pipes == 0)
-		exec_command(&pipe_s, new_environ);
-	else
-		pipex(&pipe_s, new_environ);
-	free_pipe(&pipe_s);
-	status = pipe_s.status % 129;
+	if (token_list)
+	{
+		pipe_s = initialize_pipe_struct(token_list, new_environ);
+		if (pipe_s.num_pipes == 0)
+			exec_command(&pipe_s, new_environ);
+		else
+			pipex(&pipe_s, new_environ);
+		free_pipe(&pipe_s);
+		status = pipe_s.status % 129;
+	}
 	return (status);
 }
