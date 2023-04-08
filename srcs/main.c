@@ -62,9 +62,9 @@ int	main(int argc, char **argv, char **env)
 		{
 			add_history(inpt);
 			token_list = tokenize_input(inpt);
-			//print_token_list(&token_list);
+			print_token_list(&token_list);
 			ft_check_vars(&token_list, new_environ);
-			//print_token_list(&token_list);
+			print_token_list(&token_list);
 			execute_commands(token_list, &new_environ, &status);
 			if (token_list && !ft_strcmp(token_list->token, "exit") && !lots_of_args(token_list))
 			{
@@ -78,6 +78,7 @@ int	main(int argc, char **argv, char **env)
 		inpt = readline("minishell -> ");
 	}
 	free_environ(&new_environ);
+	free_tokens(&token_list);
 	rl_clear_history();
 	printf("exit (with status %i)\n", status);
 	return ((unsigned char)status);

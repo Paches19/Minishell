@@ -30,13 +30,12 @@ int	exit_error_token(int err, char *token)
 	
 	if (err == -2)
 	{
-		write(2, "minishell: syntax error near unexpected token `", 47);
+		ft_putstr_fd("minishell: syntax error near unexpected token `", STDERR_FILENO);
 		c = *token;
 		write(2, &c, 1);
 		write(2, "\'\n", 2);
 	}
 	if (err == -1)
-		write(2,"minishell: open quotes. Please close quotes if you use \
-		them\n", 65);
+		ft_putstr_fd("minishell: open quotes. Please close quotes if you use them\n", STDERR_FILENO);
 	return (-1);
 }

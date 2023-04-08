@@ -92,26 +92,26 @@ static void	ft_extend_env(char *token, char ***new_environ, int *len)
 	++*len;
 }
 
-static void	ft_execute_export(char **token, char ***new_environ, int *len)
+static void	ft_execute_export(t_token **p, char ***new_environ, int *len)
 {
 	int		i;
 	char	*s;
 	char	*equal;
 	
-	i = ft_check_var_exist(*token, new_environ);
-	equal = ft_strchr(*token, '=');
+	i = ft_check_var_exist((*p)->token, new_environ);
+	equal = ft_strchr((*p)->token, '=');
 	if (i < 0)
 	{
 		if (!equal)
 		{
-			s = ft_strjoin(*token, "=''");
-			free(*token);
-			*token = s;
+			s = ft_strjoin((*p)->token, "=''");
+			free((*p)->token);
+			(*p)->token = s;
 		}
-		ft_extend_env(*token, new_environ, len);
+		ft_extend_env((*p)->token, new_environ, len);
 	}
 	else if (equal && *(equal + 1) != 0)
-		ft_replace_var(*token, new_environ, i);		
+		ft_replace_var((*p)->token, new_environ, i);		
 }
 
 static int	ft_export_error(void)
@@ -126,6 +126,9 @@ int ft_export(t_token *token_list, char ***new_environ, int is_pipe)
 	int		i;
 	int		len;
 	int		status;
+	int		errors;
+	char	*equal;
+	char 	*s;
 	
 	len = 0;
 	while ((*new_environ)[len])
@@ -140,17 +143,26 @@ int ft_export(t_token *token_list, char ***new_environ, int is_pipe)
 	status = 0;
 	while (p && p->type == COMMAND)
 	{
+		equal = ft_strchr(p->token, '=');
+		if (!equal && p->next && *p->next->token == '=')
+		{
+			s = ft_strjoin(p->token, p->next->token);
+			p = p->next;
+			free(p->token);
+			p->token = s;
+			equal = ft_strchr(p->token, '=');
+		}
 		i = -1;
+		errors = 0;
 		if (p->token[0] == '=')
-			status = ft_export_error();
+			errors = ft_export_error();
 		else
-			while (p->token[++i] && p->token[i] != '=')
-			{
+			while (p->token[++i] && p->token[i] != '=' && errors == 0)
 				if (!ft_isalpha(p->token[i]) && p->token[i] != '_')
-					status = ft_export_error();
-				else
-					ft_execute_export(&p->token, new_environ, &len);
-			}
+					errors = ft_export_error();
+		if (errors == 0)
+			ft_execute_export(&p, new_environ, &len);
+		status = status || (errors == 1);
 		p = p->next;
 	}
 	if (is_pipe)

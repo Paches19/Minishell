@@ -96,9 +96,9 @@ char *token)
 
 t_token	*tokenize_input(char *input) 
 {
-	t_token 		*token_list;
-	char 			*token;
-	int				len;
+	t_token	*token_list;
+	char 	*token;
+	int		len;	
 
 	if (!input)
 		return (NULL);
