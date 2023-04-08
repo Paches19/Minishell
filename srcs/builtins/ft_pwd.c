@@ -12,23 +12,44 @@
 
 #include "../../include/minishell.h"
 
-int ft_pwd(int is_pipe)
+static int there_are_args(t_token *token_list)
+{
+	int	i;
+	t_token	*p;
+
+	i = 0;
+	p = token_list->next;
+	while (p)
+	{
+		i++;
+		p = p->next;
+	}
+	if (i > 0)
+	{
+		ft_putstr_fd("pwd: Too many arguments", STDERR_FILENO);
+		return(1);
+	}
+	return (0);
+}
+
+int ft_pwd(t_token *token_list, int is_pipe)
 {
 	char	dir[1024];
+	int		s;
 
-	if (getcwd(dir, sizeof(dir)) == NULL)
+	s = 1;
+	if (!there_are_args(token_list))
 	{
-		perror("pwd");
-		if (is_pipe)
-			exit (1);
-		return (1);
+		if (getcwd(dir, sizeof(dir)) != NULL)
+		{
+			ft_putstr_fd(dir, STDOUT_FILENO);
+			s = 0;
+		}
+		else 
+			ft_putstr_fd("pwd", STDERR_FILENO);
 	}
-	else
-	{
-		ft_putstr_fd(dir, 1);
-		ft_putchar_fd('\n', 1);
-		if (is_pipe)
-			exit (0);
-		return (0);
-	}	
+	ft_putchar_fd('\n', STDOUT_FILENO);
+	if (is_pipe)
+		exit (s);
+	return (s);
 }

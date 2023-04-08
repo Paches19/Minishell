@@ -12,15 +12,6 @@
 
 #include "../../include/minishell.h"
 
-int	ft_builtins_errors(char e)
-{
-	if (e == 'u')
-		printf("unset: not enough arguments\n");
-	if (e == 'e')
-		printf("export: bad identifier\n");
-	return (1);
-}
-
 void	error_cmd(int err)
 {
 	perror(strerror(err));

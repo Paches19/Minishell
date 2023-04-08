@@ -84,7 +84,7 @@ int		ft_exit(t_token *token_list, int status, int is_pipe);
 //	L ft_export.c
 int		ft_export(t_token *token_list, char ***new_environ, int is_pipe);
 //	L ft_pwd.c
-int		ft_pwd(int is_pipe);
+int		ft_pwd(t_token *token_list, int is_pipe);
 //	L ft_unseat.c
 int		ft_unset(t_token *token_list, char ***new_environ, int is_pipe);
 // ******************************* commands
@@ -94,7 +94,7 @@ int		get_size_cmd(char **cmd);
 char	**get_av(char **cmd);
 char	*try_access(char **cmd, char **paths);
 //	L pipex.c
-int		execute_commands(t_token *token_list, char **new_environ);
+void	execute_commands(t_token *token_list, char ***new_environ, int *status);
 // ******************************* environ
 //	L get_environ.c
 char	**copy_environ(char **source);
@@ -134,8 +134,7 @@ void	free_environ(char ***e);
 void	free_tokens(t_token **token_list);
 //	L matrix_utils.c
 void	ft_init_matrix(const char *s, char c, char **res, size_t words);
-//	L ft_errors.c
-int		ft_builtins_errors(char e);
+//	L ft_errors.
 int		exit_error_token(int err, char *token);
 void	error_cmd(int err);
 void	exit_error(int err);

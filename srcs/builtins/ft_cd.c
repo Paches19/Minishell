@@ -21,7 +21,7 @@ int ft_cd(t_token *token_list, char **env, int is_pipe)
 	p = token_list->next;
 	if (p && p->next && p->next->token[0] != '\0')
 	{
-		write(STDERR_FILENO,"cd : Too many arguments\n", 24);
+		ft_putstr_fd("cd : Too many arguments\n", STDERR_FILENO);
 		if (is_pipe)
 			exit(1);
 		return (1);
@@ -29,7 +29,20 @@ int ft_cd(t_token *token_list, char **env, int is_pipe)
 	if (!p)
 		dir = ft_getenv("$HOME", env);
 	else
+	{
 		dir = ft_strtrim(p->token, " ");
+		if (!ft_strcmp(dir, "-"))
+		{
+			free(dir);
+			dir = ft_getenv("$OLDPWD", env);
+		}
+	}
+	if (!dir)
+	{
+		if (is_pipe)
+			exit (1);
+		return (1);
+	}
 	i = chdir(dir);
 	free (dir);
 	if (i == -1)

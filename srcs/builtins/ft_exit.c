@@ -14,8 +14,8 @@
 
 int ft_exit(t_token *token_list, int status, int is_pipe)
 {
-	t_token	*p;
-	int		s;
+	t_token			*p;
+	int				s;
 
 	p = token_list->next;
 	if (!p)
@@ -25,9 +25,7 @@ int ft_exit(t_token *token_list, int status, int is_pipe)
 		return (status);
 	}
 	s = ft_atoi(p->token);
-	if (ft_strcmp(p->token, "0") != 0 && s == 0)
-		s = 255;
 	if (is_pipe)
-		exit (s);
-	return (s);
+		exit ((unsigned char)s);
+	return ((unsigned char)s);
 }

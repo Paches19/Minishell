@@ -34,8 +34,10 @@ static char	*ft_strjoin_space(char *s1, char *s2)
 	size_t	i;
 	size_t	len_s1;
 
-	if (!s1 || !s2)
+	if (!s1)
 		exit_error(ENOMEM);
+	if (!s2)
+		return (s1);
 	len_s1 = ft_strlen(s1) + 1;
 	str = (char *) malloc(sizeof(char) * (len_s1 + ft_strlen(s2) + 2));
 	if (!str)
@@ -141,7 +143,7 @@ static int	get_num_cmds(char **cmd)
 	return (i);
 }
 
-static t_pipe	initialize_pipe_struct(t_token *token_list, char **new_environ)
+static t_pipe	initialize_pipe_struct(t_token *token_list, char **new_environ, int *status)
 {
     t_pipe  pipe_s;
 
@@ -149,7 +151,7 @@ static t_pipe	initialize_pipe_struct(t_token *token_list, char **new_environ)
 	pipe_s.num_pipes = ft_count_pipes(token_list);
 	pipe_s.fd_in = get_infile(token_list);
 	pipe_s.fd_out = get_outfile(token_list);
-	pipe_s.status = 0;
+	pipe_s.status = *status;
 	pipe_s.err = 0;
 	pipe_s.paths = get_path(new_environ);
 	pipe_s.cmd = get_cmd(token_list, pipe_s.num_pipes);
@@ -178,7 +180,7 @@ static void	ft_close_out(int stdout_cpy)
 	close(stdout_cpy);
 }
 
-static int	exec_command(t_pipe *pipe_s, char **new_environ)
+static void	exec_command(t_pipe *pipe_s, char ***new_environ)
 {
 	pid_t	pid;
 	char	**split_cmd;
@@ -191,12 +193,11 @@ static int	exec_command(t_pipe *pipe_s, char **new_environ)
 		stdout_cpy = dup(STDOUT_FILENO);
 		ft_dup_fd(&pipe_s);
 		token_list = tokenize_input(pipe_s->cmd[pipe_s->i]);
-		ft_check_vars(&token_list, new_environ);
-		pipe_s->err = exec_builtins(token_list, &new_environ, pipe_s->status, 0);
+		//print_token_list(&token_list);
+		pipe_s->err = exec_builtins(token_list, new_environ, pipe_s->status, 0);
 		free_tokens(&token_list);
 		ft_close_out(stdout_cpy);
-		if (pipe_s->err == -1)
-			exit(EXIT_FAILURE);
+		pipe_s->status = (unsigned char)pipe_s->err;
 	}
 	else
 	{
@@ -205,19 +206,20 @@ static int	exec_command(t_pipe *pipe_s, char **new_environ)
 		{
 			ft_dup_fd(&pipe_s);
 			pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
-			pipe_s->err = execve(pipe_s->file_path, split_cmd, new_environ);
+			pipe_s->err = execve(pipe_s->file_path, split_cmd, *new_environ);
 			if (pipe_s->err == -1)	
 				exit(EXIT_FAILURE);
 		}
 		else
+		{
 			waitpid(pid, &pipe_s->status, 0);
-	
+			pipe_s->status %= 129;
+		}
 	}
 	free_matrix(split_cmd);
-	return (pipe_s->err);
 }
 
-static void	pipex(t_pipe *pipe_s, char **new_environ)
+static void	pipex(t_pipe *pipe_s, char ***new_environ)
 {
 	pid_t	pid;
 	char	**split_cmds;
@@ -226,7 +228,6 @@ static void	pipex(t_pipe *pipe_s, char **new_environ)
 
 	pipe_s->i = -1;
 	fd_in = pipe_s->fd_in;
-	// fprintf(stderr, "ncmds: %d\n", pipe_s->num_cmds);
 	while (++pipe_s->i < pipe_s->num_cmds)
 	{
 		if (pipe(pipe_s->fd) < 0)
@@ -253,14 +254,15 @@ static void	pipex(t_pipe *pipe_s, char **new_environ)
 			if (ft_is_builtin(split_cmds[0]))
 			{
 				token_list = tokenize_input(pipe_s->cmd[pipe_s->i]);
-				ft_check_vars(&token_list, new_environ);
-				pipe_s->err = exec_builtins(token_list, &new_environ, pipe_s->status, 1);
+				pipe_s->err = exec_builtins(token_list, new_environ, pipe_s->status, 1);
+				pipe_s->status = (unsigned char)pipe_s->err;
 				free_tokens(&token_list);
 			}
 			else
 			{
 				pipe_s->file_path = try_access(split_cmds, pipe_s->paths);
-				pipe_s->err = execve(pipe_s->file_path, split_cmds, new_environ);
+				pipe_s->err = execve(pipe_s->file_path, split_cmds, *new_environ);
+				pipe_s->status = pipe_s->err % 129;
 			}
 			free_matrix(split_cmds);
 			if (pipe_s->err < 0)
@@ -280,27 +282,24 @@ static void	pipex(t_pipe *pipe_s, char **new_environ)
 	}
 }
 
-static void	free_pipe(t_pipe *pipe_s)
-{
-	free_matrix(pipe_s->cmd);
-	free_matrix(pipe_s->paths);
-}
-
-int execute_commands(t_token *token_list, char **new_environ)
+void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 {
 	t_pipe	pipe_s;
-	int		status;
 
-	status = 0;
 	if (token_list)
 	{
-		pipe_s = initialize_pipe_struct(token_list, new_environ);
+		pipe_s = initialize_pipe_struct(token_list, *new_environ, status);
 		if (pipe_s.num_pipes == 0)
+		{
 			exec_command(&pipe_s, new_environ);
+			*status = (unsigned char)pipe_s.status;
+		}
 		else
+		{
 			pipex(&pipe_s, new_environ);
-		free_pipe(&pipe_s);
-		status = pipe_s.status % 129;
+			*status = pipe_s.status % 129;
+		}
+		free_matrix(pipe_s.cmd);
+		free_matrix(pipe_s.paths);
 	}
-	return (status);
 }

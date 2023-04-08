@@ -37,6 +37,15 @@ static int	ft_delete_var(t_token *p, char ***new_environ)
 	return (stat);
 }
 
+int	ft_unset_errors(char e)
+{
+	if (e == 'u')
+		ft_putstr_fd("unset: not enough arguments\n", STDERR_FILENO);
+	if (e == 'e')
+		ft_putstr_fd("unset: bad identifier\n", STDERR_FILENO);
+	return (1);
+}
+
 int ft_unset(t_token *token_list, char ***new_environ, int is_pipe)
 {
 	t_token	*p;
@@ -46,22 +55,16 @@ int ft_unset(t_token *token_list, char ***new_environ, int is_pipe)
 	if (!p)
 	{
 		if (is_pipe)
-			exit (ft_builtins_errors('u'));
-		return (ft_builtins_errors('u'));
+			exit (ft_unset_errors('u'));
+		return (ft_unset_errors('u'));
 	}
 	stat = 0;
 	while (p)
 	{
-		if (!p)
-		{
-			if (is_pipe)
-				exit (ft_builtins_errors('u'));
-			return (ft_builtins_errors('u'));
-		}
 		if (ft_strchr(p->token, '=') ||
 			(!ft_isalpha(p->token[0]) && p->token[0] != '_') ||
 			ft_strlen(p->token) == 0)
-			stat = ft_builtins_errors('e');
+			stat = ft_unset_errors('e');
 		else
 			stat = ft_delete_var(p, new_environ);
 		p = p->next;

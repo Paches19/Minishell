@@ -11,12 +11,12 @@
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-void	ft_leaks(void)
+/*
+static void	ft_leaks(void)
 {
 	system("leaks -q minishell");
 }
-
+*/
 static int	lots_of_args(t_token *token_list)
 {
 	int	i;
@@ -31,7 +31,7 @@ static int	lots_of_args(t_token *token_list)
 	}
 	if (i > 1)
 	{
-		perror("exit: Too many arguments");
+		ft_putstr_fd("exit: Too many arguments\n", STDERR_FILENO);
 		return(1);
 	}
 	return (0);
@@ -65,7 +65,7 @@ int	main(int argc, char **argv, char **env)
 			//print_token_list(&token_list);
 			ft_check_vars(&token_list, new_environ);
 			//print_token_list(&token_list);
-			status = execute_commands(token_list, new_environ);
+			execute_commands(token_list, &new_environ, &status);
 			if (token_list && !ft_strcmp(token_list->token, "exit") && !lots_of_args(token_list))
 			{
 				free(inpt);

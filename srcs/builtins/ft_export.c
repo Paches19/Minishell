@@ -96,18 +96,28 @@ static void	ft_execute_export(char **token, char ***new_environ, int *len)
 {
 	int		i;
 	char	*s;
+	char	*equal;
 	
-	if (!ft_strchr(*token, '='))
-	{
-		s = ft_strjoin(*token, "=''");
-		free(*token);
-		*token = s;
-	}
 	i = ft_check_var_exist(*token, new_environ);
-	if (i >= 0)
-		ft_replace_var(*token, new_environ, i);
-	else
+	equal = ft_strchr(*token, '=');
+	if (i < 0)
+	{
+		if (!equal)
+		{
+			s = ft_strjoin(*token, "=''");
+			free(*token);
+			*token = s;
+		}
 		ft_extend_env(*token, new_environ, len);
+	}
+	else if (equal && *(equal + 1) != 0)
+		ft_replace_var(*token, new_environ, i);		
+}
+
+static int	ft_export_error(void)
+{
+	ft_putstr_fd("export: bad identifier\n", STDERR_FILENO);
+	return (1);
 }
 
 int ft_export(t_token *token_list, char ***new_environ, int is_pipe)
@@ -115,6 +125,7 @@ int ft_export(t_token *token_list, char ***new_environ, int is_pipe)
 	t_token	*p;
 	int		i;
 	int		len;
+	int		status;
 	
 	len = 0;
 	while ((*new_environ)[len])
@@ -126,28 +137,23 @@ int ft_export(t_token *token_list, char ***new_environ, int is_pipe)
 			exit (ft_env_in_order(*new_environ, len));
 		return (ft_env_in_order(*new_environ, len));
 	}
+	status = 0;
 	while (p && p->type == COMMAND)
 	{
 		i = -1;
 		if (p->token[0] == '=')
-		{
-			if (is_pipe)
-				exit(ft_builtins_errors('e'));
-			return (ft_builtins_errors('e'));
-		}
-		while (p->token[++i] && p->token[i] != '=')
-		{
-			if (!ft_isalpha(p->token[i]) && p->token[i] != '_')
+			status = ft_export_error();
+		else
+			while (p->token[++i] && p->token[i] != '=')
 			{
-				if (is_pipe)
-					exit(ft_builtins_errors('e'));
-				return (ft_builtins_errors('e'));
+				if (!ft_isalpha(p->token[i]) && p->token[i] != '_')
+					status = ft_export_error();
+				else
+					ft_execute_export(&p->token, new_environ, &len);
 			}
-		}
-		ft_execute_export(&p->token, new_environ, &len);
 		p = p->next;
 	}
 	if (is_pipe)
-		exit (0);
-	return (0);
+		exit (status);
+	return (status);
 }
