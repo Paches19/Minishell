@@ -48,7 +48,7 @@ char	**get_av(char **cmd)
 	size_cmd = get_size_cmd(cmd);
 	av = (char **)ft_calloc(sizeof(char *), size_cmd + 1);
 	if (!av)
-		error_cmd(ENOMEM);
+		cmd_error(ENOMEM);
 	i = -1;
 	while (++i < size_cmd)
 	{
@@ -57,7 +57,7 @@ char	**get_av(char **cmd)
 		{
 			free_matrix(av);
 			free_matrix(cmd);
-			error_cmd(ENOMEM);
+			cmd_error(ENOMEM);
 		}
 	}
 	i = -1;
@@ -65,6 +65,14 @@ char	**get_av(char **cmd)
 		av[i] = cmd[i];
 	free_matrix(cmd);
 	return (av);
+}
+
+static void	command_not_found(char *cmd, char **path)
+{
+	ft_putstr_fd(cmd, STDERR_FILENO);
+	ft_putstr_fd(": command not found\n", STDERR_FILENO);
+	free(*path);
+	*path = NULL;
 }
 
 char	*try_access(char **cmd, char **paths)
@@ -78,8 +86,8 @@ char	*try_access(char **cmd, char **paths)
 	file_path = NULL;
 	if (!cmd)
 		return (NULL);
-	if (*cmd && **cmd == '/')  //Nos dan el path
-		return(*cmd);
+	if (*cmd && **cmd == '/')
+		return (*cmd);
 	while (paths && paths[++i] && err < 0)
 	{
 		if (file_path)
@@ -90,11 +98,6 @@ char	*try_access(char **cmd, char **paths)
 		err = access(file_path, X_OK);
 	}
 	if (err < 0)
-	{
-		write(2, cmd[0], ft_strlen(cmd[0]));
-		write(2, ": command not found\n", 20);
-		free(file_path);
-		file_path = NULL;
-	}
+		command_not_found(cmd[0], &file_path);
 	return (file_path);
 }

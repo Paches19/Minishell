@@ -12,7 +12,7 @@
 
 #include "../../include/minishell.h"
 
-static char	*ft_convert_type(t_token_type   type)
+static char	*ft_convert_type(t_token_type type)
 {
 	if (type == COMMAND)
 		return ("COMMAND");
@@ -48,10 +48,9 @@ void	print_token_list(t_token **tokenize_list)
 	printf("print token list\n");
 	aux = *tokenize_list;
 	i = 0;
-	while(aux)
+	while (aux)
 	{
 		printf("token[%d]: ", ++i);
-		//printf("\b\btoken: %s\n", aux->token);
 		printf("content [%s]", aux->token);
 		printf(" type [%s]\n", ft_convert_type(aux->type));
 		aux = aux->next;

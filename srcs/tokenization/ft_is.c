@@ -12,33 +12,33 @@
 
 #include "../../include/minishell.h"
 
-int ft_isspace(char c)
+int	ft_is_space(char c)
 {
-    return (c < 33);
+	return (c < 33);
 }
 
-int ft_is_special(char c)
+int	ft_is_special(char c)
 {
-    return (c == '|' || c == '<' || c == '>' || c == '$');
+	return (c == '|' || c == '<' || c == '>' || c == '$');
 }
 
-int ft_is_quote(char c)
+int	ft_is_quote(char c)
 {
-    return (c == '"' || c == '\'');
+	return (c == '"' || c == '\'');
 }
 
-int ft_is_redirect(char c)
+int	ft_is_redirect(char c)
 {
-    return (c == '<' || c == '>');
+	return (c == '<' || c == '>');
 }
 
-int ft_is_builtin(char *s)
+int	ft_is_builtin(char *s)
 {
-    return ((ft_strcmp(s, "echo") == 0) ||
-        (ft_strcmp(s, "cd") == 0) ||
-        (ft_strcmp(s, "pwd") == 0) ||
- 		(ft_strcmp(s, "export") == 0) ||
- 		(ft_strcmp(s, "unset") == 0) ||
- 		(ft_strcmp(s, "exit") == 0) ||
-		(ft_strcmp(s, "env") == 0));
+	return ((ft_strcmp(s, "echo") == 0)
+		|| (ft_strcmp(s, "cd") == 0)
+		|| (ft_strcmp(s, "pwd") == 0)
+		|| (ft_strcmp(s, "export") == 0)
+		|| (ft_strcmp(s, "unset") == 0)
+		|| (ft_strcmp(s, "exit") == 0)
+		|| (ft_strcmp(s, "env") == 0));
 }

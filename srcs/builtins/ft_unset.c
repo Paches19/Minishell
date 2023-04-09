@@ -19,9 +19,10 @@ static int	ft_delete_var(t_token *p, char ***new_environ)
 	char		*temp;
 
 	stat = 0;
-	i = -1;
-	while ((*new_environ)[++i] && ft_strncmp((*new_environ)[i], \
-	p->token, ft_strlen(p->token)));
+	i = 0;
+	while ((*new_environ)[i] && ft_strncmp((*new_environ)[i], \
+			p->token, ft_strlen(p->token)))
+		i++;
 	if ((*new_environ)[i])
 	{
 		temp = (*new_environ)[i];
@@ -37,7 +38,7 @@ static int	ft_delete_var(t_token *p, char ***new_environ)
 	return (stat);
 }
 
-int	ft_unset_errors(char e)
+static int	ft_unset_errors(char e)
 {
 	if (e == 'u')
 		ft_putstr_fd("unset: not enough arguments\n", STDERR_FILENO);
@@ -46,7 +47,7 @@ int	ft_unset_errors(char e)
 	return (1);
 }
 
-int ft_unset(t_token *token_list, char ***new_environ, int is_pipe)
+int	ft_unset(t_token *token_list, char ***new_environ, int is_pipe)
 {
 	t_token	*p;
 	int		stat;
@@ -61,9 +62,9 @@ int ft_unset(t_token *token_list, char ***new_environ, int is_pipe)
 	stat = 0;
 	while (p)
 	{
-		if (ft_strchr(p->token, '=') ||
-			(!ft_isalpha(p->token[0]) && p->token[0] != '_') ||
-			ft_strlen(p->token) == 0)
+		if (ft_strchr(p->token, '=')
+			|| (!ft_isalpha(p->token[0]) && p->token[0] != '_')
+			|| ft_strlen(p->token) == 0)
 			stat = ft_unset_errors('e');
 		else
 			stat = ft_delete_var(p, new_environ);
@@ -73,4 +74,3 @@ int ft_unset(t_token *token_list, char ***new_environ, int is_pipe)
 		exit(stat);
 	return (stat);
 }
-

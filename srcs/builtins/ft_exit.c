@@ -12,19 +12,39 @@
 
 #include "../../include/minishell.h"
 
-int ft_exit(t_token *token_list, int status, int is_pipe)
+static int	lots_of_args(t_token *t)
 {
-	t_token			*p;
-	int				s;
+	int		i;
+	t_token	*p;
+
+	i = 0;
+	p = t;
+	while (p)
+	{
+		i++;
+		p = p->next;
+	}
+	if (i > 1)
+	{
+		ft_putstr_fd("exit: Too many arguments\n", STDERR_FILENO);
+		return (1);
+	}
+	return (0);
+}
+
+int	ft_exit(t_token *token_list, int status, int is_pipe)
+{
+	t_token	*p;
+	int		s;
 
 	p = token_list->next;
+	s = status;
 	if (!p)
-	{
-		if (is_pipe)
-			exit (status);
-		return (status);
-	}
-	s = ft_atoi(p->token);
+		s = status;
+	else if (lots_of_args(p))
+		s = 1;
+	else
+		s = ft_atoi(p->token);
 	if (is_pipe)
 		exit ((unsigned char)s);
 	return ((unsigned char)s);

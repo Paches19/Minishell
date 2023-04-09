@@ -17,69 +17,73 @@ static void	ft_leaks(void)
 	system("leaks -q minishell");
 }
 */
-static int	lots_of_args(t_token *token_list)
+static void	clean_memory(char **i, t_token **t, char ***n, int end)
 {
-	int	i;
+	if (i && *i)
+		free(*i);
+	free_tokens(t);
+	if (end)
+	{
+		free_environ(n);
+		rl_clear_history();
+	}
+}
+
+static void	init_minishell(int *s, char ***n, t_token **t, char **env)
+{
+	splash();
+	signal(SIGINT, &renewprompt);
+	signal(SIGQUIT, SIG_IGN);
+	*s = 0;
+	*n = copy_environ(env);
+	*t = NULL;
+}
+
+static int	typed_exit(t_token *t)
+{
+	int		i;
 	t_token	*p;
 
 	i = 0;
-	p = token_list->next;
+	p = t->next;
 	while (p)
 	{
 		i++;
 		p = p->next;
 	}
 	if (i > 1)
-	{
-		ft_putstr_fd("exit: Too many arguments\n", STDERR_FILENO);
-		return(1);
-	}
-	return (0);
+		return (0);
+	return (t && !ft_strcmp(t->token, "exit"));
 }
 
 int	main(int argc, char **argv, char **env)
 {
 	t_token	*token_list;
-	char 	*inpt;
+	char	*input;
 	int		status;
 	char	**new_environ;
 
-	if (argc)
-		argc = 0;
-	if (argv)
-		argv = 0;
+	(void)argc;
+	(void )**argv;
 	//atexit(ft_leaks);
-	splash();
-	signal(SIGINT, &renewprompt);  //Ctrl+C
-	signal(SIGQUIT, SIG_IGN); //Ctrl-\ ignored
-	//Ctrl+D = '\0', so is not a signal !!!
-	status = 0;
-	new_environ = copy_environ(env);
-	inpt = readline("minishell -> ");
-	while (inpt)
+	init_minishell(&status, &new_environ, &token_list, env);
+	input = readline("minishell -> ");
+	while (input)
 	{
-		if (*inpt != 0)
+		if (*input != 0)
 		{
-			add_history(inpt);
-			token_list = tokenize_input(inpt);
-			print_token_list(&token_list);
+			add_history(input);
+			token_list = tokenize_input(input);
+			//print_token_list(&token_list);
 			ft_check_vars(&token_list, new_environ);
-			print_token_list(&token_list);
+			//print_token_list(&token_list);
 			execute_commands(token_list, &new_environ, &status);
-			if (token_list && !ft_strcmp(token_list->token, "exit") && !lots_of_args(token_list))
-			{
-				free(inpt);
-				free_tokens(&token_list);
-				break;
-			}
-			free_tokens(&token_list);
+			if (typed_exit(token_list))
+				break ;
 		}
-		free(inpt);
-		inpt = readline("minishell -> ");
+		clean_memory(&input, &token_list, &new_environ, 0);
+		input = readline("minishell -> ");
 	}
-	free_environ(&new_environ);
-	free_tokens(&token_list);
-	rl_clear_history();
-	printf("exit (with status %i)\n", status);
+	clean_memory(&input, &token_list, &new_environ, 1);
 	return ((unsigned char)status);
 }

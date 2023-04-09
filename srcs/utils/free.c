@@ -26,10 +26,10 @@ void	free_matrix(char **matrix)
 {
 	int	i;
 
-	if(!matrix || !*(matrix))
+	if (!matrix || !*(matrix))
 		return ;
 	i = -1;
-	while(matrix[++i])
+	while (matrix[++i])
 	{
 		free(matrix[i]);
 		matrix[i] = NULL;
@@ -38,15 +38,15 @@ void	free_matrix(char **matrix)
 	matrix = NULL;
 }
 
-void	free_tokens(t_token **token_list) 
+void	free_tokens(t_token **token_list)
 {
-	t_token *current_node;
-	t_token *next_node;
+	t_token	*current_node;
+	t_token	*next_node;
 
 	if (!token_list || !(*token_list))
-		return;
+		return ;
 	current_node = *token_list;
-	while (current_node != NULL) 
+	while (current_node != NULL)
 	{
 		next_node = current_node->next;
 		if (current_node->token != NULL)

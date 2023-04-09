@@ -12,9 +12,9 @@
 
 #include "../../include/minishell.h"
 
-static int there_are_args(t_token *token_list)
+static int	there_are_args(t_token *token_list)
 {
-	int	i;
+	int		i;
 	t_token	*p;
 
 	i = 0;
@@ -27,12 +27,12 @@ static int there_are_args(t_token *token_list)
 	if (i > 0)
 	{
 		ft_putstr_fd("pwd: Too many arguments", STDERR_FILENO);
-		return(1);
+		return (1);
 	}
 	return (0);
 }
 
-int ft_pwd(t_token *token_list, int is_pipe)
+int	ft_pwd(t_token *token_list, int is_pipe)
 {
 	char	dir[1024];
 	int		s;
@@ -45,7 +45,7 @@ int ft_pwd(t_token *token_list, int is_pipe)
 			ft_putstr_fd(dir, STDOUT_FILENO);
 			s = 0;
 		}
-		else 
+		else
 			ft_putstr_fd("pwd", STDERR_FILENO);
 	}
 	ft_putchar_fd('\n', STDOUT_FILENO);

@@ -27,28 +27,37 @@ static void	ft_write_echo(char *s)
 
 static int	ft_printable_token(t_token *p)
 {
-	return (!(p->type == INPUT_REDIRECT || p->type == HEREDOC_REDIRECT ||
-		p->type == PIPE || p->type == OUTPUT_REDIRECT ||
-		p->type == APPEND_REDIRECT));
+	return (!(p->type == INPUT_REDIRECT || p->type == HEREDOC_REDIRECT
+			|| p->type == PIPE || p->type == OUTPUT_REDIRECT
+			|| p->type == APPEND_REDIRECT));
 }
 
-int ft_echo(t_token *token_list, int status, int is_pipe)
+static int	read_flag(t_token **p)
+{
+	int	nl;
+
+	if (!*p || !(!ft_strcmp((*p)->token, "-n") && ft_strlen((*p)->token) == 2))
+		nl = 1;
+	else
+	{
+		while (*p && (!ft_strcmp((*p)->token, "-n")
+				&& ft_strlen((*p)->token) == 2))
+			*p = (*p)->next;
+		if (*p)
+			nl = 0;
+		else
+			nl = 2;
+	}
+	return (nl);
+}
+
+int	ft_echo(t_token *token_list, int status, int is_pipe)
 {
 	t_token	*p;
 	int		nl;
 
 	p = token_list->next;
-	if (!p || !(!ft_strcmp(p->token, "-n") && ft_strlen(p->token) == 2))
-		nl = 1;
-	else
-	{
-		while (p && (!ft_strcmp(p->token, "-n") && ft_strlen(p->token) == 2))
-			p = p->next;
-		if (p)
-			nl = 0;
-		else
-			nl = 2;
-	}
+	nl = read_flag(&p);
 	while (p && (ft_printable_token(p) || !ft_strcmp(p->token, "$?")))
 	{
 		if (p->token)

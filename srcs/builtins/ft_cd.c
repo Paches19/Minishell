@@ -12,20 +12,10 @@
 
 #include "../../include/minishell.h"
 
-int ft_cd(t_token *token_list, char **env, int is_pipe)
+static int	execute_cd(t_token *p, char **env)
 {
 	char	*dir;
-	t_token	*p;
-	int		i;
 
-	p = token_list->next;
-	if (p && p->next && p->next->token[0] != '\0')
-	{
-		ft_putstr_fd("cd : Too many arguments\n", STDERR_FILENO);
-		if (is_pipe)
-			exit(1);
-		return (1);
-	}
 	if (!p)
 		dir = ft_getenv("$HOME", env);
 	else
@@ -38,21 +28,32 @@ int ft_cd(t_token *token_list, char **env, int is_pipe)
 		}
 	}
 	if (!dir)
-	{
-		if (is_pipe)
-			exit (1);
 		return (1);
-	}
-	i = chdir(dir);
-	free (dir);
-	if (i == -1)
+	if (chdir(dir) == -1)
 	{
 		perror("cd");
-		if (is_pipe)
-			exit(1);
+		free(dir);
 		return (1);
 	}
-	if (is_pipe)
-		exit(0);
+	free (dir);
 	return (0);
+}
+
+int	ft_cd(t_token *token_list, char **env, int is_pipe)
+{
+	t_token	*p;
+	int		status;
+
+	p = token_list->next;
+	status = 0;
+	if (p && p->next && p->next->token[0] != '\0')
+	{
+		ft_putstr_fd("cd : Too many arguments\n", STDERR_FILENO);
+		status = 1;
+	}
+	else
+		status = execute_cd(p, env);
+	if (is_pipe)
+		exit(status);
+	return (status);
 }
