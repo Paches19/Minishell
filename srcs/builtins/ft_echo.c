@@ -89,7 +89,6 @@ int	ft_echo(t_token *token_list, int status, int is_pipe)
 
 	p = token_list->next;
 	nl = read_flag(&p);
-	print_token_list(&token_list);
 	while (p && (ft_printable_token(p) || (!ft_strcmp(p->token, "$?") && ft_strlen(p->token) == 2)))
 	{
 		if (p->token)

@@ -3,26 +3,52 @@
 /*                                                        :::      ::::::::   */
 /*   init_pipe_struct.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jutrera- <jutrera-@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 17:03:15 by jutrera-          #+#    #+#             */
-/*   Updated: 2023/04/09 17:03:15 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/04/10 19:34:39 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
+t_token	*ft_last_inredirect(t_token *token_list)
+{
+	t_token	*t;
+	t_token	*last_redirect;
+
+	t = token_list;
+	last_redirect = NULL;
+	while (t)
+	{
+		if (t->type == INPUT_REDIRECT)
+			last_redirect = t;
+		t = t->next;
+	}
+	return (last_redirect);
+}
+
+t_token	*ft_last_outredirect(t_token *token_list)
+{
+	t_token	*t;
+	t_token	*last_redirect;
+
+	t = token_list;
+	last_redirect = NULL;
+	while (t)
+	{
+		if (t->type == OUTPUT_REDIRECT || t->type == APPEND_REDIRECT)
+			last_redirect = t;
+		t = t->next;
+	}
+	return (last_redirect);
+}
+
 static int	get_infile(t_token *token_list)
 {
 	t_token	*t;
 
-	t = token_list;
-	while (t)
-	{
-		if (t->type == INPUT_REDIRECT || t->type == HEREDOC_REDIRECT)
-			break ;
-		t = t->next;
-	}
+	t = ft_last_inredirect(token_list);
 	if (t && t->type == INPUT_REDIRECT)
 	{
 		if (access(t->token, F_OK))
@@ -44,13 +70,7 @@ static int	get_outfile(t_token *token_list)
 {
 	t_token	*t;
 
-	t = token_list;
-	while (t)
-	{
-		if (t->type == OUTPUT_REDIRECT || t->type == APPEND_REDIRECT)
-			break ;
-		t = t->next;
-	}
+	t = ft_last_outredirect(token_list);
 	if (t && t->type == OUTPUT_REDIRECT)
 		return (open(t->token, O_WRONLY | O_CREAT | O_TRUNC, \
 		S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH));

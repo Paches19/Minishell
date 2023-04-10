@@ -93,6 +93,8 @@ char	**get_path(char **envp);
 int		get_size_cmd(char **cmd);
 char	**get_av(char **cmd);
 char	*try_access(char **cmd, char **paths);
+t_token	*ft_last_inredirect(t_token *token_list);
+t_token	*ft_last_outredirect(t_token *token_list);
 // ******************************* environ ************************************
 char	**copy_environ(char **source);
 char	*ft_getenv(char *var_name, char **env);
