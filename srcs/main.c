@@ -67,22 +67,24 @@ int	main(int argc, char **argv, char **env)
 	(void )**argv;
 	//atexit(ft_leaks);
 	init_minishell(&status, &new_environ, &token_list, env);
-	input = readline("minishell -> ");
-	while (input)
+	input = NULL;
+	while (1)
 	{
-		if (*input != 0)
+		input = readline("minishell -> ");
+		if (input && *input != 0)
 		{
 			add_history(input);
 			token_list = tokenize_input(input);
-			//print_token_list(&token_list);
+			// print_token_list(&token_list);
 			ft_check_vars(&token_list, new_environ);
-			//print_token_list(&token_list);
+			// print_token_list(&token_list);
 			execute_commands(token_list, &new_environ, &status);
-			if (typed_exit(token_list))
+			if (token_list && typed_exit(token_list))
 				break ;
 		}
+		else if (!input)
+			break ;
 		clean_memory(&input, &token_list, &new_environ, 0);
-		input = readline("minishell -> ");
 	}
 	clean_memory(&input, &token_list, &new_environ, 1);
 	return ((unsigned char)status);

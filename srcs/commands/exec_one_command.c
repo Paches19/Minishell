@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_one_command.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jutrera- <jutrera-@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 17:09:08 by jutrera-          #+#    #+#             */
-/*   Updated: 2023/04/09 17:09:08 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/04/10 19:03:00 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,11 @@ static void	ft_close_out(int stdout_cpy)
 	close(stdout_cpy);
 }
 
-void	exec_one_command(t_pipe *pipe_s, char ***new_environ)
+void	exec_one_command(t_token *token_list, t_pipe *pipe_s, char ***new_environ)
 {
 	pid_t	pid;
 	char	**split_cmd;
-	t_token	*token_list;
+	// t_token	*token_list;
 	int		stdout_cpy;
 
 	split_cmd = ft_split(pipe_s->cmd[pipe_s->i], ' ');
@@ -45,9 +45,9 @@ void	exec_one_command(t_pipe *pipe_s, char ***new_environ)
 	{
 		stdout_cpy = dup(STDOUT_FILENO);
 		ft_dup_fd(&pipe_s);
-		token_list = tokenize_input(pipe_s->cmd[pipe_s->i]);
+		// token_list = tokenize_input(pipe_s->cmd[pipe_s->i]);
 		pipe_s->err = exec_builtins(token_list, new_environ, pipe_s->status, 0);
-		free_tokens(&token_list);
+		// free_tokens(&token_list);
 		ft_close_out(stdout_cpy);
 		pipe_s->status = (unsigned char)pipe_s->err;
 	}

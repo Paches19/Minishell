@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/31 11:13:20 by adpachec          #+#    #+#             */
-/*   Updated: 2023/04/04 10:42:32 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/10 19:02:03 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 		{
 			if (pipe_s.fd_in != -1)
 			{
-				exec_one_command(&pipe_s, new_environ);
+				exec_one_command(token_list, &pipe_s, new_environ);
 				*status = (unsigned char)pipe_s.status;
 			}
 			else

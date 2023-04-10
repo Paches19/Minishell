@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_cmd.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jutrera- <jutrera-@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 17:17:23 by jutrera-          #+#    #+#             */
-/*   Updated: 2023/04/09 17:17:23 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/04/10 18:03:31 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ char	**get_cmd(t_token *token_list, int n_pipes)
 			t = t->next;
 			while (t && t->type != PIPE && !ft_is_redirect_token(t))
 			{
+				if (t->type == SINGLE_QUOTE && t->token[0] == 0)
+					cmd[i] = ft_strjoin_space(cmd[i], "\'\'");
 				cmd[i] = ft_strjoin_space(cmd[i], t->token);
 				t = t->next;
 			}

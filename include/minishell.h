@@ -84,7 +84,8 @@ int		ft_unset(t_token *token_list, char ***new_environ, int is_pipe);
 void	execute_commands(t_token *token_list, char ***new_environ, int *status);
 t_pipe	init_pipe_struct(t_token *token_list,
 			char **new_environ, int *status);
-void	exec_one_command(t_pipe *pipe_s, char ***new_environ);
+void	exec_one_command(t_token *token_list, t_pipe *pipe_s, \
+		char ***new_environ);
 void	pipex(t_pipe *pipe_s, char ***new_environ);
 char	**get_cmd(t_token *token_list, int n_pipes);
 //		get_paths_access.c
