@@ -70,7 +70,7 @@ int	main(int argc, char **argv, char **env)
 	input = NULL;
 	while (1)
 	{
-		input = readline("minishell -> ");
+		input = readline("\x1b[33mminishell ->\x1b[0m ");
 		if (input && *input != 0)
 		{
 			add_history(input);
