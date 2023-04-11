@@ -87,5 +87,6 @@ int	main(int argc, char **argv, char **env)
 		clean_memory(&input, &token_list, &new_environ, 0);
 	}
 	clean_memory(&input, &token_list, &new_environ, 1);
+	printf("exit status: %d\n", (unsigned char)status);
 	return ((unsigned char)status);
 }

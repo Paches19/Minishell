@@ -51,7 +51,7 @@ int	export_errors(char *s)
 	e = 0;
 	if (s[0] == '=')
 	{
-		ft_putstr_fd("export: bad identifier\n", STDERR_FILENO);
+		ft_putstr_fd("minishell: export: bad identifier\n", STDERR_FILENO);
 		e = 1;
 	}
 	else
@@ -61,7 +61,8 @@ int	export_errors(char *s)
 		{
 			if (!ft_isalpha(s[i]) && s[i] != '_')
 			{
-				ft_putstr_fd("export: bad identifier\n", STDERR_FILENO);
+				ft_putstr_fd("minishell: export: bad identifier\n", \
+				STDERR_FILENO);
 				e = 1;
 			}			
 			i++;

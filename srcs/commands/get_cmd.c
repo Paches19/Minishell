@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 17:17:23 by jutrera-          #+#    #+#             */
-/*   Updated: 2023/04/10 18:03:31 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/11 12:57:11 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,19 @@ static int	ft_is_redirect_token(t_token *token)
 	|| token->type == APPEND_REDIRECT || token->type == HEREDOC_REDIRECT);
 }
 
+static int	ft_is_quote_token(t_token *token)
+{
+	return (token->type == SINGLE_QUOTE || token->type == DOUBLE_QUOTE);
+}
+
+static char	*join_cmd(char *cmd, t_token *t)
+{
+	if (ft_is_quote_token(t) && (t->token[0] == 0 || t->token[0] == 32))
+		return(ft_strjoin_space(cmd, "\'\'"));
+	else
+		return(ft_strjoin_space(cmd, t->token));
+}
+
 char	**get_cmd(t_token *token_list, int n_pipes)
 {
 	t_token	*t;
@@ -61,9 +74,7 @@ char	**get_cmd(t_token *token_list, int n_pipes)
 			t = t->next;
 			while (t && t->type != PIPE && !ft_is_redirect_token(t))
 			{
-				if (t->type == SINGLE_QUOTE && t->token[0] == 0)
-					cmd[i] = ft_strjoin_space(cmd[i], "\'\'");
-				cmd[i] = ft_strjoin_space(cmd[i], t->token);
+				cmd[i] = join_cmd(cmd[i], t);
 				t = t->next;
 			}
 		}

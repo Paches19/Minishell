@@ -31,7 +31,7 @@ static int	execute_cd(t_token *p, char **env)
 		return (1);
 	if (chdir(dir) == -1)
 	{
-		perror("cd");
+		printf("cd: %s: No such file or directory\n", p->token);
 		free(dir);
 		return (1);
 	}

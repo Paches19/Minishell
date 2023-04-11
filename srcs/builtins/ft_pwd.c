@@ -26,7 +26,7 @@ static int	there_are_args(t_token *token_list)
 	}
 	if (i > 0)
 	{
-		ft_putstr_fd("pwd: Too many arguments", STDERR_FILENO);
+		ft_putstr_fd("minishell: pwd: Too many arguments", STDERR_FILENO);
 		return (1);
 	}
 	return (0);
@@ -46,7 +46,7 @@ int	ft_pwd(t_token *token_list, int is_pipe)
 			s = 0;
 		}
 		else
-			ft_putstr_fd("pwd", STDERR_FILENO);
+			ft_putstr_fd("minishell: pwd", STDERR_FILENO);
 	}
 	ft_putchar_fd('\n', STDOUT_FILENO);
 	if (is_pipe)

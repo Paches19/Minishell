@@ -26,10 +26,30 @@ static int	lots_of_args(t_token *t)
 	}
 	if (i > 1)
 	{
-		ft_putstr_fd("exit: Too many arguments\n", STDERR_FILENO);
+		ft_putstr_fd("minishell: exit: Too many arguments\n", STDERR_FILENO);
 		return (1);
 	}
 	return (0);
+}
+
+int	ft_is_num(char *token)
+{
+	int	i;
+
+	i = -1;
+	while (token[++i])
+	{
+		if (!ft_isdigit(token[i]))
+			return (0);
+	}
+	return (1);
+}
+
+void	error_built_exit(char *token)
+{
+	ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
+	ft_putstr_fd(token, STDERR_FILENO);
+	ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
 }
 
 int	ft_exit(t_token *token_list, int status, int is_pipe)
@@ -44,7 +64,14 @@ int	ft_exit(t_token *token_list, int status, int is_pipe)
 	else if (lots_of_args(p))
 		s = 1;
 	else
+	{
+		if (!ft_is_num(p->token))
+		{
+			error_built_exit(p->token);
+			return (2);
+		}
 		s = ft_atoi(p->token);
+	}
 	if (is_pipe)
 		exit ((unsigned char)s);
 	return ((unsigned char)s);

@@ -41,9 +41,9 @@ static int	ft_delete_var(t_token *p, char ***new_environ)
 static int	ft_unset_errors(char e)
 {
 	if (e == 'u')
-		ft_putstr_fd("unset: not enough arguments\n", STDERR_FILENO);
+		ft_putstr_fd("minishell: unset: not enough arguments\n", STDERR_FILENO);
 	if (e == 'e')
-		ft_putstr_fd("unset: bad identifier\n", STDERR_FILENO);
+		ft_putstr_fd("minishell: unset: bad identifier\n", STDERR_FILENO);
 	return (1);
 }
 

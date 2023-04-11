@@ -29,7 +29,6 @@ static void	ft_write_echo(char *s)
 {
 	int	i;
 
-	// fprintf(stderr, "token: %s\n", s);
 	if (!ft_strcmp(s, "$") && ft_strlen(s) == 1)
 		return  ;
 	i = 0;
@@ -93,7 +92,6 @@ int	ft_echo(t_token *token_list, int status, int is_pipe)
 	{
 		if (p->token)
 		{
-			// fprintf(stderr, "token: %s\n", p->token);
 			if (!ft_strcmp(p->token, "$?") && ft_strlen(p->token) == 2)
 				ft_putnbr_fd(status, STDOUT_FILENO);
 			else if (p->type == DOUBLE_QUOTE || p->type == SINGLE_QUOTE)
