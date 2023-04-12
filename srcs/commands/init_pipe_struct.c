@@ -34,28 +34,29 @@ static int	create_heredoc(char *finish)
 	else if (pid == 0)
 	{
 		r = 0;
-		fd = open("/tmp/heredocXXXXXX", O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+		fd = open("/tmp/heredocXXXXXX", O_RDWR | O_CREAT | O_EXCL,
+				S_IRUSR | S_IWUSR);
 		if (fd == -1)
 		{
 			perror("open");
 			exit(1);
-    	}
+		}
 		signal(SIGINT, handler_ctrl_c);
 		while (1)
 		{
 			line = readline("heredoc> ");
 			if (ft_strcmp(line, finish) == 0)
-				break;
+				break ;
 			if (line && *line != '\n')
 			{
 				write(fd, line, ft_strlen(line));
 				write(fd, "\n", 1);
 			}
 			if (line)
-				free(line);
+				free (line);
 		}
 		if (line)
-			free(line);
+			free (line);
 		close(fd);
 		exit (1);
 	}

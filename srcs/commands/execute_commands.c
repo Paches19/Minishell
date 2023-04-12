@@ -18,18 +18,18 @@ void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 
 	if (token_list)
 	{
+		signal(SIGINT, renewprompt2);
 		pipe_s = init_pipe_struct(token_list, *new_environ, status);
 		if (pipe_s.fd_in == -1)
 			*status = 130;
 		else if (pipe_s.num_pipes == 0)
 		{
+			*status = 1;
 			if (pipe_s.fd_in != -1)
 			{
 				exec_one_command(token_list, &pipe_s, new_environ);
 				*status = (unsigned char)pipe_s.status;
 			}
-			else
-				*status = 1;
 		}
 		else
 		{
@@ -39,5 +39,6 @@ void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 		free_matrix(pipe_s.cmd);
 		free_matrix(pipe_s.paths);
 		unlink("/tmp/heredocXXXXXX");
+		signal(SIGINT, renewprompt);
 	}
 }

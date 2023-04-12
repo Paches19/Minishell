@@ -104,6 +104,7 @@ int		count_vars(char ***new_environ);
 int		env_in_order(char **new_environ, int len);
 // ******************************* prompt *************************************
 void	renewprompt(int signal);
+void	renewprompt2(int signal);
 // ******************************* style **************************************
 void	splash(void);
 // ******************************* tokenization *******************************

@@ -11,12 +11,7 @@
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-/*
-static void	ft_leaks(void)
-{
-	system("leaks -q minishell");
-}
-*/
+
 static void	clean_memory(char **i, t_token **t, char ***n, int end)
 {
 	if (i && *i)
@@ -65,19 +60,14 @@ int	main(int argc, char **argv, char **env)
 
 	(void)argc;
 	(void )**argv;
-	//atexit(ft_leaks);
 	init_minishell(&status, &new_environ, &token_list, env);
-	input = NULL;
 	while (1)
 	{
 		input = readline("\x1b[33mminishell ->\x1b[0m ");
 		if (input && *input != 0)
 		{
-			add_history(input);
 			token_list = tokenize_input(input);
-			//print_token_list(&token_list);
 			ft_check_vars(&token_list, new_environ);
-			//print_token_list(&token_list);
 			execute_commands(token_list, &new_environ, &status);
 			if (token_list && typed_exit(token_list))
 				break ;
@@ -87,6 +77,5 @@ int	main(int argc, char **argv, char **env)
 		clean_memory(&input, &token_list, &new_environ, 0);
 	}
 	clean_memory(&input, &token_list, &new_environ, 1);
-	printf("exit status: %d\n", (unsigned char)status);
 	return ((unsigned char)status);
 }

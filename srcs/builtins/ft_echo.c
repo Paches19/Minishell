@@ -30,7 +30,7 @@ static void	ft_write_echo(char *s)
 	int	i;
 
 	if (!ft_strcmp(s, "$") && ft_strlen(s) == 1)
-		return  ;
+		return ;
 	i = 0;
 	while (s[i])
 	{
@@ -46,8 +46,9 @@ static void	ft_write_echo_quotes(char *s)
 
 	if (!ft_strcmp(s, "\'\'") && ft_strlen(s) == 2)
 		return ;
-	i = -1;
-	while (s[++i] == ' ');
+	i = 0;
+	while (s[i] == ' ')
+		++i;
 	while (s[i])
 	{
 		ft_putchar_fd(s[i], STDOUT_FILENO);
@@ -88,7 +89,8 @@ int	ft_echo(t_token *token_list, int status, int is_pipe)
 
 	p = token_list->next;
 	nl = read_flag(&p);
-	while (p && (ft_printable_token(p) || (!ft_strcmp(p->token, "$?") && ft_strlen(p->token) == 2)))
+	while (p && (ft_printable_token(p)
+			|| (!ft_strcmp(p->token, "$?") && ft_strlen(p->token) == 2)))
 	{
 		if (p->token)
 		{

@@ -103,6 +103,7 @@ t_token	*tokenize_input(char *input)
 	if (!input)
 		return (NULL);
 	token_list = NULL;
+	add_history(input);
 	while (*input)
 	{
 		token = (char *) input;

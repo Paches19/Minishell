@@ -52,9 +52,9 @@ static int	ft_is_quote_token(t_token *token)
 static char	*join_cmd(char *cmd, t_token *t)
 {
 	if (ft_is_quote_token(t) && (t->token[0] == 0 || t->token[0] == 32))
-		return(ft_strjoin_space(cmd, "\'\'"));
+		return (ft_strjoin_space(cmd, "\'\'"));
 	else
-		return(ft_strjoin_space(cmd, t->token));
+		return (ft_strjoin_space(cmd, t->token));
 }
 
 char	**get_cmd(t_token *token_list, int n_pipes)

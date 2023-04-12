@@ -33,11 +33,11 @@ static void	ft_close_out(int stdout_cpy)
 	close(stdout_cpy);
 }
 
-void	exec_one_command(t_token *token_list, t_pipe *pipe_s, char ***new_environ)
+void	exec_one_command(t_token *token_list, t_pipe *pipe_s,
+		char ***new_environ)
 {
 	pid_t	pid;
 	char	**split_cmd;
-	// t_token	*token_list;
 	int		stdout_cpy;
 
 	split_cmd = ft_split(pipe_s->cmd[pipe_s->i], ' ');
@@ -45,9 +45,7 @@ void	exec_one_command(t_token *token_list, t_pipe *pipe_s, char ***new_environ)
 	{
 		stdout_cpy = dup(STDOUT_FILENO);
 		ft_dup_fd(&pipe_s);
-		// token_list = tokenize_input(pipe_s->cmd[pipe_s->i]);
 		pipe_s->err = exec_builtins(token_list, new_environ, pipe_s->status, 0);
-		// free_tokens(&token_list);
 		ft_close_out(stdout_cpy);
 		pipe_s->status = (unsigned char)pipe_s->err;
 	}

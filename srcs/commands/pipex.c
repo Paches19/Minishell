@@ -22,7 +22,7 @@ void	pipex(t_pipe *pipe_s, char ***new_environ)
 	pipe_s->i = -1;
 	fd_in = pipe_s->fd_in;
 	if (pipe_s->fd_in < 0)
-		exit_error(errno); //ERROR DE FD ENTRADA
+		exit_error(errno);
 	while (++pipe_s->i < pipe_s->num_cmds)
 	{
 		if (pipe(pipe_s->fd) < 0)
