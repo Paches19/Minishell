@@ -48,7 +48,7 @@ char	**get_av(char **cmd)
 	size_cmd = get_size_cmd(cmd);
 	av = (char **)ft_calloc(sizeof(char *), size_cmd + 1);
 	if (!av)
-		error_cmd(ENOMEM);
+		cmd_error(ENOMEM);
 	i = -1;
 	while (++i < size_cmd)
 	{
@@ -57,7 +57,7 @@ char	**get_av(char **cmd)
 		{
 			free_matrix(av);
 			free_matrix(cmd);
-			error_cmd(ENOMEM);
+			cmd_error(ENOMEM);
 		}
 	}
 	i = -1;
@@ -65,6 +65,14 @@ char	**get_av(char **cmd)
 		av[i] = cmd[i];
 	free_matrix(cmd);
 	return (av);
+}
+
+static void	command_not_found(char *cmd, char **path)
+{
+	ft_putstr_fd(cmd, STDERR_FILENO);
+	ft_putstr_fd(": command not found\n", STDERR_FILENO);
+	free(*path);
+	*path = NULL;
 }
 
 char	*try_access(char **cmd, char **paths)
@@ -76,12 +84,12 @@ char	*try_access(char **cmd, char **paths)
 	err = -1;
 	i = -1;
 	file_path = NULL;
-	// printf("path[0]: %s\n", paths[0]);
-	if (cmd[0][0] == '/')  //Nos dan el path
-		return(*cmd);
+	if (!cmd)
+		return (NULL);
+	if (*cmd && **cmd == '/')
+		return (*cmd);
 	while (paths && paths[++i] && err < 0)
 	{
-		// printf("llego: %d\n", i);
 		if (file_path)
 			free(file_path);
 		if (paths[i][ft_strlen(paths[i]) - 1] != '/')
@@ -90,23 +98,6 @@ char	*try_access(char **cmd, char **paths)
 		err = access(file_path, X_OK);
 	}
 	if (err < 0)
-	{
-		write(2, cmd[0], ft_strlen(cmd[0]));
-		write(2, ": command not found\n", 20);
-		free(file_path);
-		file_path = NULL;
-		//return ("^");
-		//exit(127);
-	}
-	return (file_path);
-}
-
-char	*get_paths_cmd_son_2(char ***paths, char ***cmd, char *const *argv, char **envp)
-{
-	char	*file_path;
-
-	paths[0] = get_path(envp);
-	cmd[0] = ft_split(argv[3], ' ');
-	file_path = try_access(cmd[0], paths[0]);
+		command_not_found(cmd[0], &file_path);
 	return (file_path);
 }

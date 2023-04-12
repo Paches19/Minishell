@@ -18,23 +18,19 @@ static int	ft_check_var_exist(char *token, char ***new_environ)
 	int	j;
 	int	len;
 
-	len = -1;
-	while (token[++len] && token[len] != '=');
+	len = 0;
+	while (token[len] && token[len] != '=')
+			len++;
 	i = -1;
 	while ((*new_environ)[++i])
 	{
-		j = -1;
-		while ((*new_environ)[i][++j] != '=');
+		j = 0;
+		while ((*new_environ)[i][j] != '=')
+			j++;
 		if (len == j && !ft_strncmp(token, (*new_environ)[i], j))
 			return (i);
 	}
 	return (-1);
-}
-
-static void	ft_replace_var(char *token, char ***new_environ, int i)
-{
-	free((*new_environ)[i]);
-	(*new_environ)[i] = ft_strdup(token);
 }
 
 static void	ft_extend_env(char *token, char ***new_environ, int *len)
@@ -57,49 +53,70 @@ static void	ft_extend_env(char *token, char ***new_environ, int *len)
 	++*len;
 }
 
-static void	ft_execute_export(char **token, char ***new_environ, int *len)
+static void	ft_execute_export(t_token **p, char ***new_environ, int *len)
 {
 	int		i;
 	char	*s;
-	
-	if (!ft_strchr(*token, '='))
+	char	*equal;
+
+	i = ft_check_var_exist((*p)->token, new_environ);
+	equal = ft_strchr((*p)->token, '=');
+	if (i < 0)
 	{
-		s = ft_strjoin(*token, "=''");
-		free(*token);
-		*token = s;
+		if (!equal)
+		{
+			s = ft_strjoin((*p)->token, "=''");
+			free((*p)->token);
+			(*p)->token = s;
+		}
+		ft_extend_env((*p)->token, new_environ, len);
 	}
-	i = ft_check_var_exist(*token, new_environ);
-	if (i >= 0)
-		ft_replace_var(*token, new_environ, i);
-	else
-		ft_extend_env(*token, new_environ, len);
-	
+	else if (equal && *(equal + 1) != 0)
+	{
+		free((*new_environ)[i]);
+		(*new_environ)[i] = ft_strdup((*p)->token);
+	}		
 }
 
-int ft_export(t_token *token_list, char ***new_environ)
+static void	check_equal(t_token **p)
+{
+	char	*equal;
+	char	*s;
+
+	equal = ft_strchr((*p)->token, '=');
+	if (!equal && (*p)->next && *(*p)->next->token == '=')
+	{
+		s = ft_strjoin((*p)->token, (*p)->next->token);
+		*p = (*p)->next;
+		free((*p)->token);
+		(*p)->token = s;
+	}
+}
+
+int	ft_export(t_token *token_list, char ***new_environ, int is_pipe)
 {
 	t_token	*p;
-	int		i;
 	int		len;
-	
-	len = 0;
-	while ((*new_environ)[len])
-		len++;
+	int		status;
+
+	len = count_vars(new_environ);
 	p = token_list->next;
 	if (!p)
-		return (ft_env_in_order(*new_environ, len));
-	while (p && p->type == COMMAND)
+		status = env_in_order(*new_environ, len);
+	else
 	{
-		i = -1;
-		if (p->token[0] == '=')
-			return (ft_builtins_errors('e'));
-		while (p->token[++i] && p->token[i] != '=')
+		status = 0;
+		while (p && p->type == COMMAND)
 		{
-			if (!ft_isalpha(p->token[i]) && p->token[i] != '_')
-				return (ft_builtins_errors('e'));
+			check_equal(&p);
+			if (!export_errors(p->token))
+				ft_execute_export(&p, new_environ, &len);
+			else
+				status = 1;
+			p = p->next;
 		}
-		ft_execute_export(&p->token, new_environ, &len);
-		p = p->next;
 	}
-	return (0);
+	if (is_pipe)
+		exit (status);
+	return (status);
 }
