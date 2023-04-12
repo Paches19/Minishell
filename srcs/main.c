@@ -75,9 +75,9 @@ int	main(int argc, char **argv, char **env)
 		{
 			add_history(input);
 			token_list = tokenize_input(input);
-			// print_token_list(&token_list);
+			//print_token_list(&token_list);
 			ft_check_vars(&token_list, new_environ);
-			// print_token_list(&token_list);
+			//print_token_list(&token_list);
 			execute_commands(token_list, &new_environ, &status);
 			if (token_list && typed_exit(token_list))
 				break ;

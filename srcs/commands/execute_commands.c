@@ -19,7 +19,9 @@ void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 	if (token_list)
 	{
 		pipe_s = init_pipe_struct(token_list, *new_environ, status);
-		if (pipe_s.num_pipes == 0)
+		if (pipe_s.fd_in == -1)
+			*status = 130;
+		else if (pipe_s.num_pipes == 0)
 		{
 			if (pipe_s.fd_in != -1)
 			{
@@ -36,5 +38,6 @@ void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 		}
 		free_matrix(pipe_s.cmd);
 		free_matrix(pipe_s.paths);
+		unlink("/tmp/heredocXXXXXX");
 	}
 }

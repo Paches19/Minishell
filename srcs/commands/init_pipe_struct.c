@@ -12,12 +12,9 @@
 
 #include "../../include/minishell.h"
 
-static int	r;
-
 static void	handler_ctrl_c(int sig)
 {
 	(void)sig;
-	r = 0;
 	exit (0);
 }
 
@@ -26,6 +23,7 @@ static int	create_heredoc(char *finish)
 	int		fd;
 	char	*line;
 	pid_t	pid;
+	int		r;
 
 	pid = fork();
 	if (pid == -1)
@@ -35,13 +33,13 @@ static int	create_heredoc(char *finish)
 	}
 	else if (pid == 0)
 	{
+		r = 0;
 		fd = open("/tmp/heredocXXXXXX", O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
 		if (fd == -1)
 		{
 			perror("open");
 			exit(1);
     	}
-		r = 1;
 		signal(SIGINT, handler_ctrl_c);
 		while (1)
 		{
@@ -59,11 +57,27 @@ static int	create_heredoc(char *finish)
 		if (line)
 			free(line);
 		close(fd);
-		signal(SIGINT, renewprompt);
+		exit (1);
 	}
 	else
 		waitpid(pid, &r, 0);
 	return (r);
+}
+
+t_token	*ft_last_inheredoc(t_token *token_list)
+{
+	t_token	*t;
+	t_token	*last_redirect;
+
+	t = token_list;
+	last_redirect = NULL;
+	while (t)
+	{
+		if (t->type == HEREDOC_REDIRECT)
+			last_redirect = t;
+		t = t->next;
+	}
+	return (last_redirect);
 }
 
 t_token	*ft_last_inredirect(t_token *token_list)
@@ -101,8 +115,11 @@ t_token	*ft_last_outredirect(t_token *token_list)
 static int	get_infile(t_token *token_list)
 {
 	t_token	*t;
+	int		r;
 
 	t = ft_last_inredirect(token_list);
+	if (!t)
+		t = ft_last_inheredoc(token_list);
 	if (t && t->type == INPUT_REDIRECT)
 	{
 		if (access(t->token, F_OK))
