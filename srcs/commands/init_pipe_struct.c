@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 17:03:15 by jutrera-          #+#    #+#             */
-/*   Updated: 2023/04/10 19:34:39 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/12 19:48:29 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static int	create_heredoc(char *finish)
 			perror("open");
 			exit(1);
 		}
-		signal(SIGINT, handler_ctrl_c);
+		signal(SIGINT, &handler_ctrl_c);
 		while (1)
 		{
 			line = readline("heredoc> ");
@@ -50,10 +50,18 @@ static int	create_heredoc(char *finish)
 			if (line && *line != '\n')
 			{
 				write(fd, line, ft_strlen(line));
-				write(fd, "\n", 1);
-			}
-			if (line)
+				write(fd, "\n", 2);
 				free (line);
+			}
+			else if (!line)
+			{
+				ft_putstr_fd("minishell: warning: here", STDOUT_FILENO);
+				ft_putstr_fd("-document delimited by end-of", STDOUT_FILENO);
+				ft_putstr_fd("-file at this line (wanted '", STDOUT_FILENO);
+				ft_putstr_fd(finish, STDOUT_FILENO);
+				ft_putstr_fd("')\n", STDOUT_FILENO);
+				break ;
+			}
 		}
 		if (line)
 			free (line);

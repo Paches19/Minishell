@@ -26,6 +26,7 @@ static void	clean_memory(char **i, t_token **t, char ***n, int end)
 
 static void	init_minishell(int *s, char ***n, t_token **t, char **env)
 {
+	unlink("/tmp/heredocXXXXXX");
 	splash();
 	signal(SIGINT, &renewprompt);
 	signal(SIGQUIT, SIG_IGN);
@@ -73,7 +74,10 @@ int	main(int argc, char **argv, char **env)
 				break ;
 		}
 		else if (!input)
+		{
+			ft_putchar_fd('\n', STDOUT_FILENO);
 			break ;
+		}
 		clean_memory(&input, &token_list, &new_environ, 0);
 	}
 	clean_memory(&input, &token_list, &new_environ, 1);

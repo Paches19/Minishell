@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/31 11:13:20 by adpachec          #+#    #+#             */
-/*   Updated: 2023/04/10 19:02:03 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/12 18:45:00 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 	if (token_list)
 	{
 		signal(SIGINT, renewprompt2);
+		
 		pipe_s = init_pipe_struct(token_list, *new_environ, status);
 		if (pipe_s.fd_in == -1)
 			*status = 130;

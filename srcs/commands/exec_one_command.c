@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 17:09:08 by jutrera-          #+#    #+#             */
-/*   Updated: 2023/04/10 19:03:00 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/12 18:51:04 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	exec_one_command(t_token *token_list, t_pipe *pipe_s,
 	int		stdout_cpy;
 
 	split_cmd = ft_split(pipe_s->cmd[pipe_s->i], ' ');
-	if (ft_is_builtin(split_cmd[0]))
+	if (split_cmd && ft_is_builtin(split_cmd[0]))
 	{
 		stdout_cpy = dup(STDOUT_FILENO);
 		ft_dup_fd(&pipe_s);
@@ -49,16 +49,21 @@ void	exec_one_command(t_token *token_list, t_pipe *pipe_s,
 		ft_close_out(stdout_cpy);
 		pipe_s->status = (unsigned char)pipe_s->err;
 	}
-	else
+	else if (split_cmd)
 	{
 		pid = fork();
 		if (!pid)
 		{
+			signal(SIGQUIT, &renewprompt);
 			ft_dup_fd(&pipe_s);
 			pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
 			pipe_s->err = execve(pipe_s->file_path, split_cmd, *new_environ);
 			if (pipe_s->err == -1)
+			{
+				free_matrix(pipe_s->cmd);
+				free_matrix(pipe_s->paths);
 				exit (EXIT_FAILURE);
+			}
 		}
 		else
 		{

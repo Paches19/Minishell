@@ -38,6 +38,7 @@ void	pipex(t_pipe *pipe_s, char ***new_environ)
 		}
 		else if (pid == 0)
 		{
+			signal(SIGQUIT, &renewprompt);
 			dup2(fd_in, STDIN_FILENO);
 			if (pipe_s->i == pipe_s->num_cmds - 1)
 				dup2(pipe_s->fd_out, STDOUT_FILENO);

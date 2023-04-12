@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 17:17:23 by jutrera-          #+#    #+#             */
-/*   Updated: 2023/04/11 12:57:11 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/12 19:00:45 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ char	**get_cmd(t_token *token_list, int n_pipes)
 	i = -1;
 	while (t)
 	{
-		if (t->type == COMMAND || t->type == BUILTIN)
+		if (t->type == COMMAND || t->type == BUILTIN || t->type == DOUBLE_QUOTE)
 		{
 			cmd[++i] = ft_strdup(t->token);
 			t = t->next;
