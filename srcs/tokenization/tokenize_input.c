@@ -37,14 +37,14 @@ static enum e_token_type	get_token_type(const char *token, int len)
 		return (ARGUMENT);
 	else if (ft_strcmp(token, "|") == 0)
 		return (PIPE);
-	else if (ft_strcmp(token, ">>") == 0 && len == 2)
-		return (APPEND_REDIRECT);
-	else if (ft_strcmp(token, "<<") == 0 && len == 2)
-		return (HEREDOC_REDIRECT);
-	else if (ft_strcmp(token, "<") == 0)
-		return (INPUT_REDIRECT);
-	else if (ft_strcmp(token, ">") == 0)
-		return (OUTPUT_REDIRECT);
+	// else if (ft_strcmp(token, ">>") == 0 && len == 2)
+	// 	return (APPEND_REDIRECT);
+	// else if (ft_strcmp(token, "<<") == 0 && len == 2)
+	// 	return (HEREDOC_REDIRECT);
+	// else if (ft_strcmp(token, "<") == 0)
+	// 	return (INPUT_REDIRECT);
+	// else if (ft_strcmp(token, ">") == 0)
+	// 	return (OUTPUT_REDIRECT);
 	else if (*token == '\"' && token[ft_strlen(token) - 1] == '\"')
 		return (DOUBLE_QUOTE);
 	else if (*token == '\'' && token[ft_strlen(token) - 1] == '\'')
@@ -56,12 +56,28 @@ static enum e_token_type	get_token_type(const char *token, int len)
 	return (COMMAND);
 }
 
-static enum e_token_type	get_type_redirect(const char *token)
+static enum e_token_type	get_heredoc_type(char *input, int len)
+{
+	int	i;
+
+	i = -1;
+	fprintf(stderr, "input: ");
+	while (++i < len)
+	{
+		fprintf(stderr, "%c", input[i]);
+		if (ft_is_quote(input[i]))
+			return (HEREDOC_QUOTE);
+	}
+	return (HEREDOC_REDIRECT);
+}
+
+static enum e_token_type	get_type_redirect(const char *token, char *input,
+												int len)
 {
 	if (ft_strncmp(token, ">>", 2) == 0)
 		return (APPEND_REDIRECT);
 	else if (ft_strncmp(token, "<<", 2) == 0)
-		return (HEREDOC_REDIRECT);
+		return (get_heredoc_type(input, len));
 	else if (ft_strncmp(token, "<", 1) == 0)
 		return (INPUT_REDIRECT);
 	else if (ft_strncmp(token, ">", 1) == 0)
@@ -84,7 +100,7 @@ char *token)
 	while (ft_is_space(*token))
 		++token;
 	if (ft_is_redirect(*token))
-		new_token->type = get_type_redirect(token);
+		new_token->type = get_type_redirect(token, input, len);
 	else
 		new_token->type = get_token_type(new_token->token, len);
 	if (*list == NULL)

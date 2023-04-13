@@ -28,6 +28,8 @@ static char	*ft_convert_type(t_token_type type)
 		return ("APPEND_REDIRECT");
 	else if (type == HEREDOC_REDIRECT)
 		return ("HEREDOC_REDIRECT");
+	else if (type == HEREDOC_QUOTE)
+		return ("HEREDOC_QUOTE");
 	else if (type == DOUBLE_QUOTE)
 		return ("DOUBLE_QUOTE");
 	else if (type == SINGLE_QUOTE)
