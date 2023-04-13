@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   read_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jutrera- <jutrera-@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 16:30:09 by jutrera-          #+#    #+#             */
-/*   Updated: 2023/04/09 16:30:09 by jutrera-         ###   ########.fr       */
+/*   Updated: 2023/04/13 12:21:22 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	read_variable(char ***input)
 	}
 	len = 1;
 	while (**input && !ft_is_space(***input)
-		&& !ft_is_special(***input) && ft_isalpha(***input))
+		&& !ft_is_special(***input) && ft_isalnum(***input))
 	{
 		++**input;
 		++len;
