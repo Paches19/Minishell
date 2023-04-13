@@ -61,10 +61,8 @@ static enum e_token_type	get_heredoc_type(char *input, int len)
 	int	i;
 
 	i = -1;
-	fprintf(stderr, "input: ");
 	while (++i < len)
 	{
-		fprintf(stderr, "%c", input[i]);
 		if (ft_is_quote(input[i]))
 			return (HEREDOC_QUOTE);
 	}
