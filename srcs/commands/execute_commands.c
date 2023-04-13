@@ -17,7 +17,14 @@ static void	ft_finish(t_pipe *p)
 	free_matrix(p->cmd);
 	free_matrix(p->paths);
 	unlink("/tmp/heredocXXXXXX");
-	signal(SIGINT, renewprompt);
+	signal(SIGINT, &renewprompt);
+	signal(SIGQUIT, SIG_IGN);
+}
+
+static void	quit_command(int sig)
+{
+	(void)sig;
+	ft_putstr_fd("Quit\n", STDOUT_FILENO);
 }
 
 void	execute_commands(t_token *token_list, char ***new_environ, int *status)
@@ -26,8 +33,9 @@ void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 
 	if (token_list)
 	{
-		signal(SIGINT, renewprompt2);
 		pipe_s = init_pipe_struct(token_list, *new_environ, status);
+		signal(SIGINT, &renewprompt2);
+		signal(SIGQUIT, &quit_command);
 		if (pipe_s.fd_in == -1)
 			*status = 130;
 		else if (pipe_s.num_pipes == 0)

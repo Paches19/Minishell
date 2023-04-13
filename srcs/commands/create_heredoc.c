@@ -24,6 +24,7 @@ static int	ft_init_child(void)
 		exit(1);
 	}
 	signal(SIGINT, &handler_ctrl_c);
+	signal(SIGQUIT, SIG_IGN);
 	return (fd);
 }
 

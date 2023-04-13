@@ -96,6 +96,7 @@ char	**get_cmd(t_token *token_list, int n_pipes);
 int		create_heredoc(t_token *t, char **new_environ);
 //		create_heredoc_utils.c
 void	handler_ctrl_c(int sig);
+void	handler_slash(int sig);
 void	ft_message_ctrld(char *s);
 void	ft_error_fork(void);
 void	eliminate_quotes(char **s);

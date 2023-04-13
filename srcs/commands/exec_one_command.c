@@ -38,11 +38,34 @@ static void	ft_close_out(int stdout_cpy, int stdin_cpy)
 	close(stdin_cpy);
 }
 
-static int	ft_failure(t_pipe *p)
+static void	execute_nobuilting(char **split_cmd, t_pipe *pipe_s,
+		char ***new_environ)
 {
-	free_matrix(p->cmd);
-	free_matrix(p->paths);
-	return (EXIT_FAILURE);
+	int	stdout_cpy;
+	int	stdin_cpy;
+
+	signal(SIGQUIT, &renewprompt);
+	ft_dup_fd(&pipe_s, &stdout_cpy, &stdin_cpy);
+	pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
+	pipe_s->err = execve(pipe_s->file_path, split_cmd, *new_environ);
+	if (pipe_s->err == -1)
+	{
+		free_matrix(pipe_s->cmd);
+		free_matrix(pipe_s->paths);
+		exit (EXIT_FAILURE);
+	}
+}
+
+static unsigned char	execute_builting(t_token *token_list, t_pipe *pipe_s,
+		char ***new_environ)
+{
+	int	stdout_cpy;
+	int	stdin_cpy;
+
+	ft_dup_fd(&pipe_s, &stdout_cpy, &stdin_cpy);
+	pipe_s->err = exec_builtins(token_list, new_environ, pipe_s->status, 0);
+	ft_close_out(stdout_cpy, stdin_cpy);
+	return ((unsigned char)pipe_s->err);
 }
 
 void	exec_one_command(t_token *token_list, t_pipe *pipe_s,
@@ -50,29 +73,15 @@ void	exec_one_command(t_token *token_list, t_pipe *pipe_s,
 {
 	pid_t	pid;
 	char	**split_cmd;
-	int		stdout_cpy;
-	int		stdin_cpy;
 
 	split_cmd = ft_split(pipe_s->cmd[pipe_s->i], ' ');
 	if (split_cmd && ft_is_builtin(split_cmd[0]))
-	{
-		ft_dup_fd(&pipe_s, &stdout_cpy, &stdin_cpy);
-		pipe_s->err = exec_builtins(token_list, new_environ, pipe_s->status, 0);
-		ft_close_out(stdout_cpy, stdin_cpy);
-		pipe_s->status = (unsigned char)pipe_s->err;
-	}
+		pipe_s->status = execute_builting(token_list, pipe_s, new_environ);
 	else if (split_cmd)
 	{
 		pid = fork();
 		if (!pid)
-		{
-			signal(SIGQUIT, &renewprompt);
-			ft_dup_fd(&pipe_s, &stdout_cpy, &stdin_cpy);
-			pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
-			pipe_s->err = execve(pipe_s->file_path, split_cmd, *new_environ);
-			if (pipe_s->err == -1)
-				exit(ft_failure(pipe_s));
-		}
+			execute_nobuilting(split_cmd, pipe_s, new_environ);
 		else
 		{
 			waitpid(pid, &pipe_s->status, 0);
