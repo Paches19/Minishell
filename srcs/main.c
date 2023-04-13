@@ -67,17 +67,11 @@ int	main(int argc, char **argv, char **env)
 		input = readline("\x1b[33mminishell ->\x1b[0m ");
 		if (input && *input != 0)
 		{
-			token_list = tokenize_input(input);
-			ft_check_vars(&token_list, new_environ);
+			token_list = tokenize_input(input, new_environ);
 			execute_commands(token_list, &new_environ, &status);
-			if (token_list && typed_exit(token_list))
-				break ;
 		}
-		else if (!input)
-		{
-			ft_putchar_fd('\n', STDOUT_FILENO);
+		if (!input || (token_list && typed_exit(token_list)))
 			break ;
-		}
 		clean_memory(&input, &token_list, &new_environ, 0);
 	}
 	clean_memory(&input, &token_list, &new_environ, 1);

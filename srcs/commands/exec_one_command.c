@@ -38,6 +38,13 @@ static void	ft_close_out(int stdout_cpy, int stdin_cpy)
 	close(stdin_cpy);
 }
 
+static int	ft_failure(t_pipe *p)
+{
+	free_matrix(p->cmd);
+	free_matrix(p->paths);
+	return (EXIT_FAILURE);
+}
+
 void	exec_one_command(t_token *token_list, t_pipe *pipe_s,
 		char ***new_environ)
 {
@@ -64,11 +71,7 @@ void	exec_one_command(t_token *token_list, t_pipe *pipe_s,
 			pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
 			pipe_s->err = execve(pipe_s->file_path, split_cmd, *new_environ);
 			if (pipe_s->err == -1)
-			{
-				free_matrix(pipe_s->cmd);
-				free_matrix(pipe_s->paths);
-				exit (EXIT_FAILURE);
-			}
+				exit(ft_failure(pipe_s));
 		}
 		else
 		{

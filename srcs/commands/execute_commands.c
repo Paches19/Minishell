@@ -12,6 +12,14 @@
 
 #include "../../include/minishell.h"
 
+static void	ft_finish(t_pipe *p)
+{
+	free_matrix(p->cmd);
+	free_matrix(p->paths);
+	unlink("/tmp/heredocXXXXXX");
+	signal(SIGINT, renewprompt);
+}
+
 void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 {
 	t_pipe	pipe_s;
@@ -19,7 +27,6 @@ void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 	if (token_list)
 	{
 		signal(SIGINT, renewprompt2);
-		
 		pipe_s = init_pipe_struct(token_list, *new_environ, status);
 		if (pipe_s.fd_in == -1)
 			*status = 130;
@@ -37,9 +44,6 @@ void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 			pipex(&pipe_s, new_environ);
 			*status = pipe_s.status % 129;
 		}
-		free_matrix(pipe_s.cmd);
-		free_matrix(pipe_s.paths);
-		unlink("/tmp/heredocXXXXXX");
-		signal(SIGINT, renewprompt);
+		ft_finish(&pipe_s);
 	}
 }

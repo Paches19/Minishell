@@ -12,6 +12,13 @@
 
 #include "../../include/minishell.h"
 
+static void	write_message(char *s)
+{
+	ft_putstr_fd("minishell: cd:", STDERR_FILENO);
+	ft_putstr_fd(s, STDERR_FILENO);
+	ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+}
+
 static int	execute_cd(t_token *p, char **env)
 {
 	char	*dir;
@@ -31,9 +38,7 @@ static int	execute_cd(t_token *p, char **env)
 		return (1);
 	if (chdir(dir) == -1)
 	{
-		ft_putstr_fd("minishell: cd:", STDERR_FILENO);
-		ft_putstr_fd(p->token, STDERR_FILENO);
-		ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+		write_message(p->token);
 		free(dir);
 		return (1);
 	}

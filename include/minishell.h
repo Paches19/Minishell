@@ -81,6 +81,10 @@ int		ft_exit(t_token *token_list, int status, int is_pipe);
 int		ft_export(t_token *token_list, char ***new_environ, int is_pipe);
 int		ft_pwd(t_token *token_list, int is_pipe);
 int		ft_unset(t_token *token_list, char ***new_environ, int is_pipe);
+//		ft_echo_utils.c
+void	ft_write_simple(char *s);
+void	ft_write_percent(int nl);
+void	ft_write_spaces(t_token *p);
 // ******************************* commands ***********************************
 void	execute_commands(t_token *token_list, char ***new_environ, int *status);
 t_pipe	init_pipe_struct(t_token *token_list,
@@ -89,13 +93,22 @@ void	exec_one_command(t_token *token_list, t_pipe *pipe_s, \
 		char ***new_environ);
 void	pipex(t_pipe *pipe_s, char ***new_environ);
 char	**get_cmd(t_token *token_list, int n_pipes);
+int		create_heredoc(t_token *t, char **new_environ);
+//		create_heredoc_utils.c
+void	handler_ctrl_c(int sig);
+void	ft_message_ctrld(char *s);
+void	ft_error_fork(void);
+void	eliminate_quotes(char **s);
 //		get_paths_access.c
 char	**get_path(char **envp);
 int		get_size_cmd(char **cmd);
 char	**get_av(char **cmd);
 char	*try_access(char **cmd, char **paths);
+//		init_pipe_struct_utils.c
+t_token	*ft_last_inheredoc(t_token *token_list);
 t_token	*ft_last_inredirect(t_token *token_list);
 t_token	*ft_last_outredirect(t_token *token_list);
+int		ft_message_bad_name(char *s);
 // ******************************* environ ************************************
 char	**copy_environ(char **source);
 char	*ft_getenv(char *var_name, char **env);
@@ -111,7 +124,8 @@ void	splash(void);
 // ******************************* tokenization *******************************
 int		ft_reading_token(char **input);
 void	sort_tokens(t_token **token_list);
-t_token	*tokenize_input(char *input);
+t_token	*tokenize_input(char *input, char **env);
+int		check_builtin(const char *token, int len);
 //		ft_is.c
 int		ft_is_special(char c);
 int		ft_is_space(char c);
