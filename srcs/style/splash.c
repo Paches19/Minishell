@@ -27,7 +27,8 @@ void	splash(void)
 	printf(" \u2587     \u2587  \u2587  \u2587   \u2587  \u2587       \u2587");
 	printf("  \u2587   \u2587  \u2587     \u2587   \u2587\n");
 	printf(" \u2587     \u2587  \u2587  \u2587   \u2587  \u2587   \u2587");
-	printf("\u2587\u2587\u2587   \u2587   \u2587   \u2587\u2587    \u2587   \u2587");
+	printf("\u2587\u2587\u2587   \u2587   \u2587   \u2587\u2587    \u2587   ");
+	printf("\u2587");
 	printf("\n\n");
 	printf("\x1b[0m");
 	printf("(by adpachec & jutrera-)\n");
