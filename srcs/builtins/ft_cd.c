@@ -31,7 +31,6 @@ static int	execute_cd(t_token *p, char **env)
 		return (1);
 	if (chdir(dir) == -1)
 	{
-		printf("cd: %s: No such file or directory\n", p->token);
 		ft_putstr_fd("minishell: cd:", STDERR_FILENO);
 		ft_putstr_fd(p->token, STDERR_FILENO);
 		ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
