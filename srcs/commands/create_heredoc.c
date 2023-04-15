@@ -24,7 +24,6 @@ static int	ft_init_child(void)
 		exit(1);
 	}
 	signal(SIGINT, &handler_ctrl_c);
-	signal(SIGQUIT, SIG_IGN);
 	return (fd);
 }
 
@@ -97,6 +96,7 @@ int	create_heredoc(t_token *t, char **new_environ)
 	if (t->type == HEREDOC_QUOTE)
 		eliminate_quotes(&(t->token));
 	pid = fork();
+	r = 1;
 	if (pid == -1)
 		ft_error_fork();
 	else if (pid == 0)

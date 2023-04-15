@@ -63,7 +63,8 @@ int	main(int argc, char **argv, char **env)
 	(void )**argv;
 	init_minishell(&status, &new_environ, &token_list, env);
 	while (1)
-	{
+	{	
+		signal(SIGINT, &renewprompt);
 		input = readline("\x1b[33mminishell ->\x1b[0m ");
 		if (input && *input != 0)
 		{
