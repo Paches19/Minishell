@@ -33,6 +33,6 @@ void	ft_write_percent(int nl)
 
 void	ft_write_spaces(t_token *p)
 {
-	if (p && p->token && p->prev->type != VARIABLE)
+	if (p && p->token)
 		ft_putchar_fd(' ', STDOUT_FILENO);
 }

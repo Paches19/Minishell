@@ -23,7 +23,7 @@ void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 {
 	t_pipe	pipe_s;
 
-	if (token_list)
+	if (token_list && token_list->token)
 	{
 		signal(SIGINT, &renewprompt2);
 		pipe_s = init_pipe_struct(token_list, *new_environ, status);

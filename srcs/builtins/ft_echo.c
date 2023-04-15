@@ -85,7 +85,7 @@ int	ft_echo(t_token *token_list, int status, int is_pipe)
 				ft_putnbr_fd(status, STDOUT_FILENO);
 			else if (p->type == DOUBLE_QUOTE || p->type == SINGLE_QUOTE)
 				ft_write_echo_quotes(p->token);
-			else if (p->next)
+			else if (p->next && p->next->type != COMMAND)
 				ft_write_echo(p->token);
 			else
 				ft_write_simple(p->token);
