@@ -76,5 +76,5 @@ int	main(int argc, char **argv, char **env)
 		clean_memory(&input, &token_list, &new_environ, 0);
 	}
 	clean_memory(&input, &token_list, &new_environ, 1);
-	return ((unsigned char)status);
+	return (status);
 }

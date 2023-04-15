@@ -12,6 +12,33 @@
 
 #include "../../include/minishell.h"
 
+int	ft_num_exit(const char *str)
+{
+	int	sign;
+	int	result;
+	int	i;
+
+	result = 0;
+	sign = 1;
+	i = 0;
+	while ((str[i] >= 9 && str[i] <= 13) || str[i] == 32)
+		i++;
+	if ((str[i] == 45 || str[i] == 43))
+	{
+		if (str[i] == 45)
+			sign = -1;
+		i++;
+	}
+	while (str[i] && str[i] >= 48 && str[i] <= 57)
+	{
+		result = result * 10 + str[i] - 48;
+		i++;
+	}
+	if (str[i])
+		return (0);
+	return (result * sign);
+}
+
 static int	lots_of_args(t_token *t)
 {
 	int		i;
@@ -32,20 +59,7 @@ static int	lots_of_args(t_token *t)
 	return (0);
 }
 
-int	ft_is_num(char *token)
-{
-	int	i;
-
-	i = -1;
-	while (token[++i])
-	{
-		if (!ft_isdigit(token[i]))
-			return (0);
-	}
-	return (1);
-}
-
-void	error_built_exit(char *token)
+static void	error_built_exit(char *token)
 {
 	ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
 	ft_putstr_fd(token, STDERR_FILENO);
@@ -65,14 +79,14 @@ int	ft_exit(t_token *token_list, int status, int is_pipe)
 		s = 1;
 	else
 	{
-		if (!ft_is_num(p->token))
+		s = ft_num_exit(p->token);
+		if (s == 0 && ft_strcmp(p->token, "0") != 0)
 		{
+			s = 255;
 			error_built_exit(p->token);
-			return (2);
 		}
-		s = ft_atoi(p->token);
 	}
 	if (is_pipe)
-		exit ((unsigned char)s);
-	return ((unsigned char)s);
+		exit (s);
+	return (s);
 }

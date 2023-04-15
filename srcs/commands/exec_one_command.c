@@ -65,7 +65,7 @@ static unsigned char	execute_builting(t_token *token_list, t_pipe *pipe_s,
 	ft_dup_fd(&pipe_s, &stdout_cpy, &stdin_cpy);
 	pipe_s->err = exec_builtins(token_list, new_environ, pipe_s->status, 0);
 	ft_close_out(stdout_cpy, stdin_cpy);
-	return ((unsigned char)pipe_s->err);
+	return (pipe_s->err);
 }
 
 void	exec_one_command(t_token *token_list, t_pipe *pipe_s,

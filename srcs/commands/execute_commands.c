@@ -35,7 +35,7 @@ void	execute_commands(t_token *token_list, char ***new_environ, int *status)
 			if (pipe_s.fd_in != -1)
 			{
 				exec_one_command(token_list, &pipe_s, new_environ);
-				*status = (unsigned char)pipe_s.status;
+				*status = pipe_s.status;
 			}
 		}
 		else

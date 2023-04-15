@@ -27,9 +27,7 @@ void	ft_write_simple(char *s)
 
 void	ft_write_percent(int nl)
 {
-	if (nl == 0)
-		ft_putstr_fd("\x1B[30m\x1B[47m%\x1B[0m\x1B[0m\n", STDOUT_FILENO);
-	else if (nl == 1)
+	if (nl == 1)
 		ft_putchar_fd('\n', STDOUT_FILENO);
 }
 
