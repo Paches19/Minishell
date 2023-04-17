@@ -19,19 +19,35 @@ static void	write_message(char *s)
 	ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
 }
 
-static int	execute_cd(t_token *p, char **env)
+static void	ft_upadte_pwd(char ***new_environ)
+{
+	int		i;
+	char	*pwd;
+	char	actual_dir[1024];
+
+	i = ft_check_var_exist("OLDPWD", new_environ);
+	pwd = ft_getenv("$PWD", new_environ[0]);
+	free((*new_environ)[i]);
+	(*new_environ)[i] = ft_strjoin("OLDPWD=", pwd);
+	free(pwd);
+	i = ft_check_var_exist("PWD", new_environ);
+	free((*new_environ)[i]);
+	(*new_environ)[i] = ft_strjoin("PWD=", getcwd(actual_dir, sizeof(actual_dir)));
+}
+
+static int	execute_cd(t_token *p, char ***env)
 {
 	char	*dir;
 
 	if (!p)
-		dir = ft_getenv("$HOME", env);
+		dir = ft_getenv("$HOME", *env);
 	else
 	{
 		dir = ft_strtrim(p->token, " ");
 		if (!ft_strcmp(dir, "-"))
 		{
 			free(dir);
-			dir = ft_getenv("$OLDPWD", env);
+			dir = ft_getenv("$OLDPWD", *env);
 		}
 	}
 	if (!dir)
@@ -42,11 +58,12 @@ static int	execute_cd(t_token *p, char **env)
 		free(dir);
 		return (1);
 	}
+	ft_upadte_pwd(env);
 	free (dir);
 	return (0);
 }
 
-int	ft_cd(t_token *token_list, char **env, int is_pipe)
+int	ft_cd(t_token *token_list, char ***env, int is_pipe)
 {
 	t_token	*p;
 	int		status;

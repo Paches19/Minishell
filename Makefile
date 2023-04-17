@@ -41,6 +41,7 @@ SRCS		=	srcs/main.c \
 				srcs/builtins/ft_echo_utils.c \
 				srcs/builtins/ft_env.c \
 				srcs/builtins/ft_exit.c \
+				srcs/builtins/ft_export_utils.c \
 				srcs/builtins/ft_export.c \
 				srcs/builtins/ft_pwd.c \
 				srcs/builtins/ft_unset.c \

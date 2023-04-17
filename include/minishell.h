@@ -74,10 +74,12 @@ typedef struct s_pipe
 // ******************************* builtins ***********************************
 int		exec_builtins(t_token *token_list, char ***new_environ,
 			int status, int is_pipe);
-int		ft_cd(t_token *token_list, char **env, int is_pipe);
+int		ft_cd(t_token *token_list, char ***env, int is_pipe);
 int		ft_echo(t_token *token_list, int status, int is_pipe);
 int		ft_env(char ***new_environ, int is_pipe);
 int		ft_exit(t_token *token_list, int status, int is_pipe);
+char	*ft_eliminate_quotes(char *token);
+int		len_token_without_quotes(char *token);
 int		ft_export(t_token *token_list, char ***new_environ, int is_pipe);
 int		ft_pwd(t_token *token_list, int is_pipe);
 int		ft_unset(t_token *token_list, char ***new_environ, int is_pipe);
@@ -115,6 +117,7 @@ char	**copy_environ(char **source);
 char	*ft_getenv(char *var_name, char **env);
 void	ft_update_double_quote(char **token, char **env);
 void	ft_check_vars(t_token **token_list, char **env);
+int		ft_check_var_exist(char *token, char ***new_environ);
 int		count_vars(char ***new_environ);
 int		env_in_order(char **new_environ, int len);
 // ******************************* prompt *************************************
