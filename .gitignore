@@ -9,3 +9,5 @@ a.out
 minishell
 obj
 install_readline
+in
+out

@@ -12,19 +12,6 @@
 
 #include "../../include/minishell.h"
 
-static void	ft_write_simple(char *s)
-{
-	int	i;
-
-	i = 0;
-	while (s[i])
-	{
-		if (!ft_is_quote(s[i]))
-			ft_putchar_fd(s[i], STDOUT_FILENO);
-		i++;
-	}
-}
-
 static void	ft_write_echo(char *s)
 {
 	int	i;
@@ -60,7 +47,8 @@ static int	ft_printable_token(t_token *p)
 {
 	return (!(p->type == INPUT_REDIRECT || p->type == HEREDOC_REDIRECT
 			|| p->type == PIPE || p->type == OUTPUT_REDIRECT
-			|| p->type == APPEND_REDIRECT));
+			|| p->type == APPEND_REDIRECT || p->type == HEREDOC_QUOTE)
+		|| (!ft_strcmp(p->token, "$?") && ft_strlen(p->token) == 2));
 }
 
 static int	read_flag(t_token **p)
@@ -89,8 +77,7 @@ int	ft_echo(t_token *token_list, int status, int is_pipe)
 
 	p = token_list->next;
 	nl = read_flag(&p);
-	while (p && (ft_printable_token(p)
-			|| (!ft_strcmp(p->token, "$?") && ft_strlen(p->token) == 2)))
+	while (p && ft_printable_token(p))
 	{
 		if (p->token)
 		{
@@ -98,19 +85,15 @@ int	ft_echo(t_token *token_list, int status, int is_pipe)
 				ft_putnbr_fd(status, STDOUT_FILENO);
 			else if (p->type == DOUBLE_QUOTE || p->type == SINGLE_QUOTE)
 				ft_write_echo_quotes(p->token);
-			else if (p->next)
+			else if (p->next && p->next->type != COMMAND)
 				ft_write_echo(p->token);
 			else
 				ft_write_simple(p->token);
 		}
 		p = p->next;
-		if (p && p->token && p->prev->type != VARIABLE)
-			ft_putchar_fd(' ', STDOUT_FILENO);
+		ft_write_spaces(p);
 	}
-	if (nl == 0)
-		ft_putstr_fd("\x1B[30m\x1B[47m%\x1B[0m\x1B[0m\n", STDOUT_FILENO);
-	else if (nl == 1)
-		ft_putchar_fd('\n', STDOUT_FILENO);
+	ft_write_percent(nl);
 	if (is_pipe)
 		exit (0);
 	return (0);

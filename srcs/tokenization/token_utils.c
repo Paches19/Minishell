@@ -12,6 +12,24 @@
 
 #include "../../include/minishell.h"
 
+static char	*ft_convert_type2(t_token_type type)
+{
+	if (type == HEREDOC_REDIRECT)
+		return ("HEREDOC_REDIRECT");
+	else if (type == HEREDOC_QUOTE)
+		return ("HEREDOC_QUOTE");
+	else if (type == DOUBLE_QUOTE)
+		return ("DOUBLE_QUOTE");
+	else if (type == SINGLE_QUOTE)
+		return ("SINGLE_QUOTE");
+	else if (type == VARIABLE)
+		return ("VARIABLE");
+	else if (type == BUILTIN)
+		return ("BUILTIN");
+	else
+		return ("UNKNOWN");
+}
+
 static char	*ft_convert_type(t_token_type type)
 {
 	if (type == COMMAND)
@@ -26,20 +44,8 @@ static char	*ft_convert_type(t_token_type type)
 		return ("OUTPUT_REDIRECT");
 	else if (type == APPEND_REDIRECT)
 		return ("APPEND_REDIRECT");
-	else if (type == HEREDOC_REDIRECT)
-		return ("HEREDOC_REDIRECT");
-	else if (type == HEREDOC_QUOTE)
-		return ("HEREDOC_QUOTE");
-	else if (type == DOUBLE_QUOTE)
-		return ("DOUBLE_QUOTE");
-	else if (type == SINGLE_QUOTE)
-		return ("SINGLE_QUOTE");
-	else if (type == VARIABLE)
-		return ("VARIABLE");
-	else if (type == BUILTIN)
-		return ("BUILTIN");
 	else
-		return ("UNKNOWN");
+		return (ft_convert_type2(type));
 }
 
 void	print_token_list(t_token **tokenize_list)

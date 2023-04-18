@@ -12,7 +12,7 @@
 
 #include "../../include/minishell.h"
 
-static int	ft_check_var_exist(char *token, char ***new_environ)
+int	ft_check_var_exist(char *token, char ***new_environ)
 {
 	int	i;
 	int	j;
@@ -74,6 +74,9 @@ static void	ft_execute_export(t_token **p, char ***new_environ, int *len)
 	else if (equal && *(equal + 1) != 0)
 	{
 		free((*new_environ)[i]);
+		s = ft_eliminate_quotes((*p)->token);
+		free((*p)->token);
+		(*p)->token = s;
 		(*new_environ)[i] = ft_strdup((*p)->token);
 	}		
 }
@@ -106,7 +109,8 @@ int	ft_export(t_token *token_list, char ***new_environ, int is_pipe)
 	else
 	{
 		status = 0;
-		while (p && p->type == COMMAND)
+		while (p && (p->type == COMMAND || p->type == DOUBLE_QUOTE ||
+			p->type == SINGLE_QUOTE))
 		{
 			check_equal(&p);
 			if (!export_errors(p->token))

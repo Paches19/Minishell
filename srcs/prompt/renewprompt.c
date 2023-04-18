@@ -12,17 +12,17 @@
 
 #include "../../include/minishell.h"
 
-void	renewprompt(int signal)
+void	renewprompt(int sig)
 {
-	(void)signal;
+	(void)sig;
 	ft_putchar_fd('\n', STDOUT_FILENO);
 	rl_on_new_line();
-	rl_replace_line("",0);
+	rl_replace_line("", 0);
 	rl_redisplay();
 }
 
-void	renewprompt2(int signal)
+void	renewprompt2(int sig)
 {
-	(void)signal;
+	(void)sig;
 	ft_putchar_fd('\n', STDOUT_FILENO);
 }

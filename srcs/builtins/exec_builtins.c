@@ -18,7 +18,7 @@ int	exec_builtins(t_token *token_list, char ***new_environ,
 	if (ft_strcmp(token_list->token, "echo") == 0)
 		return (ft_echo(token_list, status, is_pipe));
 	else if (ft_strcmp(token_list->token, "cd") == 0)
-		return (ft_cd(token_list, *new_environ, is_pipe));
+		return (ft_cd(token_list, new_environ, is_pipe));
 	else if (ft_strcmp(token_list->token, "pwd") == 0)
 		return (ft_pwd(token_list, is_pipe));
 	else if (ft_strcmp(token_list->token, "export") == 0)

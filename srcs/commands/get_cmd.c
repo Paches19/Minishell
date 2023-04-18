@@ -58,12 +58,6 @@ static char	*join_cmd(char *cmd, t_token *t)
 		return (ft_strjoin_space(cmd, t->token));
 }
 
-int	new_cmd_token(t_token *t)
-{
-	return (t->type == COMMAND || t->type == BUILTIN || t->type == DOUBLE_QUOTE
-		|| t->type == SINGLE_QUOTE || t->type == VARIABLE);
-}
-
 char	**get_cmd(t_token *token_list, int n_pipes)
 {
 	t_token	*t;
@@ -75,7 +69,8 @@ char	**get_cmd(t_token *token_list, int n_pipes)
 	i = -1;
 	while (t)
 	{
-		if (new_cmd_token(t))
+		if (t->type == COMMAND || t->type == BUILTIN || t->type == DOUBLE_QUOTE
+			|| t->type == SINGLE_QUOTE || t->type == VARIABLE)
 		{
 			cmd[++i] = ft_strdup(t->token);
 			t = t->next;

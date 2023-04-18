@@ -12,119 +12,9 @@
 
 #include "../../include/minishell.h"
 
-static void	handler_ctrl_c(int sig)
-{
-	(void)sig;
-	exit (0);
-}
-
-static int	create_heredoc(char *finish)
-{
-	int		fd;
-	char	*line;
-	pid_t	pid;
-	int		r;
-
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("couldn't fork");
-		exit(EXIT_FAILURE);
-	}
-	else if (pid == 0)
-	{
-		r = 0;
-		fd = open("/tmp/heredocXXXXXX", O_RDWR | O_CREAT | O_EXCL,
-				S_IRUSR | S_IWUSR);
-		if (fd == -1)
-		{
-			perror("open");
-			exit(1);
-		}
-		signal(SIGINT, &handler_ctrl_c);
-		while (1)
-		{
-			line = readline("heredoc> ");
-			if (ft_strcmp(line, finish) == 0)
-				break ;
-			if (line && *line != '\n')
-			{
-				write(fd, line, ft_strlen(line));
-				write(fd, "\n", 2);
-				free (line);
-			}
-			else if (!line)
-			{
-				ft_putstr_fd("minishell: warning: here", STDOUT_FILENO);
-				ft_putstr_fd("-document delimited by end-of", STDOUT_FILENO);
-				ft_putstr_fd("-file at this line (wanted '", STDOUT_FILENO);
-				ft_putstr_fd(finish, STDOUT_FILENO);
-				ft_putstr_fd("')\n", STDOUT_FILENO);
-				break ;
-			}
-		}
-		if (line)
-			free (line);
-		close(fd);
-		exit (1);
-	}
-	else
-		waitpid(pid, &r, 0);
-	return (r);
-}
-
-t_token	*ft_last_inheredoc(t_token *token_list)
+static int	get_infile(t_token *token_list, char **new_environ)
 {
 	t_token	*t;
-	t_token	*last_redirect;
-
-	t = token_list;
-	last_redirect = NULL;
-	while (t)
-	{
-		if (t->type == HEREDOC_REDIRECT)
-			last_redirect = t;
-		t = t->next;
-	}
-	return (last_redirect);
-}
-
-t_token	*ft_last_inredirect(t_token *token_list)
-{
-	t_token	*t;
-	t_token	*last_redirect;
-
-	t = token_list;
-	last_redirect = NULL;
-	while (t)
-	{
-		if (t->type == INPUT_REDIRECT)
-			last_redirect = t;
-		t = t->next;
-	}
-	return (last_redirect);
-}
-
-t_token	*ft_last_outredirect(t_token *token_list)
-{
-	t_token	*t;
-	t_token	*last_redirect;
-
-	t = token_list;
-	last_redirect = NULL;
-	while (t)
-	{
-		if (t->type == OUTPUT_REDIRECT || t->type == APPEND_REDIRECT)
-			last_redirect = t;
-		t = t->next;
-	}
-	return (last_redirect);
-}
-
-static int	get_infile(t_token *token_list)
-{
-	t_token	*t;
-	int		r;
 
 	t = ft_last_inredirect(token_list);
 	if (!t)
@@ -132,19 +22,13 @@ static int	get_infile(t_token *token_list)
 	if (t && t->type == INPUT_REDIRECT)
 	{
 		if (access(t->token, F_OK))
-		{
-			ft_putstr_fd("minishell: no such file", STDERR_FILENO);
-			ft_putstr_fd(" or directory: ", STDERR_FILENO);
-			ft_putstr_fd(t->token, STDERR_FILENO);
-			ft_putchar_fd('\n', STDERR_FILENO);
-			return (-1);
-		}
+			return (ft_message_bad_name(t->token));
 		return (open(t->token, O_RDONLY));
 	}
-	else if (t && t->type == HEREDOC_REDIRECT)
+	else if (t && (t->type == HEREDOC_REDIRECT
+			|| t->type == HEREDOC_QUOTE))
 	{
-		r = create_heredoc(t->token);
-		if (r)
+		if (create_heredoc(t, new_environ))
 			return (open("/tmp/heredocXXXXXX", O_RDONLY));
 		else
 		{
@@ -204,7 +88,7 @@ t_pipe	init_pipe_struct(t_token *token_list,
 
 	pipe_s.i = 0;
 	pipe_s.num_pipes = ft_count_pipes(token_list);
-	pipe_s.fd_in = get_infile(token_list);
+	pipe_s.fd_in = get_infile(token_list, new_environ);
 	pipe_s.fd_out = get_outfile(token_list);
 	pipe_s.status = *status;
 	pipe_s.err = 0;

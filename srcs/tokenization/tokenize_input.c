@@ -12,39 +12,12 @@
 
 #include "../../include/minishell.h"
 
-static int	check_builtin(const char *token, int len)
-{
-	if (!ft_strcmp(token, "echo") && len == 4)
-		return (BUILTIN);
-	else if (!ft_strcmp(token, "cd") && len == 2)
-		return (BUILTIN);
-	else if (!ft_strcmp(token, "pwd") && len == 3)
-		return (BUILTIN);
-	else if (!ft_strcmp(token, "export") && len == 6)
-		return (BUILTIN);
-	else if (!ft_strcmp(token, "unset") && len == 5)
-		return (BUILTIN);
-	else if (!ft_strcmp(token, "env") && len == 3)
-		return (BUILTIN);
-	else if (!ft_strcmp(token, "exit") && len == 4)
-		return (BUILTIN);
-	return (COMMAND);
-}
-
 static enum e_token_type	get_token_type(const char *token, int len)
 {
 	if (*token == '-')
 		return (ARGUMENT);
 	else if (ft_strcmp(token, "|") == 0)
 		return (PIPE);
-	// else if (ft_strcmp(token, ">>") == 0 && len == 2)
-	// 	return (APPEND_REDIRECT);
-	// else if (ft_strcmp(token, "<<") == 0 && len == 2)
-	// 	return (HEREDOC_REDIRECT);
-	// else if (ft_strcmp(token, "<") == 0)
-	// 	return (INPUT_REDIRECT);
-	// else if (ft_strcmp(token, ">") == 0)
-	// 	return (OUTPUT_REDIRECT);
 	else if (*token == '\"' && token[ft_strlen(token) - 1] == '\"')
 		return (DOUBLE_QUOTE);
 	else if (*token == '\'' && token[ft_strlen(token) - 1] == '\'')
@@ -108,7 +81,7 @@ char *token)
 	return (*list);
 }
 
-t_token	*tokenize_input(char *input)
+t_token	*tokenize_input(char *input, char **env)
 {
 	t_token	*token_list;
 	char	*token;
@@ -131,5 +104,6 @@ t_token	*tokenize_input(char *input)
 		if (len)
 			add_token_to_list(&token_list, input, len, token);
 	}
+	ft_check_vars(&token_list, env);
 	return (token_list);
 }

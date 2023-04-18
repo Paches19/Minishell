@@ -12,11 +12,54 @@
 
 #include "../../include/minishell.h"
 
+static int	ft_exit_fail(char *s)
+{
+	perror(s);
+	return (EXIT_FAILURE);
+}
+
+static void	child_builtin(t_pipe *pipe_s, char ***new_environ)
+{
+	t_token	*token_list;
+
+	token_list = tokenize_input(pipe_s->cmd[pipe_s->i],
+			*new_environ);
+	pipe_s->err = exec_builtins(token_list,
+			new_environ, pipe_s->status, 1);
+	pipe_s->status = (unsigned char)pipe_s->err;
+	free_tokens(&token_list);
+}
+
+static void	the_child(t_pipe *pipe_s, char ***new_environ, int fd_in)
+{
+	char	**split_cmds;
+
+	signal(SIGQUIT, &renewprompt);
+	dup2(fd_in, STDIN_FILENO);
+	if (pipe_s->i == pipe_s->num_cmds - 1)
+		dup2(pipe_s->fd_out, STDOUT_FILENO);
+	else
+		dup2(pipe_s->fd[WRITE_END], STDOUT_FILENO);
+	close(pipe_s->fd[READ_END]);
+	close(pipe_s->fd[WRITE_END]);
+	split_cmds = ft_split(pipe_s->cmd[pipe_s->i], ' ');
+	if (ft_is_builtin(split_cmds[0]))
+		child_builtin(pipe_s, new_environ);
+	else
+	{
+		pipe_s->file_path = try_access(split_cmds, pipe_s->paths);
+		pipe_s->err = execve(pipe_s->file_path,
+				split_cmds, *new_environ);
+		pipe_s->status = pipe_s->err % 129;
+	}
+	free_matrix(split_cmds);
+	if (pipe_s->err < 0)
+		exit(pipe_s->err);
+}
+
 void	pipex(t_pipe *pipe_s, char ***new_environ)
 {
 	pid_t	pid;
-	char	**split_cmds;
-	t_token	*token_list;
 	int		fd_in;
 
 	pipe_s->i = -1;
@@ -26,51 +69,12 @@ void	pipex(t_pipe *pipe_s, char ***new_environ)
 	while (++pipe_s->i < pipe_s->num_cmds)
 	{
 		if (pipe(pipe_s->fd) < 0)
-		{
-			perror("couldn't pipe");
-			exit(EXIT_FAILURE);
-		}
+			exit(ft_exit_fail("couldn't pipe"));
 		pid = fork();
 		if (pid == -1)
-		{
-			perror("couldn't fork");
-			exit(EXIT_FAILURE);
-		}
+			exit(ft_exit_fail("couldn't fork"));
 		else if (pid == 0)
-		{
-			signal(SIGQUIT, &renewprompt);
-			dup2(fd_in, STDIN_FILENO);
-			if (pipe_s->i == pipe_s->num_cmds - 1)
-				dup2(pipe_s->fd_out, STDOUT_FILENO);
-			else
-				dup2(pipe_s->fd[WRITE_END], STDOUT_FILENO);
-			close(pipe_s->fd[READ_END]);
-			close(pipe_s->fd[WRITE_END]);
-			split_cmds = ft_split(pipe_s->cmd[pipe_s->i], ' ');
-			if (ft_is_builtin(split_cmds[0]))
-			{
-				token_list = tokenize_input(pipe_s->cmd[pipe_s->i]);
-				pipe_s->err = exec_builtins(token_list,
-						new_environ, pipe_s->status, 1);
-				pipe_s->status = (unsigned char)pipe_s->err;
-				free_tokens(&token_list);
-			}
-			else
-			{
-				pipe_s->file_path = try_access(split_cmds, pipe_s->paths);
-				pipe_s->err = execve(pipe_s->file_path,
-						split_cmds, *new_environ);
-				pipe_s->status = pipe_s->err % 129;
-			}
-			free_matrix(split_cmds);
-			if (pipe_s->err < 0)
-			{
-				ft_putstr_fd("err: ", STDERR_FILENO);
-				ft_putnbr_fd(pipe_s->err, STDERR_FILENO);
-				ft_putchar_fd('\n', STDERR_FILENO);
-				exit(pipe_s->err);
-			}		
-		}
+			the_child(pipe_s, new_environ, fd_in);
 		else
 		{
 			waitpid(pid, &pipe_s->status, 0);
