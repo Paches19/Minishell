@@ -18,14 +18,6 @@ static int	ft_exit_fail(char *s)
 	return (EXIT_FAILURE);
 }
 
-static int	ft_error_message(int p_err)
-{
-	ft_putstr_fd("err: ", STDERR_FILENO);
-	ft_putnbr_fd(p_err, STDERR_FILENO);
-	ft_putchar_fd('\n', STDERR_FILENO);
-	exit(p_err);
-}
-
 static void	child_builtin(t_pipe *pipe_s, char ***new_environ)
 {
 	t_token	*token_list;
@@ -62,7 +54,7 @@ static void	the_child(t_pipe *pipe_s, char ***new_environ, int fd_in)
 	}
 	free_matrix(split_cmds);
 	if (pipe_s->err < 0)
-		exit(ft_error_message(pipe_s->err));
+		exit(pipe_s->err);
 }
 
 void	pipex(t_pipe *pipe_s, char ***new_environ)
