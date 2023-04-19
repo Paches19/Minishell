@@ -99,7 +99,7 @@ all			: 	$(NAME)
 $(OBJDIR)/%.o: 	$(SRCDIR)/%.c
 				@mkdir -p $(dir $@)
 				@echo "$(YELLOW)Compiling $<...$(RESET)"
-				@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+				@$(CC) $(CFLAGS) $(LEAKS) $(INCLUDES) -c $< -o $@
 				@echo "$(GREEN)Compiled $@ successfully!$(RESET)"
 
 # Compile library
@@ -110,7 +110,7 @@ $(LIBRARY)	:
 # Link program
 $(NAME)		: 	$(LIBRARY) $(OBJS)
 				@echo "$(YELLOW)Linking $(NAME)...$(RESET)"
-				@$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -o $(NAME)
+				@$(CC) $(OBJS) $(CFLAGS) $(LEAKS) $(LDFLAGS) -o $(NAME)
 				@echo "$(GREEN)$(NAME) created successfully!$(RESET)"
 
 # Clean object files and program

@@ -52,11 +52,6 @@ static int	typed_exit(t_token *t)
 	return (t && !ft_strcmp(t->token, "exit"));
 }
 
-void	ft_leaks(void)
-{
-	system("leaks -q minishell");
-}
-
 int	main(int argc, char **argv, char **env)
 {
 	t_token	*token_list;
@@ -66,7 +61,6 @@ int	main(int argc, char **argv, char **env)
 
 	(void)argc;
 	(void )**argv;
-	atexit(ft_leaks);
 	init_minishell(&status, &new_environ, &token_list, env);
 	while (1)
 	{	

@@ -30,6 +30,21 @@ static void	child_builtin(t_pipe *pipe_s, char ***new_environ)
 	free_tokens(&token_list);
 }
 
+static void	ft_print_access_error(char *path)
+{
+	char	**cmd;
+	int		i;
+
+	cmd = ft_split(path, '/');
+	i = 0;
+	while (cmd[i])
+		++i;
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(cmd[i - 1], 2);
+	ft_putstr_fd(": command not found\n", 2);
+	free_matrix(cmd);
+}
+
 static void	the_child(t_pipe *pipe_s, char ***new_environ, int fd_in)
 {
 	char	**split_cmds;
@@ -48,6 +63,8 @@ static void	the_child(t_pipe *pipe_s, char ***new_environ, int fd_in)
 	else
 	{
 		pipe_s->file_path = try_access(split_cmds, pipe_s->paths);
+		if (access(pipe_s->file_path, X_OK) < 0)
+			ft_print_access_error(pipe_s->file_path);
 		pipe_s->err = execve(pipe_s->file_path,
 				split_cmds, *new_environ);
 		pipe_s->status = pipe_s->err % 129;
