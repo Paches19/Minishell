@@ -12,7 +12,27 @@
 
 #include "../../include/minishell.h"
 
-int	ft_env(char ***new_environ, int is_pipe)
+static int	there_are_args(t_token *token_list)
+{
+	int		i;
+	t_token	*p;
+
+	i = 0;
+	p = token_list->next;
+	while (p)
+	{
+		i++;
+		p = p->next;
+	}
+	if (i > 0)
+	{
+		ft_putstr_fd("minishell: env: Too many arguments\n", STDERR_FILENO);
+		return (127);
+	}
+	return (0);
+}
+
+int	ft_env(t_token *token_list, char ***new_environ, int is_pipe)
 {
 	int	i;
 	int	len;
@@ -21,7 +41,7 @@ int	ft_env(char ***new_environ, int is_pipe)
 	status = 0;
 	if (!(*new_environ) || !(*new_environ[0]))
 		status = -1;
-	else
+	else if (!there_are_args(token_list))
 	{
 		i = -1;
 		while ((*new_environ)[++i])
@@ -34,6 +54,8 @@ int	ft_env(char ***new_environ, int is_pipe)
 			}
 		}
 	}
+	else
+		status = 127;
 	if (is_pipe)
 		exit(status);
 	return (status);

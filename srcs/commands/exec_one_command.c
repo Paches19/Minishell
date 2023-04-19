@@ -86,6 +86,8 @@ void	exec_one_command(t_token *token_list, t_pipe *pipe_s,
 		{
 			waitpid(pid, &pipe_s->status, 0);
 			pipe_s->status %= 129;
+			if (pipe_s->status > 0)
+				printf("minishell: %s: command not found\n", split_cmd[0]);
 		}
 	}
 	free_matrix(split_cmd);

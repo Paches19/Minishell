@@ -27,9 +27,13 @@ CFLAGS 		=	-Wall -Wextra -Werror
 # INCLUDES 	= -I$(INCDIR) -I/Users/jutrera-/.brew/opt/readline/include
 # LDFLAGS 	= -L ./libft/ -lft -L/Users/jutrera-/.brew/opt/readline/lib/ -lreadline
 
-# Para mi Windows
-INCLUDES	=	-I$(INCDIR)
-LDFLAGS 	=	-L ./libft/ -lft -lreadline
+# Para los MAC de 42
+INCLUDES 	= -I$(INCDIR) -I ./vendor/readline/include
+LDFLAGS 	= -L ./libft/ -lft -L ./vendor/readline/lib -lreadline
+
+# # Para mi Windows
+# INCLUDES	=	-I$(INCDIR)
+# LDFLAGS 	=	-L ./libft/ -lft -lreadline
 
 LEAKS 		=	-fsanitize=address -g
 

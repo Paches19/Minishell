@@ -76,12 +76,12 @@ int		exec_builtins(t_token *token_list, char ***new_environ,
 			int status, int is_pipe);
 int		ft_cd(t_token *token_list, char ***env, int is_pipe);
 int		ft_echo(t_token *token_list, int status, int is_pipe);
-int		ft_env(char ***new_environ, int is_pipe);
+int		ft_env(t_token *token_list, char ***new_environ, int is_pipe);
 int		ft_exit(t_token *token_list, int status, int is_pipe);
 char	*ft_eliminate_quotes(char *token);
 int		len_token_without_quotes(char *token);
 int		ft_export(t_token *token_list, char ***new_environ, int is_pipe);
-int		ft_pwd(t_token *token_list, int is_pipe);
+int		ft_pwd(int is_pipe);
 int		ft_unset(t_token *token_list, char ***new_environ, int is_pipe);
 //		ft_echo_utils.c
 void	ft_write_simple(char *s);
@@ -112,6 +112,7 @@ t_token	*ft_last_inheredoc(t_token *token_list);
 t_token	*ft_last_inredirect(t_token *token_list);
 t_token	*ft_last_outredirect(t_token *token_list);
 int		ft_message_bad_name(char *s);
+void	command_not_found(char *cmd, char **path);
 // ******************************* environ ************************************
 char	**copy_environ(char **source);
 char	*ft_getenv(char *var_name, char **env);

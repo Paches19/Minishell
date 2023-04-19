@@ -67,13 +67,13 @@ char	**get_av(char **cmd)
 	return (av);
 }
 
-static void	command_not_found(char *cmd, char **path)
-{
-	ft_putstr_fd(cmd, STDERR_FILENO);
-	ft_putstr_fd(": command not found\n", STDERR_FILENO);
-	free(*path);
-	*path = NULL;
-}
+// void	command_not_found(char *cmd, char **path)
+// {
+// 	ft_putstr_fd(cmd, STDERR_FILENO);
+// 	ft_putstr_fd(": command not found\n", STDERR_FILENO);
+// 	free(*path);
+// 	*path = NULL;
+// }
 
 char	*try_access(char **cmd, char **paths)
 {
@@ -97,7 +97,7 @@ char	*try_access(char **cmd, char **paths)
 		file_path = ft_strjoin(paths[i], cmd[0]);
 		err = access(file_path, X_OK);
 	}
-	if (err < 0)
-		command_not_found(cmd[0], &file_path);
+	// if (err < 0)
+	// 	command_not_found(cmd[0], &file_path);
 	return (file_path);
 }
