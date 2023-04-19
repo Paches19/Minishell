@@ -32,7 +32,8 @@ static void	ft_upadte_pwd(char ***new_environ)
 	free(pwd);
 	i = ft_check_var_exist("PWD", new_environ);
 	free((*new_environ)[i]);
-	(*new_environ)[i] = ft_strjoin("PWD=", getcwd(actual_dir, sizeof(actual_dir)));
+	(*new_environ)[i] = ft_strjoin("PWD=", getcwd(actual_dir, \
+	sizeof(actual_dir)));
 }
 
 static int	execute_cd(t_token *p, char ***env)

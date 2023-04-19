@@ -109,8 +109,8 @@ int	ft_export(t_token *token_list, char ***new_environ, int is_pipe)
 	else
 	{
 		status = 0;
-		while (p && (p->type == COMMAND || p->type == DOUBLE_QUOTE ||
-			p->type == SINGLE_QUOTE))
+		while (p && (p->type == COMMAND || p->type == DOUBLE_QUOTE \
+		|| p->type == SINGLE_QUOTE))
 		{
 			check_equal(&p);
 			if (!export_errors(p->token))

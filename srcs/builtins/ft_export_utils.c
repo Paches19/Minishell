@@ -6,7 +6,7 @@
 /*   By: adpachec <adpachec@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 12:03:36 by adpachec          #+#    #+#             */
-/*   Updated: 2023/04/17 12:03:52 by adpachec         ###   ########.fr       */
+/*   Updated: 2023/04/19 17:15:46 by adpachec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	len_token_without_quotes(char *token)
 
 	i = -1;
 	len = 0;
-	while(token[++i])
+	while (token[++i])
 	{
 		if (!ft_is_quote(token[i]))
 			++len;
