@@ -35,6 +35,7 @@ char	*ft_strjoin2(char *s1, char *s2)
 	while (++i < len_total)
 		dest[i] = s2[i - len_s1];
 	dest[i] = '\0';
-	free(s1);
+	if (s1)
+		free(s1);
 	return (dest);
 }

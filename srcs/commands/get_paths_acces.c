@@ -97,7 +97,5 @@ char	*try_access(char **cmd, char **paths)
 		file_path = ft_strjoin(paths[i], cmd[0]);
 		err = access(file_path, X_OK);
 	}
-	// if (err < 0)
-	// 	command_not_found(cmd[0], &file_path);
 	return (file_path);
 }
