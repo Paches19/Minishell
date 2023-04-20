@@ -32,16 +32,15 @@ $(O_DIR)	:
 				@mkdir -p $(O_DIR)
 
 $(O_DIR)%.o	:	$(S_DIR)%.c
-				@echo "$(BLUE)Compiling $@ !... $(NRM)\c"
+				@echo "Compiling $(BLUE)$@$(NRM) ... \c"
 				@${CC} ${CFLAGS} -I$(I_DIR) -c $< -o $@
 				@echo "$(GREEN)OK$(NRM)"
 
 ${NAME}		:	$(O_DIR) $(OBJS)
-				@echo "$(YELLOW)Linking object files ! $(NRM)\c"
+				@echo "Linking object files ...\c"
 				@ar rcs ${NAME} ${OBJS}
-				@echo "$(GREEN)SUCCESS !$(NRM)"
 				@ranlib $(NAME)
-				@echo "libft.a created successfully !"
+				@echo "$(GREEN)libft.a created successfully !$(NRM)"				
 
 clean		:
 				@rm -Rf $(O_DIR)/

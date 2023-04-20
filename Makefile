@@ -98,33 +98,35 @@ all			: 	$(NAME)
 # Compile object files
 $(OBJDIR)/%.o: 	$(SRCDIR)/%.c
 				@mkdir -p $(dir $@)
-				@echo "$(YELLOW)Compiling $<...$(RESET)"
+				@echo "Compiling $(YELLOW)$<$(RESET)...\c"
 				@$(CC) $(CFLAGS) $(LEAKS) $(INCLUDES) -c $< -o $@
-				@echo "$(GREEN)Compiled $@ successfully!$(RESET)"
+				@echo "$(GREEN)OK !$(RESET)"
 
 # Compile library
 $(LIBRARY)	:
 				@echo "$(YELLOW)Compiling library...$(RESET)"
 				@$(MAKE) --no-print-directory -C $(LIBDIR)
+				@echo "\n$(YELLOW)Compiling programme !$(RESET)"
 
 # Link program
 $(NAME)		: 	$(LIBRARY) $(OBJS)
-				@echo "$(YELLOW)Linking $(NAME)...$(RESET)"
+				@echo "Linking object files... \c"
 				@$(CC) $(OBJS) $(CFLAGS) $(LEAKS) $(LDFLAGS) -o $(NAME)
-				@echo "$(GREEN)$(NAME) created successfully!$(RESET)"
+				@echo "$(GREEN)$(NAME) created successfully !$(RESET)"
 
-# Clean object files and program
+# Clean object files
 clean		:
-				@echo "$(RED)Deleting object files...$(RESET)"
+				@echo "$(RED)Deleting object files...$(RESET)\c"
+				@$(MAKE) clean --no-print-directory -C $(LIBDIR) 
 				@$(RM) $(OBJDIR)
-				@echo "$(RED)Deleting $(NAME)...$(RESET)"
-				@$(RM) $(NAME)
+				@echo "$(GREEN) all object files DELETED !$(RESET)"
 
 # Clean everything and recompile
 fclean		: 	clean
-				@echo "$(RED)Deleting library...$(RESET)"
+				@echo "$(RED)Deleting object and binary files...$(RESET)\c"
 				@$(MAKE) fclean --no-print-directory -C $(LIBDIR)
-				@echo "$(GREEN)Finished cleaning!$(RESET)"
+				@$(RM) $(NAME)
+				@echo "$(GREEN)all files DELETED !$(RESET)"
 
 # Recompile everything
 re			: 	fclean all
