@@ -23,17 +23,13 @@ LIBDIR 		=	libft
 CC 			=	gcc
 CFLAGS 		=	-Wall -Wextra -Werror
 
-# Para los MAC de 42
-# INCLUDES 	= -I$(INCDIR) -I/Users/jutrera-/.brew/opt/readline/include
-# LDFLAGS 	= -L ./libft/ -lft -L/Users/jutrera-/.brew/opt/readline/lib/ -lreadline
+# Para jutrera-
+INCLUDES 	= -I$(INCDIR)
+LDFLAGS 	= -L./libft/ -lft -lreadline
 
-# Para los MAC de 42
-INCLUDES 	= -I$(INCDIR) -I ./vendor/readline/include
-LDFLAGS 	= -L ./libft/ -lft -L ./vendor/readline/lib -lreadline
-
-# # Para mi Windows
-# INCLUDES	=	-I$(INCDIR)
-# LDFLAGS 	=	-L ./libft/ -lft -lreadline
+# Para adpachec
+#INCLUDES 	= -I$(INCDIR) -Ivendor/readline/include
+#LDFLAGS 	= -Llibft/ -lft -Lvendor/readline/lib -lreadline
 
 LEAKS 		=	-fsanitize=address -g
 
