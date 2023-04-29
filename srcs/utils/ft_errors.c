@@ -29,10 +29,13 @@ int	exit_error_token(int err, char *token)
 
 	if (err == -2)
 	{
-		ft_putstr_fd("minishell: syntax error near", STDERR_FILENO);
+		ft_putstr_fd("minishell: syntax error near ", STDERR_FILENO);
 		ft_putstr_fd("unexpected token `", STDERR_FILENO);
 		c = *token;
-		write(2, &c, 1);
+		if (c != ' ')
+			write(2, &c, 1);
+		else
+			ft_putstr_fd("newline", STDERR_FILENO);
 		write(2, "\'\n", 2);
 	}
 	if (err == -1)

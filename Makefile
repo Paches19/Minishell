@@ -102,7 +102,7 @@ $(OBJDIR)/%.o: 	$(SRCDIR)/%.c
 $(LIBRARY)	:
 				@echo "$(YELLOW)Compiling library...$(RESET)"
 				@$(MAKE) --no-print-directory -C $(LIBDIR)
-				@echo "\n$(YELLOW)Compiling programme !$(RESET)"
+				@echo "\n$(YELLOW)Compiling program !$(RESET)"
 
 # Link program
 $(NAME)		: 	$(LIBRARY) $(OBJS)

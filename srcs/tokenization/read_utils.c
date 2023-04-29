@@ -81,5 +81,7 @@ int	read_redirect(char ***input)
 			++len;
 		}
 	}
+	if (!len)
+		len = -2;
 	return (len);
 }

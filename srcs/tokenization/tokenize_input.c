@@ -101,7 +101,7 @@ t_token	*tokenize_input(char *input, char **env)
 			free_tokens(&token_list);
 			return (NULL);
 		}
-		if (len)
+		else if (len)
 			add_token_to_list(&token_list, input, len, token);
 	}
 	ft_check_vars(&token_list, env);
