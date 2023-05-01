@@ -12,6 +12,17 @@
 
 #include "../../include/minishell.h"
 
+int	cd_error(char *s, char *dir)
+{
+	ft_putstr_fd("minishell: cd:", STDERR_FILENO);
+	ft_putstr_fd(s, STDERR_FILENO);
+	ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+	if (s)
+		free(s);
+	free(dir);
+	return (1);
+}
+
 void	cmd_error(int err)
 {
 	perror(strerror(err));

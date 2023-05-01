@@ -64,12 +64,10 @@ int	read_redirect(char ***input)
 	i = -1;
 	while (!ft_is_space(***input) && ft_is_special(***input) && ++i > -1)
 		++(**input);
-	if (i > 1)
-		len = -2;
-	else if (i == 0)
-		len = 1;
-	else if (i == 1)
+	if (i == 1)
 		len = ft_check_special(**input);
+	else if (i > 1)
+		len = -2;
 	while (***input && ft_is_space(***input))
 		++**input;
 	if (len > 0)

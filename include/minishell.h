@@ -98,7 +98,6 @@ char	**get_cmd(t_token *token_list, int n_pipes);
 int		create_heredoc(t_token *t, char **new_environ);
 //		create_heredoc_utils.c
 void	handler_ctrl_c(int sig);
-void	handler_slash(int sig);
 void	ft_message_ctrld(char *s);
 void	ft_error_fork(void);
 void	eliminate_quotes(char **s);
@@ -112,7 +111,6 @@ t_token	*ft_last_inheredoc(t_token *token_list);
 t_token	*ft_last_inredirect(t_token *token_list);
 t_token	*ft_last_outredirect(t_token *token_list);
 int		ft_message_bad_name(char *s);
-void	command_not_found(char *cmd, char **path);
 // ******************************* environ ************************************
 char	**copy_environ(char **source);
 char	*ft_getenv(char *var_name, char **env);
@@ -152,6 +150,7 @@ void	free_matrix(char **matrix);
 void	free_environ(char ***e);
 void	free_tokens(t_token **token_list);
 //		ft_errors.c
+int		cd_error(char *s, char *dir);
 int		exit_error_token(int err, char *token);
 void	cmd_error(int err);
 void	exit_error(int err);
