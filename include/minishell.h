@@ -60,7 +60,6 @@ typedef struct s_pipe
 {
 	int		i;
 	int		num_pipes;
-	int		fd[2];
 	int		status;
 	int		err;
 	char	**paths;
@@ -70,6 +69,12 @@ typedef struct s_pipe
 	int		fd_out;
 	int		num_cmds;
 }			t_pipe;
+
+typedef struct s_fd
+{
+	int		fd[2];
+}			t_fd;
+
 
 // ******************************* builtins ***********************************
 int		exec_builtins(t_token *token_list, char ***new_environ,

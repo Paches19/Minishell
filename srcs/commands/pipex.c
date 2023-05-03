@@ -35,6 +35,12 @@ static void	ft_print_access_error(char *path)
 	char	**cmd;
 	int		i;
 
+	if (!path)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(": command not found\n", 2);
+		return ;
+	}
 	cmd = ft_split(path, '/');
 	i = 0;
 	while (cmd[i])
@@ -45,18 +51,23 @@ static void	ft_print_access_error(char *path)
 	free_matrix(cmd);
 }
 
-static void	the_child(t_pipe *pipe_s, char ***new_environ, int fd_in)
+static void	the_child(t_pipe *pipe_s, char ***new_environ, int fd_in, t_fd	*fds)
 {
 	char	**split_cmds;
+	int		j;
 
 	signal(SIGQUIT, &renewprompt);
 	dup2(fd_in, STDIN_FILENO);
 	if (pipe_s->i == pipe_s->num_cmds - 1)
 		dup2(pipe_s->fd_out, STDOUT_FILENO);
 	else
-		dup2(pipe_s->fd[WRITE_END], STDOUT_FILENO);
-	close(pipe_s->fd[READ_END]);
-	close(pipe_s->fd[WRITE_END]);
+		dup2(fds[pipe_s->i].fd[WRITE_END], STDOUT_FILENO);
+	j = -1;
+	while (++j < pipe_s->num_cmds - 1)
+	{
+		close(fds[j].fd[READ_END]);
+		close(fds[j].fd[WRITE_END]);
+	}
 	split_cmds = ft_split(pipe_s->cmd[pipe_s->i], ' ');
 	if (ft_is_builtin(split_cmds[0]))
 		child_builtin(pipe_s, new_environ);
@@ -76,27 +87,38 @@ static void	the_child(t_pipe *pipe_s, char ***new_environ, int fd_in)
 
 void	pipex(t_pipe *pipe_s, char ***new_environ)
 {
-	pid_t	pid;
 	int		fd_in;
+	pid_t	*pids;
+	t_fd	*fds;
 
-	pipe_s->i = -1;
+	pids = (pid_t *)ft_calloc(sizeof(pid_t), pipe_s->num_cmds);
+	fds = (t_fd *)ft_calloc(sizeof(t_fd), pipe_s->num_cmds - 1);
 	fd_in = pipe_s->fd_in;
 	if (pipe_s->fd_in < 0)
 		exit_error(errno);
+	pipe_s->i = -1;
+	while (++pipe_s->i < pipe_s->num_cmds - 1)
+		pipe(fds[pipe_s->i].fd);
+	pipe_s->i = -1;
 	while (++pipe_s->i < pipe_s->num_cmds)
 	{
-		if (pipe(pipe_s->fd) < 0)
-			exit(ft_exit_fail("couldn't pipe"));
-		pid = fork();
-		if (pid == -1)
+		pids[pipe_s->i] = fork();
+		if (pids[pipe_s->i] == -1)
 			exit(ft_exit_fail("couldn't fork"));
-		else if (pid == 0)
-			the_child(pipe_s, new_environ, fd_in);
+		else if (pids[pipe_s->i] == 0)
+			the_child(pipe_s, new_environ, fd_in, fds);
 		else
-		{
-			waitpid(pid, &pipe_s->status, 0);
-			close(pipe_s->fd[WRITE_END]);
-			fd_in = pipe_s->fd[READ_END];
-		}
+			if (pipe_s->i < pipe_s->num_cmds - 1)
+				fd_in = fds[pipe_s->i].fd[READ_END];
 	}
+	pipe_s->i = -1;
+	while (++pipe_s->i < pipe_s->num_cmds - 1)
+	{
+		close(fds[pipe_s->i].fd[READ_END]);
+		close(fds[pipe_s->i].fd[WRITE_END]);
+        waitpid(pids[pipe_s->i], &pipe_s->status, 0);
+    }
+	waitpid(pids[pipe_s->i], &pipe_s->status, 0);
+	free(pids);
+	free(fds);
 }
