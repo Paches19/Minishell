@@ -68,3 +68,19 @@ int	ft_message_bad_name(char *s)
 	ft_putchar_fd('\n', STDERR_FILENO);
 	return (-1);
 }
+
+char	*try_pwd_access(char **split_cmd, char ***new_environ, char *file_path)
+{
+	char	*new_path;
+	char	*pwd;
+
+	if (file_path)
+		free(file_path);
+	if (split_cmd[0][0] == '.')
+	{
+		pwd = ft_getenv("$PWD", *new_environ);
+		new_path = ft_strjoin2(pwd, *split_cmd + 1);
+		return (new_path);
+	}
+	return (NULL);
+}

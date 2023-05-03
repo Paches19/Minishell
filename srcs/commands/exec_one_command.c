@@ -46,7 +46,7 @@ static void	execute_nobuilting(char **split_cmd, t_pipe *pipe_s,
 
 	signal(SIGQUIT, &renewprompt);
 	ft_dup_fd(&pipe_s, &stdout_cpy, &stdin_cpy);
-	pipe_s->file_path = try_access(split_cmd, pipe_s->paths);
+	pipe_s->file_path = try_access(split_cmd, pipe_s->paths, new_environ);
 	pipe_s->err = execve(pipe_s->file_path, split_cmd, *new_environ);
 	if (pipe_s->err == -1)
 	{

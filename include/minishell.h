@@ -105,7 +105,7 @@ void	eliminate_quotes(char **s);
 char	**get_path(char **envp);
 int		get_size_cmd(char **cmd);
 char	**get_av(char **cmd);
-char	*try_access(char **cmd, char **paths);
+char	*try_access(char **cmd, char **paths, char ***new_environ);
 //		init_pipe_struct_utils.c
 t_token	*ft_last_inheredoc(t_token *token_list);
 t_token	*ft_last_inredirect(t_token *token_list);
@@ -155,4 +155,6 @@ int		exit_error_token(int err, char *token);
 void	cmd_error(int err);
 void	exit_error(int err);
 int		export_errors(char *s);
+char	*try_pwd_access(char **split_cmd, char ***new_environ, char *file_path);
+
 #endif

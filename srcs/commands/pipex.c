@@ -62,7 +62,7 @@ static void	the_child(t_pipe *pipe_s, char ***new_environ, int fd_in)
 		child_builtin(pipe_s, new_environ);
 	else
 	{
-		pipe_s->file_path = try_access(split_cmds, pipe_s->paths);
+		pipe_s->file_path = try_access(split_cmds, pipe_s->paths, new_environ);
 		if (access(pipe_s->file_path, X_OK) < 0)
 			ft_print_access_error(pipe_s->file_path);
 		pipe_s->err = execve(pipe_s->file_path,

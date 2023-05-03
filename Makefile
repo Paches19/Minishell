@@ -24,12 +24,12 @@ CC 			=	gcc
 CFLAGS 		=	-Wall -Wextra -Werror
 
 # Para jutrera-
-INCLUDES 	= -I$(INCDIR)
-LDFLAGS 	= -L./libft/ -lft -lreadline
+# INCLUDES 	= -I$(INCDIR)
+# LDFLAGS 	= -L./libft/ -lft -lreadline
 
 # Para adpachec
-#INCLUDES 	= -I$(INCDIR) -Ivendor/readline/include
-#LDFLAGS 	= -Llibft/ -lft -Lvendor/readline/lib -lreadline
+INCLUDES 	= -I$(INCDIR) -Ivendor/readline/include
+LDFLAGS 	= -Llibft/ -lft -Lvendor/readline/lib -lreadline
 
 LEAKS 		=	-fsanitize=address -g
 
