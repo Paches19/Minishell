@@ -94,7 +94,7 @@ all			: 	$(NAME)
 
 # Compile object files
 message		:	
-				@echo "$(YELLOW)Compiling program...$(RESET)"
+				@echo "$(YELLOW)Compiling program : $(NAME)$(RESET)"
 
 $(OBJDIR)/%.o: 	$(SRCDIR)/%.c
 				@mkdir -p $(dir $@)
@@ -104,7 +104,7 @@ $(OBJDIR)/%.o: 	$(SRCDIR)/%.c
 
 # Compile library
 $(LIBRARY)	:
-				@echo "$(YELLOW)Compiling library...$(RESET)"
+				@echo "$(YELLOW)Compiling library : $@$(RESET)"
 				@$(MAKE) --no-print-directory -C $(LIBDIR)
 
 # Link program

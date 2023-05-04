@@ -89,6 +89,7 @@ static void	ft_finish_pipex(t_pipe *pipe_s, t_fd *fds, pid_t *pids)
 		if (pids[pipe_s->i] > 0)
 			kill(pids[pipe_s->i], SIGTERM);
 	}
+	signal(SIGCHLD, SIG_DFL);
 	free(pids);
 	free(fds);
 }
