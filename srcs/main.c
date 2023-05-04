@@ -17,6 +17,7 @@ static void	clean_memory(char **i, t_token **t, char ***n, int end)
 	if (i && *i)
 		free(*i);
 	free_tokens(t);
+	ft_putchar_fd('\n', STDOUT_FILENO);
 	if (end)
 	{
 		free_environ(n);
@@ -69,6 +70,7 @@ int	main(int argc, char **argv, char **env)
 		if (input && *input != 0)
 		{
 			token_list = tokenize_input(input, new_environ);
+			//print_token_list(&token_list);
 			execute_commands(token_list, &new_environ, &status);
 		}
 		if (!input || (token_list && typed_exit(token_list)))
