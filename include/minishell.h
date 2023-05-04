@@ -85,7 +85,7 @@ int		ft_exit(t_token *token_list, int status, int is_pipe);
 char	*ft_eliminate_quotes(char *token);
 int		len_token_without_quotes(char *token);
 int		ft_export(t_token *token_list, char ***new_environ, int is_pipe);
-int		ft_pwd(int is_pipe);
+int		ft_pwd(int is_pipe, char **env);
 int		ft_unset(t_token *token_list, char ***new_environ, int is_pipe);
 //		ft_echo_utils.c
 void	ft_write_simple(char *s);

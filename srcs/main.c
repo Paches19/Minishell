@@ -70,7 +70,6 @@ int	main(int argc, char **argv, char **env)
 		if (input && *input != 0)
 		{
 			token_list = tokenize_input(input, new_environ);
-			//print_token_list(&token_list);
 			execute_commands(token_list, &new_environ, &status);
 		}
 		if (!input || (token_list && typed_exit(token_list)))
