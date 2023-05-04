@@ -17,9 +17,9 @@ static void	clean_memory(char **i, t_token **t, char ***n, int end)
 	if (i && *i)
 		free(*i);
 	free_tokens(t);
-	ft_putchar_fd('\n', STDOUT_FILENO);
 	if (end)
 	{
+		ft_putchar_fd('\n', STDOUT_FILENO);
 		free_environ(n);
 		rl_clear_history();
 	}
