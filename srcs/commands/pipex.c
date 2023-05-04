@@ -85,8 +85,10 @@ static void	ft_finish_pipex(t_pipe *pipe_s, t_fd *fds, pid_t *pids)
 	wait(&pipe_s->status);
 	pipe_s->i = -1;
 	while (++pipe_s->i < pipe_s->num_cmds - 1)
+	{
 		if (pids[pipe_s->i] > 0)
 			kill(pids[pipe_s->i], SIGTERM);
+	}
 	free(pids);
 	free(fds);
 }

@@ -26,7 +26,7 @@ void	free_matrix(char **matrix)
 {
 	int	i;
 
-	if (!matrix)
+	if (!matrix || !*(matrix))
 		return ;
 	i = -1;
 	while (matrix[++i])
