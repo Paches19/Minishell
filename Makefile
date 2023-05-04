@@ -54,6 +54,7 @@ SRCS		=	srcs/main.c \
 				srcs/commands/init_pipe_struct.c \
 				srcs/commands/init_pipe_struct_utils.c \
 				srcs/commands/pipex.c \
+				srcs/commands/pipex_utils.c \
 				srcs/environ/copy_environ.c \
 				srcs/environ/count_vars.c \
 				srcs/environ/env_in_order.c \

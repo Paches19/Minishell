@@ -12,24 +12,6 @@
 
 #include "../../include/minishell.h"
 
-static int	ft_exit_fail(char *s)
-{
-	perror(s);
-	return (EXIT_FAILURE);
-}
-
-static void	child_builtin(t_pipe *pipe_s, char ***new_environ)
-{
-	t_token	*token_list;
-
-	token_list = tokenize_input(pipe_s->cmd[pipe_s->i],
-			*new_environ);
-	pipe_s->err = exec_builtins(token_list,
-			new_environ, pipe_s->status, 1);
-	pipe_s->status = (unsigned char)pipe_s->err;
-	free_tokens(&token_list);
-}
-
 static void	ft_print_access_error(char *path)
 {
 	char	**cmd;
@@ -51,13 +33,12 @@ static void	ft_print_access_error(char *path)
 	free_matrix(cmd);
 }
 
-static void	the_child(t_pipe *pipe_s, char ***new_environ, int fd_in, t_fd	*fds)
+static void	prepare_child(t_pipe *pipe_s, int *fd_in, t_fd *fds)
 {
-	char	**split_cmds;
-	int		j;
+	int	j;
 
 	signal(SIGQUIT, &renewprompt);
-	dup2(fd_in, STDIN_FILENO);
+	dup2(*fd_in, STDIN_FILENO);
 	if (pipe_s->i == pipe_s->num_cmds - 1)
 		dup2(pipe_s->fd_out, STDOUT_FILENO);
 	else
@@ -68,6 +49,14 @@ static void	the_child(t_pipe *pipe_s, char ***new_environ, int fd_in, t_fd	*fds)
 		close(fds[j].fd[READ_END]);
 		close(fds[j].fd[WRITE_END]);
 	}
+}
+
+static void	the_child(t_pipe *pipe_s, char ***new_environ,
+	int fd_in, t_fd *fds)
+{
+	char	**split_cmds;
+
+	prepare_child(pipe_s, &fd_in, fds);
 	split_cmds = ft_split(pipe_s->cmd[pipe_s->i], ' ');
 	if (ft_is_builtin(split_cmds[0]))
 		child_builtin(pipe_s, new_environ);
@@ -76,13 +65,30 @@ static void	the_child(t_pipe *pipe_s, char ***new_environ, int fd_in, t_fd	*fds)
 		pipe_s->file_path = try_access(split_cmds, pipe_s->paths, new_environ);
 		if (access(pipe_s->file_path, X_OK) < 0)
 			ft_print_access_error(pipe_s->file_path);
-		pipe_s->err = execve(pipe_s->file_path,
-				split_cmds, *new_environ);
+		pipe_s->err = execve(pipe_s->file_path, split_cmds, *new_environ);
 		pipe_s->status = pipe_s->err % 129;
 	}
 	free_matrix(split_cmds);
 	if (pipe_s->err < 0)
 		exit(pipe_s->err);
+}
+
+static void	ft_finish_pipex(t_pipe *pipe_s, t_fd *fds, pid_t *pids)
+{
+	pipe_s->i = -1;
+	while (++pipe_s->i < pipe_s->num_cmds - 1)
+	{
+		close(fds[pipe_s->i].fd[READ_END]);
+		close(fds[pipe_s->i].fd[WRITE_END]);
+	}
+	signal(SIGCHLD, SIG_IGN);
+	wait(&pipe_s->status);
+	pipe_s->i = -1;
+	while (++pipe_s->i < pipe_s->num_cmds - 1)
+		if (pids[pipe_s->i] > 0)
+			kill(pids[pipe_s->i], SIGTERM);
+	free(pids);
+	free(fds);
 }
 
 void	pipex(t_pipe *pipe_s, char ***new_environ)
@@ -94,7 +100,7 @@ void	pipex(t_pipe *pipe_s, char ***new_environ)
 	pids = (pid_t *)ft_calloc(sizeof(pid_t), pipe_s->num_cmds);
 	fds = (t_fd *)ft_calloc(sizeof(t_fd), pipe_s->num_cmds - 1);
 	fd_in = pipe_s->fd_in;
-	if (pipe_s->fd_in < 0)
+	if (pipe_s->fd_in < 0 || !pids || !fds)
 		exit_error(errno);
 	pipe_s->i = -1;
 	while (++pipe_s->i < pipe_s->num_cmds - 1)
@@ -111,14 +117,5 @@ void	pipex(t_pipe *pipe_s, char ***new_environ)
 			if (pipe_s->i < pipe_s->num_cmds - 1)
 				fd_in = fds[pipe_s->i].fd[READ_END];
 	}
-	pipe_s->i = -1;
-	while (++pipe_s->i < pipe_s->num_cmds - 1)
-	{
-		close(fds[pipe_s->i].fd[READ_END]);
-		close(fds[pipe_s->i].fd[WRITE_END]);
-        waitpid(pids[pipe_s->i], &pipe_s->status, 0);
-    }
-	waitpid(pids[pipe_s->i], &pipe_s->status, 0);
-	free(pids);
-	free(fds);
+	ft_finish_pipex(pipe_s, fds, pids);
 }
