@@ -16,6 +16,8 @@ static void	ft_finish(t_pipe *p)
 {
 	free_matrix(p->cmd);
 	free_matrix(p->paths);
+	if (p->fd_in != 0)
+		close(p->fd_in);
 	unlink("/tmp/heredocXXXXXX");
 }
 

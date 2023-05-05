@@ -75,7 +75,6 @@ typedef struct s_fd
 	int		fd[2];
 }			t_fd;
 
-
 // ******************************* builtins ***********************************
 int		exec_builtins(t_token *token_list, char ***new_environ,
 			int status, int is_pipe);
@@ -86,7 +85,7 @@ int		ft_exit(t_token *token_list, int status, int is_pipe);
 char	*ft_eliminate_quotes(char *token);
 int		len_token_without_quotes(char *token);
 int		ft_export(t_token *token_list, char ***new_environ, int is_pipe);
-int		ft_pwd(int is_pipe);
+int		ft_pwd(int is_pipe, char **env);
 int		ft_unset(t_token *token_list, char ***new_environ, int is_pipe);
 //		ft_echo_utils.c
 void	ft_write_simple(char *s);
@@ -99,6 +98,8 @@ t_pipe	init_pipe_struct(t_token *token_list,
 void	exec_one_command(t_token *token_list, t_pipe *pipe_s, \
 		char ***new_environ);
 void	pipex(t_pipe *pipe_s, char ***new_environ);
+int		ft_exit_fail(char *s);
+void	child_builtin(t_pipe *pipe_s, char ***new_environ);
 char	**get_cmd(t_token *token_list, int n_pipes);
 int		create_heredoc(t_token *t, char **new_environ);
 //		create_heredoc_utils.c

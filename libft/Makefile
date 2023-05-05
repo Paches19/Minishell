@@ -32,9 +32,9 @@ $(O_DIR)	:
 				@mkdir -p $(O_DIR)
 
 $(O_DIR)%.o	:	$(S_DIR)%.c
-				@echo "Compiling $(BLUE)$@$(NRM) ... \c"
+				@printf "Compiling $(BLUE)$@$(NRM)\r"
 				@${CC} ${CFLAGS} -I$(I_DIR) -c $< -o $@
-				@echo "$(GREEN)OK$(NRM)"
+				@printf "                                   \r"
 
 ${NAME}		:	$(O_DIR) $(OBJS)
 				@echo "Linking object files ...\c"
