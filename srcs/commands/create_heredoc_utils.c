@@ -15,6 +15,7 @@
 void	handler_ctrl_c(int sig)
 {
 	(void)sig;
+	ft_putchar_fd('\n', STDOUT_FILENO);
 	exit (0);
 }
 

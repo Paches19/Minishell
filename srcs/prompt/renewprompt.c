@@ -23,6 +23,13 @@ void	renewprompt(int sig)
 
 void	renewprompt2(int sig)
 {
+	struct stat	self_stat;
+	struct stat	prog_stat;
+
 	(void)sig;
-	ft_putchar_fd('\n', STDOUT_FILENO);
+	if ((stat("/proc/self/exe", &self_stat) != -1)
+		&& (stat("./minishell", &prog_stat) != -1)
+		&& ((self_stat.st_dev != prog_stat.st_dev)
+			|| (self_stat.st_ino != prog_stat.st_ino)))
+		ft_putchar_fd('\n', STDOUT_FILENO);
 }
