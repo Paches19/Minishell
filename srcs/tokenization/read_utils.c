@@ -73,7 +73,7 @@ int	read_redirect(char ***input)
 	if (len > 0)
 	{
 		len = 0;
-		while (**input && !ft_is_space(***input) && !ft_is_special(***input))
+		while (**input && !ft_is_space(***input) && !ft_is_special2(***input))
 		{
 			++**input;
 			++len;

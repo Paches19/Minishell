@@ -163,5 +163,6 @@ void	exit_error(int err);
 int		export_errors(char *s);
 char	*try_pwd_access(char **split_cmd, char ***new_environ, char *file_path);
 void	ft_error_pipe(void);
+int		ft_is_special2(char c);
 
 #endif
