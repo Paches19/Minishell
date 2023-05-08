@@ -12,6 +12,24 @@
 
 #include "../../include/minishell.h"
 
+void	update_shell_lvl(char ***dest)
+{
+	int		shell_lvl;
+	int		i;
+	char	*new_lvl;
+
+	shell_lvl = ft_atoi(ft_getenv("$SHLVL", *dest));
+	if (shell_lvl)
+		shell_lvl++;
+	else
+		shell_lvl = 1;
+	i = ft_check_var_exist("SHLVL", dest);
+	new_lvl = ft_itoa(shell_lvl);
+	free((*dest)[i]);
+	(*dest)[i] = ft_strjoin("SHLVL=", new_lvl);
+	free(new_lvl);
+}
+
 char	**copy_environ(char **source)
 {
 	char	**dest;
@@ -31,5 +49,6 @@ char	**copy_environ(char **source)
 		i++;
 	}
 	dest[i] = 0;
+	update_shell_lvl(&dest);
 	return (dest);
 }

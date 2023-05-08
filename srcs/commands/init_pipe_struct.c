@@ -95,5 +95,10 @@ t_pipe	init_pipe_struct(t_token *token_list,
 	pipe_s.paths = get_path(new_environ);
 	pipe_s.cmd = get_cmd(token_list, pipe_s.num_pipes);
 	pipe_s.num_cmds = get_num_cmds(pipe_s.cmd);
+	if (pipe_s.num_pipes != pipe_s.num_cmds - 1)
+	{
+		ft_error_pipe();
+		pipe_s.num_pipes = 0;
+	}
 	return (pipe_s);
 }

@@ -24,12 +24,12 @@ CC 			=	gcc
 CFLAGS 		=	-Wall -Wextra -Werror
 
 # Para jutrera-
-# INCLUDES 	= -I$(INCDIR)
-# LDFLAGS 	= -L./libft/ -lft -lreadline
+INCLUDES 	= -I$(INCDIR)
+LDFLAGS 	= -L./libft/ -lft -lreadline
 
 # Para adpachec
-INCLUDES 	= -I$(INCDIR) -Ivendor/readline/include
-LDFLAGS 	= -Llibft/ -lft -Lvendor/readline/lib -lreadline
+# INCLUDES 	= -I$(INCDIR) -Ivendor/readline/include
+# LDFLAGS 	= -Llibft/ -lft -Lvendor/readline/lib -lreadline
 
 LEAKS 		=	-fsanitize=address -g
 
@@ -70,6 +70,7 @@ SRCS		=	srcs/main.c \
 				srcs/tokenization/token_utils.c \
 				srcs/tokenization/tokenize_input.c \
 				srcs/utils/free.c \
+				srcs/utils/ft_error_pipe.c \
 				srcs/utils/ft_errors.c \
 				srcs/utils/ft_init_matrix.c \
 				srcs/utils/ft_is.c
@@ -92,15 +93,12 @@ RM 			= 	rm -rf
 # Default target
 all			: 	$(NAME)
 
-# Compile object files
-message		:	
-				@echo "$(YELLOW)Compiling program : $(NAME)$(RESET)"
 
 $(OBJDIR)/%.o: 	$(SRCDIR)/%.c
 				@mkdir -p $(dir $@)
-				@printf "Compiling $(YELLOW)$<$(RESET)\r"
+				@printf "Compiling $(YELLOW)$<$(RESET) \r"
 				@$(CC) $(CFLAGS) $(LEAKS) $(INCLUDES) -c $< -o $@
-				@printf "                                                                         \r"
+				@printf "                                                   \r"
 
 # Compile library
 $(LIBRARY)	:
@@ -108,7 +106,7 @@ $(LIBRARY)	:
 				@$(MAKE) --no-print-directory -C $(LIBDIR)
 
 # Link program
-$(NAME)		: 	$(LIBRARY) message $(OBJS)
+$(NAME)		: 	$(LIBRARY) $(OBJS)
 				@echo "Linking object files... \c"
 				@$(CC) $(OBJS) $(CFLAGS) $(LEAKS) $(LDFLAGS) -o $(NAME)
 				@echo "$(GREEN)$(NAME) created successfully !$(RESET)"
